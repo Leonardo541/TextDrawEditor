@@ -160,7 +160,6 @@ canvas
 	border-bottom: 1px solid #292929;
 	box-sizing: border-box;
 	cursor: pointer;
-	user-select: none;
 }
 
 #controls .textDrawItem:hover
@@ -178,6 +177,7 @@ canvas
 	height: 24px;
 	border-right: 1px solid #292929;
 	cursor: move;
+	user-select: none;
 }
 
 #controls .textDrawItem span
@@ -326,20 +326,30 @@ canvas
 	background-color: #404040;
 }
 
+::-webkit-scrollbar-corner
+{
+	background-color: #404040;
+}
+
 ::-webkit-scrollbar-thumb
 {
 	background: #8a8a8a;
 	border: 1px solid #404040;
 }
 
-#screen::-webkit-scrollbar
+#screen .scrollable::-webkit-scrollbar
 {
 	width: 15px;
 	height: 15px;
 	background-color: #212121;
 }
 
-#screen::-webkit-scrollbar-thumb
+#screen .scrollable::-webkit-scrollbar-corner
+{
+	background-color: #212121;
+}
+
+#screen .scrollable::-webkit-scrollbar-thumb
 {
 	background: #787878;
 	border: 1px solid #212121;

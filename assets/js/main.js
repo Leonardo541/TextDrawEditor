@@ -712,6 +712,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			
 			if(buttonUp)
 			{
+				document.body.style.cursor = "";
+				document.body.style.userSelect = "";
+				
 				dialogUI.moving = false;
 				dialogUI.movingX = 0;
 				dialogUI.movingY = 0;
@@ -763,6 +766,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			
 			if(buttonUp)
 			{
+				document.body.style.cursor = "";
+				document.body.style.userSelect = "";
+				
 				this.movingTextDraw = false;
 				this.movingTextDrawIdx = -1;
 			}
@@ -776,6 +782,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			{
 				if(this.currentProject.textDrawList[i].thumbnailUI.isInBoundingClientRect(e.clientX, e.clientY))
 				{
+					document.body.style.cursor = "move";
+					document.body.style.userSelect = "none";
+					
 					this.movingTextDraw = true;
 					this.movingTextDrawIdx = i;
 					
