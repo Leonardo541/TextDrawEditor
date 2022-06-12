@@ -9,6 +9,7 @@ window.onload = function()
 function Main()
 {
 	this.contextMenuUI = null;
+	this.dialogsUI = [];
 	
 	this.mainUI = new EntityUI("body", "div", {id: "main"});
 	
@@ -128,7 +129,7 @@ function Main()
 	window.addEventListener("mousedown", (e) => { this.checkMouse(e, true, false); });
 	window.addEventListener("mouseup", (e) => { this.checkMouse(e, false, true); });
 	window.addEventListener("mousemove", (e) => { this.checkMouse(e, false, false); });
-	window.addEventListener("resize", (e) => { this.checkScrollBars(e); });
+	window.addEventListener("resize", (e) => { this.checkScrollBars(e); this.dialogsUI.forEach(dialogUI => dialogUI.move(dialogUI.element.offsetLeft, dialogUI.element.offsetTop)); });
 	
 	this.checkScrollBars();
 }
@@ -182,10 +183,34 @@ Main.prototype.changeProject = function(project)
 
 Main.prototype.createTextDraw = function(x, y)
 {
-	let textDraw = this.currentProject.createTextDraw("Example", x, y);
+	let scaleX = this.screenshotUI.width / 640.0;
+	let scaleY = this.screenshotUI.height / 448.0;
 	
-	this.updateControlList();
-	this.changeTextDraw(textDraw);
+	let mouseX = x * scaleX + this.screenshotUI.element.getBoundingClientRect().left;
+	let mouseY = y * scaleY + this.screenshotUI.element.getBoundingClientRect().top;
+	
+	let dialogUI = new DialogUI("body", "Create TextDraw");
+	
+	dialogUI.contentUI.appendStaticText("Text");
+	dialogUI.contentUI.appendLineBreak();
+	
+	let textUI = new TextBoxUI(dialogUI.contentUI, {value: "Example"});
+	
+	dialogUI.contentUI.appendLineBreak();
+	dialogUI.contentUI.appendStaticText("Position");
+	dialogUI.contentUI.appendLineBreak();
+	
+	let xUI = new TextBoxUI(dialogUI.contentUI, {value: x.toPlainString(), class: "textBoxLeft"});
+	let yUI = new TextBoxUI(dialogUI.contentUI, {value: y.toPlainString(), class: "textBoxRight"});
+	
+	dialogUI.contentUI.appendStaticLine();
+	
+	new ButtonUI(dialogUI.buttonsUI, {innerText: "Accept", click: () => { let textDraw = this.currentProject.createTextDraw(textUI.element.value, parseInt(xUI.element.value), parseInt(yUI.element.value)); this.updateControlList(); this.changeTextDraw(textDraw); dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
+	new ButtonUI(dialogUI.buttonsUI, {innerText: "Cancel", click: () => { dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
+	
+	dialogUI.move(mouseX - dialogUI.element.clientWidth / 2, mouseY - dialogUI.element.clientHeight / 2);
+	
+	this.dialogsUI.push(dialogUI);
 };
 
 Main.prototype.removeTextDraw = function (textDraw)
@@ -233,6 +258,8 @@ Main.prototype.contextMenuProject = function(project, x, y)
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
 	this.contextMenuUI.appendItem("Remove Project", () => { this.removeProject(project) });
+	
+	this.changeProject(project);
 };
 
 Main.prototype.contextMenuTextDraw = function(textDraw, x, y)
@@ -242,6 +269,8 @@ Main.prototype.contextMenuTextDraw = function(textDraw, x, y)
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
 	this.contextMenuUI.appendItem("Remove " + textDraw.name, () => { this.removeTextDraw(textDraw) });
+	
+	this.changeTextDraw(textDraw);
 };
 
 Main.prototype.contextMenuScreen = function(x, y)
@@ -275,9 +304,16 @@ Main.prototype.contextMenuScreen = function(x, y)
 				firstItem = false;
 			}
 			
-			this.contextMenuUI.appendItem("Select " + this.currentProject.textDrawList[i].name, () => { this.changeTextDraw(this.currentProject.textDrawList[i]) });
+			let contextItemUI = this.contextMenuUI.appendItem(this.currentProject.textDrawList[i].name, () => {});
+			let contextSubMenuUI = new ContextMenuUI(contextItemUI, 0, 0);
+			
+			contextSubMenuUI.appendItem("Select", () => { this.changeTextDraw(this.currentProject.textDrawList[i]); });
+			contextSubMenuUI.appendStaticLine();
+			contextSubMenuUI.appendItem("Remove", () => { this.removeTextDraw(this.currentProject.textDrawList[i]); });
 		}
 	}
+	
+	this.contextMenuUI.updateSubMenuPosition();
 };
 
 Main.prototype.updateControlList = function()
@@ -663,6 +699,25 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				this.contextMenuUI.remove();
 				this.contextMenuUI = null;
 			}
+		}
+	}
+	
+	for(let i = 0; i < this.dialogsUI.length; i++)
+	{
+		let dialogUI = this.dialogsUI[i];
+		
+		if(dialogUI.moving)
+		{
+			dialogUI.move(e.clientX - dialogUI.movingX, e.clientY - dialogUI.movingY);
+			
+			if(buttonUp)
+			{
+				dialogUI.moving = false;
+				dialogUI.movingX = 0;
+				dialogUI.movingY = 0;
+			}
+			
+			return;
 		}
 	}
 	

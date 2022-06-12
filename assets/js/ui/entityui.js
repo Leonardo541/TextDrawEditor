@@ -22,7 +22,7 @@ function EntityUI(parent, tagName, setting)
 			continue;
 		}
 		
-		if(key == "keydown" || key == "keyup" || key == "mousemove" || key == "click" || key == "contextmenu" || key == "focusin" || key == "focusout")
+		if(key == "keydown" || key == "keyup" || key == "mousedown" || key == "mouseup" || key == "mousemove" || key == "click" || key == "contextmenu" || key == "focusin" || key == "focusout")
 		{
 			this.element.addEventListener(key, setting[key]);
 			continue;

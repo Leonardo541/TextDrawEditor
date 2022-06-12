@@ -1,7 +1,7 @@
 
 function ContextMenuUI(parent, x, y)
 {
-	EntityUI.call(this, parent, "div", {id: "contextMenu"});
+	EntityUI.call(this, parent, "div", {class: "contextMenu", contextmenu: (e) => { e.preventDefault(); }});
 	
 	this.element.style.left = x + "px";
 	this.element.style.top = y + "px";
@@ -23,4 +23,55 @@ ContextMenuUI.prototype.appendItem = function(text, click)
 	}
 	
 	return new EntityUI(this, "div", setting);
-}
+};
+
+ContextMenuUI.prototype.getSubMenuList = function(text, subMenuUI)
+{
+	let subMenuList = [];
+	
+	for(let i = 0; i < this.element.childNodes.length; i++)
+	{
+		let element = this.element.childNodes[i].querySelector(":scope > .contextMenu");
+		
+		if(element && element.entityUI)
+			subMenuList.push(element.entityUI);
+	}
+	
+	return subMenuList;
+};
+
+ContextMenuUI.prototype.updateSubMenuPosition = function()
+{
+	let subMenuList = this.getSubMenuList();
+	let subMenuPosX = 0;
+	let subMenuPosY = -(this.element.clientTop + this.element.firstChild.offsetTop);
+	
+	for(let i = 0; i < subMenuList.length; i++)
+	{
+		if(subMenuList[i].element.parentNode.clientWidth > subMenuPosX)
+			subMenuPosX = subMenuList[i].element.parentNode.clientWidth;
+	}
+	
+	for(let i = 0; i < subMenuList.length; i++)
+	{
+		subMenuList[i].element.style.left = subMenuPosX + "px";
+		subMenuList[i].element.style.top = subMenuPosY + "px";
+		subMenuList[i].updateSubMenuPosition();
+	}
+};
+
+ContextMenuUI.prototype.isInBoundingClientRect = function(x, y)
+{
+	if(EntityUI.prototype.isInBoundingClientRect.call(this, x, y))
+		return true;
+	
+	let subMenuList = this.getSubMenuList();
+	
+	for(let i = 0; i < subMenuList.length; i++)
+	{
+		if(EntityUI.prototype.isInBoundingClientRect.call(subMenuList[i], x, y))
+			return true;
+	}
+	
+	return false;
+};
