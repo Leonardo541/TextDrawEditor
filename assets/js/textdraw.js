@@ -1,5 +1,5 @@
 
-function TextDraw(main, name, text, x, y, setting)
+function TextDraw(main, name, text, x, y)
 {
 	this.main = main;
 	
@@ -31,6 +31,50 @@ function TextDraw(main, name, text, x, y, setting)
 	this.font = 1;
 	this.setProportional = 1;
 }
+
+TextDraw.prototype.copyTextDraw = function(textDraw)
+{
+	textDraw.name = this.name;
+	textDraw.text = this.text;
+	textDraw.x = this.x;
+	textDraw.y = this.y;
+	textDraw.letterSizeX = this.letterSizeX;
+	textDraw.letterSizeY = this.letterSizeY;
+	textDraw.textSizeX = this.textSizeX;
+	textDraw.textSizeY = this.textSizeY;
+	textDraw.alignment = this.alignment;
+	textDraw.color = this.color;
+	textDraw.useBox = this.useBox;
+	textDraw.boxColor = this.boxColor;
+	textDraw.setShadow = this.setShadow;
+	textDraw.setOutline = this.setOutline;
+	textDraw.backgroundColor = this.backgroundColor;
+	textDraw.font = this.font;
+	textDraw.setProportional = this.setProportional;
+};
+
+TextDraw.prototype.fromTextDraw = function(textDraw)
+{
+	this.letterSizeX = textDraw.letterSizeX;
+	this.letterSizeY = textDraw.letterSizeY;
+	this.textSizeX = textDraw.textSizeX;
+	this.textSizeY = textDraw.textSizeY;
+	this.alignment = textDraw.alignment;
+	this.color = textDraw.color;
+	this.useBox = textDraw.useBox;
+	this.boxColor = textDraw.boxColor;
+	this.setShadow = textDraw.setShadow;
+	this.setOutline = textDraw.setOutline;
+	this.backgroundColor = textDraw.backgroundColor;
+	this.font = textDraw.font;
+	this.setProportional = textDraw.setProportional;
+	
+	if(textDraw.width && textDraw.height)
+	{
+		this.setRectRight(this.getRectLeft() + textDraw.width);
+		this.setRectBottom(this.getRectTop() + textDraw.height);
+	}
+};
 
 TextDraw.prototype.offsetRect = function(offsetX, offsetY)
 {

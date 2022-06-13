@@ -20,7 +20,7 @@ hr
 	border-bottom: 1px solid #808080;
 }
 
-button, select, input
+button, select, input, textarea
 {
 	width: 240px;
 	padding: 2px;
@@ -58,7 +58,13 @@ input.textBoxRight
 	margin-left: 4px;
 }
 
-input:focus
+textarea
+{
+	width: 480px;
+	height: 100px;
+}
+
+input:focus, textarea:focus
 { 
 	outline: none !important;
 	border: 1px solid #919191;

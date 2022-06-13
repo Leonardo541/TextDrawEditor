@@ -8,7 +8,7 @@ function Project(main)
 	
 	this.textDrawList = [];
 	this.textDrawCount = 0;
-	this.currentTextDraw = this.createTextDraw("Example", 10, 10);
+	this.currentTextDraw = null;
 }
 
 Project.prototype.createTextDraw = function(text, x, y)

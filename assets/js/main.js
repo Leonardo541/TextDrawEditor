@@ -28,62 +28,62 @@ function Main()
 	this.scrollableControlsUI.appendStaticLine();
 	this.scrollableControlsUI.appendStaticText("Name");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlNameUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.nameChange(e); }});
+	this.controlNameUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.nameChange(e); }, focusout: (e) => { this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Text");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlTextUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.textChange(e); }, focusout : (e) => { this.repaintThumbnail(); }});
+	this.controlTextUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.textChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Position");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlXUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxLeft", keyup: (e) => { this.xChange(e); }, focusout : (e) => { this.repaintThumbnail(); }});
-	this.controlYUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxRight", keyup: (e) => { this.yChange(e); }, focusout : (e) => { this.repaintThumbnail(); }});
+	this.controlXUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxLeft", keyup: (e) => { this.xChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlYUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxRight", keyup: (e) => { this.yChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Letter Size");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlLetterSizeXUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxLeft", keyup: (e) => { this.letterSizeXChange(e); }, focusout : (e) => { this.repaintThumbnail(); }});
-	this.controlLetterSizeYUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxRight", keyup: (e) => { this.letterSizeYChange(e); }, focusout : (e) => { this.repaintThumbnail(); }});
+	this.controlLetterSizeXUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxLeft", keyup: (e) => { this.letterSizeXChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlLetterSizeYUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxRight", keyup: (e) => { this.letterSizeYChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Text Size");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlTextSizeXUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxLeft", keyup: (e) => { this.textSizeXChange(e); }, focusout : (e) => { this.repaintThumbnail(); }});
-	this.controlTextSizeYUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxRight", keyup: (e) => { this.textSizeYChange(e); }, focusout : (e) => { this.repaintThumbnail(); }});
+	this.controlTextSizeXUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxLeft", keyup: (e) => { this.textSizeXChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlTextSizeYUI = new TextBoxUI(this.scrollableControlsUI, {class: "textBoxRight", keyup: (e) => { this.textSizeYChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Alignment");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlAlignmentUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.alignmentChange(e); }, focusout : (e) => { this.repaintThumbnail(); }});
+	this.controlAlignmentUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.alignmentChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Color");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlColorUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.colorChange(e); }, focusout: (e) => { this.repaintThumbnail(); }});
+	this.controlColorUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.colorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Use Box");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlUseBoxUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.useBoxChange(e); }, focusout: (e) => { this.repaintThumbnail(); }});
+	this.controlUseBoxUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.useBoxChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Box Color");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlBoxColorUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.boxColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); }});
+	this.controlBoxColorUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.boxColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Set Shadow");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlSetShadowUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.setShadowChange(e); }, focusout: (e) => { this.repaintThumbnail(); }});
+	this.controlSetShadowUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.setShadowChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Set Outline");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlSetOutlineUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.setOutlineChange(e); }, focusout: (e) => { this.repaintThumbnail(); }});
+	this.controlSetOutlineUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.setOutlineChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Background Color");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlBackgroundColorUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.backgroundColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); }});
+	this.controlBackgroundColorUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.backgroundColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Font");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlFontUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.fontChange(e); }, focusout: (e) => { this.repaintThumbnail(); }});
+	this.controlFontUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.fontChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.scrollableControlsUI.appendStaticText("Set Proportional");
 	this.scrollableControlsUI.appendLineBreak();
-	this.controlSetProportionalUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.setProportionalChange(e); }, focusout: (e) => { this.repaintThumbnail(); }});
+	this.controlSetProportionalUI = new TextBoxUI(this.scrollableControlsUI, {keyup: (e) => { this.setProportionalChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
 	this.scrollableControlsUI.appendStaticLine();
 	this.control640x480UI = new ButtonUI(this.scrollableControlsUI, {innerText: "640x480", onclick: (e) => { this.screenshotChange("./assets/images/640x480.png"); }});
 	this.scrollableControlsUI.appendLineBreak();
@@ -113,8 +113,14 @@ function Main()
 	
 	this.projects = [];
 	this.currentProject = null;
+	this.saveProjectsEnabled = false;
 	
-	this.addProject();
+	this.repaintedThumbnailAll = true;
+	
+	this.loadProjects();
+	
+	if(this.projects.length == 0)
+		this.addProject();
 	
 	this.movingTextDraw = false;
 	this.movingTextDrawIdx = -1;
@@ -138,12 +144,28 @@ Main.prototype.addProject = function()
 {
 	let project = new Project(this);
 	
+	project.currentTextDraw = project.createTextDraw("Example", 10, 10);
+	
 	this.projects.push(project);
 	
 	this.changeProject(project);
 	this.changeTextDraw(project.currentTextDraw);
 	
 	this.checkScrollBars();
+};
+
+Main.prototype.exportProject = function(project)
+{
+	let copiedTextDraws = [];
+	
+	for(let i = 0; i < project.textDrawList.length; i++)
+	{
+		let copiedTextDraw = {};
+		project.textDrawList[i].copyTextDraw(copiedTextDraw);
+		copiedTextDraws.push(copiedTextDraw);
+	}
+	
+	this.exportDialog("Export Project", copiedTextDraws);
 };
 
 Main.prototype.removeProject = function(project)
@@ -175,13 +197,108 @@ Main.prototype.changeProject = function(project)
 	if(this.currentProject != null)
 		this.currentProject.projectTabUI.element.classList.add("currentProjectTab");
 	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+	
 	this.updateControlList();
 	this.updateControls();
 	
 	this.repaint();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
 };
 
-Main.prototype.createTextDraw = function(x, y)
+Main.prototype.loadProjects = function()
+{
+	let json = window.localStorage.getItem("save");
+	
+	if(json)
+	{
+		let saved = JSON.parse(json);
+		
+		let savedProjects = saved.projects;
+		let savedCurrentProjectIdx = saved.currentProjectIdx;
+		
+		for(let i = 0; i < savedProjects.length; i++)
+		{
+			let project = new Project(this);
+			
+			let savedTextDraws = savedProjects[i].textDraws;
+			let savedCurrentTextDrawIdx = savedProjects[i].currentTextDrawIdx;
+			
+			for(let j = 0; j < savedTextDraws.length; j++)
+			{
+				let textDraw = new TextDraw(this, savedTextDraws[j].name, savedTextDraws[j].text, savedTextDraws[j].x, savedTextDraws[j].y);
+				project.textDrawList.push(textDraw);
+				textDraw.fromTextDraw(savedTextDraws[j]);
+				
+				if(j == savedCurrentTextDrawIdx)
+				{
+					project.currentTextDraw = textDraw;
+					project.currentTextDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
+				}
+			}
+			
+			project.textDrawCount = savedProjects[i].textDrawCount;
+			
+			this.projects.push(project);
+			
+			if(i == savedCurrentProjectIdx)
+			{
+				this.currentProject = project;
+				this.currentProject.projectTabUI.element.classList.add("currentProjectTab");
+			}
+		}
+		
+		this.updateControlList();
+		this.updateControls();
+		
+		this.repaintedThumbnailAll = false;
+		
+		this.repaint();
+		
+		this.checkScrollBars();
+	}
+};
+
+Main.prototype.saveProjects = function()
+{
+	if(this.saveProjectsEnabled)
+	{
+		let savedProjects = [];
+		let savedCurrentProjectIdx = 0;
+		
+		for(let i = 0; i < this.projects.length; i++)
+		{
+			let savedTextDraws = [];
+			let savedCurrentTextDrawIdx = 0;
+			
+			for(let j = 0; j < this.projects[i].textDrawList.length; j++)
+			{
+				let savedTextDraw = {};
+				
+				this.projects[i].textDrawList[j].copyTextDraw(savedTextDraw);
+				
+				savedTextDraws.push(savedTextDraw);
+				
+				if(this.projects[i].textDrawList[j] == this.projects[i].currentTextDraw)
+					savedCurrentTextDrawIdx = j;
+			}
+			
+			savedProjects.push({textDraws: savedTextDraws, textDrawCount: this.projects[i].textDrawCount, currentTextDrawIdx: savedCurrentTextDrawIdx});
+			
+			if(this.projects[i] == this.currentProject)
+				savedCurrentProjectIdx = i;
+		}
+		
+		window.localStorage.setItem("save", JSON.stringify({projects: savedProjects, currentProjectIdx: savedCurrentProjectIdx}));
+		
+		this.saveProjectsEnabled = false;
+	}
+};
+
+Main.prototype.createTextDraw = function(x, y, fromTextDraw)
 {
 	let scaleX = this.screenshotUI.width / 640.0;
 	let scaleY = this.screenshotUI.height / 448.0;
@@ -205,12 +322,34 @@ Main.prototype.createTextDraw = function(x, y)
 	
 	dialogUI.contentUI.appendStaticLine();
 	
-	new ButtonUI(dialogUI.buttonsUI, {innerText: "Accept", click: () => { let textDraw = this.currentProject.createTextDraw(textUI.element.value, parseInt(xUI.element.value), parseInt(yUI.element.value)); this.updateControlList(); this.changeTextDraw(textDraw); dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
+	let copiedTextDraw = null;
+	
+	if(fromTextDraw)
+	{
+		copiedTextDraw = {};
+		fromTextDraw.copyTextDraw(copiedTextDraw);
+		copiedTextDraw.width = fromTextDraw.getRectRight() - fromTextDraw.getRectLeft();
+		copiedTextDraw.height = fromTextDraw.getRectBottom() - fromTextDraw.getRectTop();
+		
+		textUI.element.value = copiedTextDraw.text;
+		xUI.element.value = copiedTextDraw.x.toPlainString();
+		yUI.element.value = copiedTextDraw.y.toPlainString();
+		
+	}
+	
+	new ButtonUI(dialogUI.buttonsUI, {innerText: "Accept", click: () => { let textDraw = this.currentProject.createTextDraw(textUI.element.value, parseFloat(xUI.element.value), parseFloat(yUI.element.value)); if(copiedTextDraw) textDraw.fromTextDraw(copiedTextDraw); this.updateControlList(); this.changeTextDraw(textDraw); dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
 	new ButtonUI(dialogUI.buttonsUI, {innerText: "Cancel", click: () => { dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
 	
 	dialogUI.move(mouseX - dialogUI.element.clientWidth / 2, mouseY - dialogUI.element.clientHeight / 2);
 	
 	this.dialogsUI.push(dialogUI);
+};
+
+Main.prototype.exportTextDraw = function(textDraw)
+{
+	let copiedTextDraw = {};
+	textDraw.copyTextDraw(copiedTextDraw);
+	this.exportDialog("Export TextDraw", [copiedTextDraw]);
 };
 
 Main.prototype.removeTextDraw = function (textDraw)
@@ -234,6 +373,9 @@ Main.prototype.removeTextDraw = function (textDraw)
 	{
 		this.repaint();
 	}
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
 };
 
 Main.prototype.changeTextDraw = function(textDraw)
@@ -249,6 +391,9 @@ Main.prototype.changeTextDraw = function(textDraw)
 	this.updateControls();
 	
 	this.repaint();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
 };
 
 Main.prototype.contextMenuProject = function(project, x, y)
@@ -257,6 +402,8 @@ Main.prototype.contextMenuProject = function(project, x, y)
 		this.contextMenuUI.remove();
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
+	this.contextMenuUI.appendItem("Export Project", () => { this.exportProject(project) });
+	this.contextMenuUI.appendStaticLine();
 	this.contextMenuUI.appendItem("Remove Project", () => { this.removeProject(project) });
 	
 	this.changeProject(project);
@@ -268,7 +415,10 @@ Main.prototype.contextMenuTextDraw = function(textDraw, x, y)
 		this.contextMenuUI.remove();
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Remove " + textDraw.name, () => { this.removeTextDraw(textDraw) });
+	this.contextMenuUI.appendItem("Export TextDraw", () => { this.exportTextDraw(textDraw) });
+	this.contextMenuUI.appendStaticLine();
+	this.contextMenuUI.appendItem("Duplicate TextDraw", () => { this.createTextDraw(textDraw.getRectLeft() + (textDraw.getRectRight() - textDraw.getRectLeft()) / 2, textDraw.getRectTop() + (textDraw.getStringRectBottom() - textDraw.getRectTop()) / 2, textDraw); });
+	this.contextMenuUI.appendItem("Remove TextDraw", () => { this.removeTextDraw(textDraw) });
 	
 	this.changeTextDraw(textDraw);
 };
@@ -291,10 +441,12 @@ Main.prototype.contextMenuScreen = function(x, y)
 	
 	for(let i = 0; i < this.currentProject.textDrawList.length; i++)
 	{
-		let left = this.currentProject.textDrawList[i].getRectLeft() * scaleX;
-		let top = this.currentProject.textDrawList[i].getRectTop() * scaleY;
-		let right = this.currentProject.textDrawList[i].getRectRight() * scaleX;
-		let bottom = this.currentProject.textDrawList[i].getStringRectBottom() * scaleY;
+		let textDraw = this.currentProject.textDrawList[i];
+		
+		let left = textDraw.getRectLeft() * scaleX;
+		let top = textDraw.getRectTop() * scaleY;
+		let right = textDraw.getRectRight() * scaleX;
+		let bottom = textDraw.getStringRectBottom() * scaleY;
 		
 		if(left <= mouseX && mouseX < right && top <= mouseY && mouseY < bottom)
 		{
@@ -304,16 +456,143 @@ Main.prototype.contextMenuScreen = function(x, y)
 				firstItem = false;
 			}
 			
-			let contextItemUI = this.contextMenuUI.appendItem(this.currentProject.textDrawList[i].name, () => {});
+			let contextItemUI = this.contextMenuUI.appendItem(textDraw.name, () => {});
 			let contextSubMenuUI = new ContextMenuUI(contextItemUI, 0, 0);
 			
-			contextSubMenuUI.appendItem("Select", () => { this.changeTextDraw(this.currentProject.textDrawList[i]); });
+			contextSubMenuUI.appendItem("Select", () => { this.changeTextDraw(textDraw); });
 			contextSubMenuUI.appendStaticLine();
-			contextSubMenuUI.appendItem("Remove", () => { this.removeTextDraw(this.currentProject.textDrawList[i]); });
+			contextSubMenuUI.appendItem("Export", () => { this.exportTextDraw(textDraw) });
+			contextSubMenuUI.appendStaticLine();
+			contextSubMenuUI.appendItem("Duplicate", () => { this.createTextDraw(textDraw.getRectLeft() + (textDraw.getRectRight() - textDraw.getRectLeft()) / 2, textDraw.getRectTop() + (textDraw.getStringRectBottom() - textDraw.getRectTop()) / 2, textDraw); });
+			contextSubMenuUI.appendItem("Remove", () => { this.removeTextDraw(textDraw); });
 		}
 	}
 	
 	this.contextMenuUI.updateSubMenuPosition();
+};
+
+Main.prototype.exportDialog = function(title, textDraws)
+{
+	let dialogUI = new DialogUI("body", title);
+	
+	dialogUI.contentUI.appendStaticText("Callback");
+	dialogUI.contentUI.appendLineBreak();
+	
+	let callbackUI = new ListBoxUI(dialogUI.contentUI, {change: (e) => { this.exportDialogChange(e.target.selectedIndex, -1, dialogUI, textDraws); }});
+	
+	callbackUI.appendOption("OnGameModeInit");
+	callbackUI.appendOption("OnFilterScriptInit");
+	
+	dialogUI.contentUI.appendLineBreak();
+	dialogUI.contentUI.appendStaticText("Output");
+	dialogUI.contentUI.appendLineBreak();
+	
+	let outputUI = new ListBoxUI(dialogUI.contentUI, {change: (e) => { this.exportDialogChange(callbackUI.element.selectedIndex, e.target.selectedIndex, dialogUI, textDraws); }});
+	
+	outputUI.appendOption("Save output to a file");
+	outputUI.appendOption("View output as text");
+	
+	dialogUI.contentUI.appendStaticLine();
+	
+	new ButtonUI(dialogUI.buttonsUI, {innerText: "Accept", click: () => { if(outputUI.element.selectedIndex == 0) this.downloadExport(callbackUI.element.selectedIndex, textDraws); dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
+	new ButtonUI(dialogUI.buttonsUI, {innerText: "Cancel", click: () => { dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
+	
+	this.dialogsUI.push(dialogUI);
+};
+
+Main.prototype.exportDialogChange = function(callback, output, dialogUI, textDraws)
+{
+	let viewOutputElement = dialogUI.contentUI.element.querySelector("#viewOutput");
+	
+	if(output == -1)
+		output = viewOutputElement && viewOutputElement.entityUI ? 1 : 0;
+	
+	if(output == 0)
+	{
+		if(viewOutputElement && viewOutputElement.entityUI)
+		{
+			if(viewOutputElement.nextSibling && viewOutputElement.nextSibling.entityUI)
+				viewOutputElement.nextSibling.entityUI.remove();
+			
+			viewOutputElement.entityUI.remove();
+		}
+	}
+	else
+	{
+		if(viewOutputElement && viewOutputElement.entityUI)
+		{
+			viewOutputElement.value = this.generateExport(callback, textDraws);
+		}
+		else
+		{
+			new EntityUI(dialogUI.contentUI, "textarea", {value: this.generateExport(callback, textDraws), id: "viewOutput"});
+			
+			dialogUI.contentUI.appendStaticLine();
+		}
+	}
+};
+
+Main.prototype.generateExport = function(callback, textDraws)
+{
+	let code = "\r\n#include <a_samp>\r\n\r\n";
+	
+	for(let i = 0; i < textDraws.length; i++)
+	{
+		code += "new Text:" + textDraws[i].name + ";\r\n";
+	}
+	
+	if(callback == 0)
+	{
+		code += "\r\npublic OnGameModeInit()\r\n{\r\n";
+	}
+	else
+	{
+		code += "\r\npublic OnFilterScriptInit()\r\n{\r\n";
+	}
+	
+	for(let i = 0; i < textDraws.length; i++)
+	{
+		if(i != 0)
+			code += "\r\n";
+		
+		code += "\t" + textDraws[i].name + " = TextDrawCreate(" + textDraws[i].x.toPlainString() + ", " + textDraws[i].y.toPlainString() + ", " + JSON.stringify(textDraws[i].text) + ");\r\n";
+		code += "\tTextDrawLetterSize(" + textDraws[i].name + ", " + textDraws[i].letterSizeX.toPlainString() + ", " + textDraws[i].letterSizeY.toPlainString() + ");\r\n";
+		code += "\tTextDrawTextSize(" + textDraws[i].name + ", " + textDraws[i].textSizeX.toPlainString() + ", " + textDraws[i].textSizeY.toPlainString() + ");\r\n";
+		code += "\tTextDrawAlignment(" + textDraws[i].name + ", " + textDraws[i].alignment.toString() + ");\r\n";
+		code += "\tTextDrawColor(" + textDraws[i].name + ", 0x" + textDraws[i].color.toString(16).toUpperCase().padZero(8) + ");\r\n";
+		code += "\tTextDrawUseBox(" + textDraws[i].name + ", " + textDraws[i].useBox.toString() + ");\r\n";
+		code += "\tTextDrawBoxColor(" + textDraws[i].name + ", 0x" + textDraws[i].boxColor.toString(16).toUpperCase().padZero(8) + ");\r\n";
+		code += "\tTextDrawSetShadow(" + textDraws[i].name + ", " + textDraws[i].setShadow.toString() + ");\r\n";
+		code += "\tTextDrawSetOutline(" + textDraws[i].name + ", " + textDraws[i].setOutline.toString() + ");\r\n";
+		code += "\tTextDrawBackgroundColor(" + textDraws[i].name + ", 0x" + textDraws[i].backgroundColor.toString(16).toUpperCase().padZero(8) + ");\r\n";
+		code += "\tTextDrawFont(" + textDraws[i].name + ", " + textDraws[i].font.toString() + ");\r\n";
+		code += "\tTextDrawSetProportional(" + textDraws[i].name + ", " + textDraws[i].setProportional.toString() + ");\r\n";
+	}
+	
+	if(callback == 0)
+	{
+		code += "}\r\n\r\npublic OnGameModeExit()\r\n{\r\n";
+	}
+	else
+	{
+		code += "}\r\n\r\npublic OnFilterScriptExit()\r\n{\r\n";
+	}
+	
+	for(let i = 0; i < textDraws.length; i++)
+	{
+		code += "\tTextDrawDestroy(" + textDraws[i].name + ");\r\n";
+	}
+	
+	code += "}\r\n";
+	
+	return code;
+};
+
+Main.prototype.downloadExport = function(callback, textDraws)
+{
+	let downloadUI = new EntityUI(null, "a", {href: "data:text/plain;charset=utf-8," + encodeURIComponent(this.generateExport(callback, textDraws)), download: "exported.pwn"});
+	
+	downloadUI.element.click();
 };
 
 Main.prototype.updateControlList = function()
@@ -379,6 +658,7 @@ Main.prototype.nameChange = function(e)
 	{
 		this.currentProject.currentTextDraw.nameUI.element.innerHTML = e.target.value;
 		this.currentProject.currentTextDraw.name = e.target.value;
+		this.saveProjectsEnabled = true;
 		
 		this.updateControlList();
 	}
@@ -389,6 +669,7 @@ Main.prototype.textChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.text = e.target.value;
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -400,6 +681,7 @@ Main.prototype.xChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.x = parseFloat(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -414,6 +696,7 @@ Main.prototype.yChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.y = parseFloat(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -428,6 +711,7 @@ Main.prototype.letterSizeXChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.letterSizeX = parseFloat(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -442,6 +726,7 @@ Main.prototype.letterSizeYChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.letterSizeY = parseFloat(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -456,6 +741,7 @@ Main.prototype.textSizeXChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.textSizeX = parseFloat(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -470,6 +756,7 @@ Main.prototype.textSizeYChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.textSizeY = parseFloat(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -484,6 +771,7 @@ Main.prototype.alignmentChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.changeAlignment(parseInt(e.target.value));
+		this.saveProjectsEnabled = true;
 		
 		this.updateControls();
 		
@@ -500,6 +788,7 @@ Main.prototype.colorChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.color = parseInt(e.target.value, 16);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -511,6 +800,7 @@ Main.prototype.useBoxChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.useBox = parseInt(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -522,6 +812,7 @@ Main.prototype.boxColorChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.boxColor = parseInt(e.target.value, 16);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -533,6 +824,7 @@ Main.prototype.setShadowChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.setShadow = parseInt(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -544,6 +836,7 @@ Main.prototype.setOutlineChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.setOutline = parseInt(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -555,6 +848,7 @@ Main.prototype.backgroundColorChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.backgroundColor = parseInt(e.target.value, 16);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -566,6 +860,7 @@ Main.prototype.fontChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.font = parseInt(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -577,6 +872,7 @@ Main.prototype.setProportionalChange = function(e)
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
 		this.currentProject.currentTextDraw.setProportional = parseInt(e.target.value);
+		this.saveProjectsEnabled = true;
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
@@ -625,6 +921,9 @@ Main.prototype.repaint = function()
 	this.aboveTextDrawUI.resize(this.screenshotUI.width, this.screenshotUI.height);
 	
 	this.optionsUI.resize(this.screenshotUI.width, this.screenshotUI.height);
+	
+	if(!this.repaintedThumbnailAll)
+		this.repaintThumbnailAll();
 	
 	this.belowTextDrawUI.clear();
 	this.currentTextDrawUI.clear();
@@ -685,6 +984,34 @@ Main.prototype.repaintThumbnail = function()
 			if(this.currentTextDrawUI.width != 0 && this.currentTextDrawUI.height != 0)
 				this.currentProject.currentTextDraw.thumbnailUI.context.drawImage(this.currentTextDrawUI.element, 0, 0, this.currentTextDrawUI.width, this.currentTextDrawUI.height, 0, 0, 24, 24);
 		}
+	}
+};
+
+Main.prototype.repaintThumbnailAll = function()
+{
+	if(this.currentTextDrawUI.width != 0 && this.currentTextDrawUI.height != 0 && this.font1UI.width != 0 && this.font1UI.height != 0 && this.font2UI.width != 0 && this.font2UI.height != 0)
+	{
+		for(let i = 0; i < this.projects.length; i++)
+		{
+			this.currentTextDrawUI.clear();
+			
+			for(let j = 0; j < this.projects[i].textDrawList.length; j++)
+			{
+				this.currentTextDrawUI.paint(this.projects[i].textDrawList[j], false);
+			}
+			
+			this.projects[i].thumbnailUI.context.clearRect(0, 0, 64, 64);
+			this.projects[i].thumbnailUI.context.drawImage(this.currentTextDrawUI.element, 0, 0, this.currentTextDrawUI.width, this.currentTextDrawUI.height, 0, 0, 64, 64);
+			
+			for(let j = 0; j < this.projects[i].textDrawList.length; j++)
+			{
+				this.currentTextDrawUI.clear();
+				this.currentTextDrawUI.paint(this.projects[i].textDrawList[j], false);
+				this.projects[i].textDrawList[j].thumbnailUI.context.drawImage(this.currentTextDrawUI.element, 0, 0, this.currentTextDrawUI.width, this.currentTextDrawUI.height, 0, 0, 24, 24);
+			}
+		}
+		
+		this.repaintedThumbnailAll = true;
 	}
 };
 
@@ -924,7 +1251,12 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 			
 			if(buttonUp)
+			{
 				this.repaintThumbnail();
+				
+				this.saveProjectsEnabled = true;
+				this.saveProjects();
+			}
 		}
 		else
 		{
