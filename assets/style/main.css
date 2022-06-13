@@ -327,37 +327,37 @@ canvas
 	height: 4px;
 }
 
-::-webkit-scrollbar
+.scrollable.scrollbarThin::-webkit-scrollbar
 {
 	width: 8px;
 	height: 8px;
 	background-color: #404040;
 }
 
-::-webkit-scrollbar-corner
+.scrollable.scrollbarThin::-webkit-scrollbar-corner
 {
 	background-color: #404040;
 }
 
-::-webkit-scrollbar-thumb
+.scrollable.scrollbarThin::-webkit-scrollbar-thumb
 {
 	background: #8a8a8a;
 	border: 1px solid #404040;
 }
 
-#screen .scrollable::-webkit-scrollbar
+::-webkit-scrollbar
 {
 	width: 15px;
 	height: 15px;
 	background-color: #212121;
 }
 
-#screen .scrollable::-webkit-scrollbar-corner
+::-webkit-scrollbar-corner
 {
 	background-color: #212121;
 }
 
-#screen .scrollable::-webkit-scrollbar-thumb
+::-webkit-scrollbar-thumb
 {
 	background: #787878;
 	border: 1px solid #212121;
