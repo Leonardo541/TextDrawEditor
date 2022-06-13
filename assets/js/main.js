@@ -154,20 +154,6 @@ Main.prototype.addProject = function()
 	this.checkScrollBars();
 };
 
-Main.prototype.exportProject = function(project)
-{
-	let copiedTextDraws = [];
-	
-	for(let i = 0; i < project.textDrawList.length; i++)
-	{
-		let copiedTextDraw = {};
-		project.textDrawList[i].copyTextDraw(copiedTextDraw);
-		copiedTextDraws.push(copiedTextDraw);
-	}
-	
-	this.exportDialog("Export Project", copiedTextDraws);
-};
-
 Main.prototype.removeProject = function(project)
 {
 	for(let i = 0; i < this.projects.length; i++)
@@ -189,6 +175,9 @@ Main.prototype.removeProject = function(project)
 
 Main.prototype.changeProject = function(project)
 {
+	if(this.currentProject == project && project.projectTabUI.element.classList.contains("currentProjectTab"))
+		return;
+	
 	if(this.currentProject != null)
 		this.currentProject.projectTabUI.element.classList.remove("currentProjectTab");
 	
@@ -298,58 +287,15 @@ Main.prototype.saveProjects = function()
 	}
 };
 
-Main.prototype.createTextDraw = function(x, y, fromTextDraw)
+Main.prototype.createTextDraw = function(text, x, y, fromTextDraw)
 {
-	let scaleX = this.screenshotUI.width / 640.0;
-	let scaleY = this.screenshotUI.height / 448.0;
-	
-	let mouseX = x * scaleX + this.screenshotUI.element.getBoundingClientRect().left;
-	let mouseY = y * scaleY + this.screenshotUI.element.getBoundingClientRect().top;
-	
-	let dialogUI = new DialogUI("body", "Create TextDraw");
-	
-	dialogUI.contentUI.appendStaticText("Text");
-	dialogUI.contentUI.appendLineBreak();
-	
-	let textUI = new TextBoxUI(dialogUI.contentUI, {value: "Example"});
-	
-	dialogUI.contentUI.appendLineBreak();
-	dialogUI.contentUI.appendStaticText("Position");
-	dialogUI.contentUI.appendLineBreak();
-	
-	let xUI = new TextBoxUI(dialogUI.contentUI, {value: x.toPlainString(), class: "textBoxLeft"});
-	let yUI = new TextBoxUI(dialogUI.contentUI, {value: y.toPlainString(), class: "textBoxRight"});
-	
-	dialogUI.contentUI.appendStaticLine();
-	
-	let copiedTextDraw = null;
+	let textDraw = this.currentProject.createTextDraw(text, x, y);
 	
 	if(fromTextDraw)
-	{
-		copiedTextDraw = {};
-		fromTextDraw.copyTextDraw(copiedTextDraw);
-		copiedTextDraw.width = fromTextDraw.getRectRight() - fromTextDraw.getRectLeft();
-		copiedTextDraw.height = fromTextDraw.getRectBottom() - fromTextDraw.getRectTop();
-		
-		textUI.element.value = copiedTextDraw.text;
-		xUI.element.value = copiedTextDraw.x.toPlainString();
-		yUI.element.value = copiedTextDraw.y.toPlainString();
-		
-	}
+		textDraw.fromTextDraw(fromTextDraw);
 	
-	new ButtonUI(dialogUI.buttonsUI, {innerText: "Accept", click: () => { let textDraw = this.currentProject.createTextDraw(textUI.element.value, parseFloat(xUI.element.value), parseFloat(yUI.element.value)); if(copiedTextDraw) textDraw.fromTextDraw(copiedTextDraw); this.updateControlList(); this.changeTextDraw(textDraw); dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
-	new ButtonUI(dialogUI.buttonsUI, {innerText: "Cancel", click: () => { dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
-	
-	dialogUI.move(mouseX - dialogUI.element.clientWidth / 2, mouseY - dialogUI.element.clientHeight / 2);
-	
-	this.dialogsUI.push(dialogUI);
-};
-
-Main.prototype.exportTextDraw = function(textDraw)
-{
-	let copiedTextDraw = {};
-	textDraw.copyTextDraw(copiedTextDraw);
-	this.exportDialog("Export TextDraw", [copiedTextDraw]);
+	this.updateControlList();
+	this.changeTextDraw(textDraw);
 };
 
 Main.prototype.removeTextDraw = function (textDraw)
@@ -380,6 +326,9 @@ Main.prototype.removeTextDraw = function (textDraw)
 
 Main.prototype.changeTextDraw = function(textDraw)
 {
+	if(this.currentProject.currentTextDraw == textDraw && textDraw.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
+		return;
+	
 	if(this.currentProject.currentTextDraw != null)
 		this.currentProject.currentTextDraw.textDrawItemUI.element.classList.remove("currentTextDrawItem");
 	
@@ -402,7 +351,7 @@ Main.prototype.contextMenuProject = function(project, x, y)
 		this.contextMenuUI.remove();
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Export Project", () => { this.exportProject(project) });
+	this.contextMenuUI.appendItem("Export Project", () => { this.showExportDialog("Export Project", x, y, project); });
 	this.contextMenuUI.appendStaticLine();
 	this.contextMenuUI.appendItem("Remove Project", () => { this.removeProject(project) });
 	
@@ -415,9 +364,9 @@ Main.prototype.contextMenuTextDraw = function(textDraw, x, y)
 		this.contextMenuUI.remove();
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Export TextDraw", () => { this.exportTextDraw(textDraw) });
+	this.contextMenuUI.appendItem("Export TextDraw", () => { this.showExportDialog("Export TextDraw", x, y, textDraw); });
 	this.contextMenuUI.appendStaticLine();
-	this.contextMenuUI.appendItem("Duplicate TextDraw", () => { this.createTextDraw(textDraw.getRectLeft() + (textDraw.getRectRight() - textDraw.getRectLeft()) / 2, textDraw.getRectTop() + (textDraw.getStringRectBottom() - textDraw.getRectTop()) / 2, textDraw); });
+	this.contextMenuUI.appendItem("Duplicate TextDraw", () => { this.showCreateDialog(textDraw.text, x, y, textDraw); });
 	this.contextMenuUI.appendItem("Remove TextDraw", () => { this.removeTextDraw(textDraw) });
 	
 	this.changeTextDraw(textDraw);
@@ -435,7 +384,7 @@ Main.prototype.contextMenuScreen = function(x, y)
 	let scaleY = this.screenshotUI.height / 448.0;
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Create TextDraw", () => { this.createTextDraw(mouseX / scaleX, mouseY / scaleY); });
+	this.contextMenuUI.appendItem("Create TextDraw", () => { this.showCreateDialog("Example", x, y); });
 	
 	let firstItem = true;
 	
@@ -461,9 +410,9 @@ Main.prototype.contextMenuScreen = function(x, y)
 			
 			contextSubMenuUI.appendItem("Select", () => { this.changeTextDraw(textDraw); });
 			contextSubMenuUI.appendStaticLine();
-			contextSubMenuUI.appendItem("Export", () => { this.exportTextDraw(textDraw) });
+			contextSubMenuUI.appendItem("Export", () => { this.changeTextDraw(textDraw); this.showExportDialog("Export TextDraw", x, y, textDraw); });
 			contextSubMenuUI.appendStaticLine();
-			contextSubMenuUI.appendItem("Duplicate", () => { this.createTextDraw(textDraw.getRectLeft() + (textDraw.getRectRight() - textDraw.getRectLeft()) / 2, textDraw.getRectTop() + (textDraw.getStringRectBottom() - textDraw.getRectTop()) / 2, textDraw); });
+			contextSubMenuUI.appendItem("Duplicate", () => { this.changeTextDraw(textDraw); this.showCreateDialog(textDraw.text, x, y, textDraw); });
 			contextSubMenuUI.appendItem("Remove", () => { this.removeTextDraw(textDraw); });
 		}
 	}
@@ -471,68 +420,109 @@ Main.prototype.contextMenuScreen = function(x, y)
 	this.contextMenuUI.updateSubMenuPosition();
 };
 
-Main.prototype.exportDialog = function(title, textDraws)
+Main.prototype.showCreateDialog = function(text, x, y, fromTextDraw)
 {
-	let dialogUI = new DialogUI("body", title);
+	let mouseX;
+	let mouseY;
 	
-	dialogUI.contentUI.appendStaticText("Callback");
-	dialogUI.contentUI.appendLineBreak();
+	let scaleX = this.screenshotUI.width / 640.0;
+	let scaleY = this.screenshotUI.height / 448.0;
 	
-	let callbackUI = new ListBoxUI(dialogUI.contentUI, {change: (e) => { this.exportDialogChange(e.target.selectedIndex, -1, dialogUI, textDraws); }});
+	let copiedTextDraw = null;
 	
-	callbackUI.appendOption("OnGameModeInit");
-	callbackUI.appendOption("OnFilterScriptInit");
+	if(fromTextDraw)
+	{
+		copiedTextDraw = {};
+		fromTextDraw.copyTextDraw(copiedTextDraw);
+		copiedTextDraw.width = fromTextDraw.getRectRight() - fromTextDraw.getRectLeft();
+		copiedTextDraw.height = fromTextDraw.getRectBottom() - fromTextDraw.getRectTop();
+		
+		x = fromTextDraw.getRectLeft() + (fromTextDraw.getRectRight() - fromTextDraw.getRectLeft()) / 2;
+		y = fromTextDraw.getRectTop() + (fromTextDraw.getStringRectBottom() - fromTextDraw.getRectTop()) / 2;
+		
+		x *= scaleX;
+		y *= scaleY;
+		
+		x += this.screenshotUI.element.getBoundingClientRect().left;
+		y += this.screenshotUI.element.getBoundingClientRect().top;
+		
+		mouseX = copiedTextDraw.x;
+		mouseY = copiedTextDraw.y;
+		
+		scaleX = 1.0;
+		scaleY = 1.0;
+	}
+	else
+	{
+		mouseX = x - this.screenshotUI.element.getBoundingClientRect().left;
+		mouseY = y - this.screenshotUI.element.getBoundingClientRect().top;
+	}
 	
-	dialogUI.contentUI.appendLineBreak();
-	dialogUI.contentUI.appendStaticText("Output");
-	dialogUI.contentUI.appendLineBreak();
+	let dialogUI = new CreateDialogUI("body", "Create TextDraw", text, mouseX / scaleX, mouseY / scaleY, (text, x, y) => { this.createTextDraw(text, x, y, copiedTextDraw); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
 	
-	let outputUI = new ListBoxUI(dialogUI.contentUI, {change: (e) => { this.exportDialogChange(callbackUI.element.selectedIndex, e.target.selectedIndex, dialogUI, textDraws); }});
-	
-	outputUI.appendOption("Save output to a file");
-	outputUI.appendOption("View output as text");
-	
-	dialogUI.contentUI.appendStaticLine();
-	
-	new ButtonUI(dialogUI.buttonsUI, {innerText: "Accept", click: () => { if(outputUI.element.selectedIndex == 0) this.downloadExport(callbackUI.element.selectedIndex, textDraws); dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
-	new ButtonUI(dialogUI.buttonsUI, {innerText: "Cancel", click: () => { dialogUI.remove(); this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1); }});
+	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
 	this.dialogsUI.push(dialogUI);
 };
 
-Main.prototype.exportDialogChange = function(callback, output, dialogUI, textDraws)
+Main.prototype.showExportDialog = function(title, x, y, fromTextDrawOrProject)
 {
-	let viewOutputElement = dialogUI.contentUI.element.querySelector("#viewOutput");
+	let mouseX;
+	let mouseY;
 	
-	if(output == -1)
-		output = viewOutputElement && viewOutputElement.entityUI ? 1 : 0;
+	let scaleX = this.screenshotUI.width / 640.0;
+	let scaleY = this.screenshotUI.height / 448.0;
 	
-	if(output == 0)
+	let copiedTextDraws = [];
+	
+	if(fromTextDrawOrProject instanceof TextDraw)
 	{
-		if(viewOutputElement && viewOutputElement.entityUI)
-		{
-			if(viewOutputElement.nextSibling && viewOutputElement.nextSibling.entityUI)
-				viewOutputElement.nextSibling.entityUI.remove();
-			
-			viewOutputElement.entityUI.remove();
-		}
+		copiedTextDraw = {};
+		fromTextDrawOrProject.copyTextDraw(copiedTextDraw);
+		copiedTextDraw.width = fromTextDrawOrProject.getRectRight() - fromTextDrawOrProject.getRectLeft();
+		copiedTextDraw.height = fromTextDrawOrProject.getRectBottom() - fromTextDrawOrProject.getRectTop();
+		
+		x = fromTextDrawOrProject.getRectLeft() + (fromTextDrawOrProject.getRectRight() - fromTextDrawOrProject.getRectLeft()) / 2;
+		y = fromTextDrawOrProject.getRectTop() + (fromTextDrawOrProject.getStringRectBottom() - fromTextDrawOrProject.getRectTop()) / 2;
+		
+		x *= scaleX;
+		y *= scaleY;
+		
+		x += this.screenshotUI.element.getBoundingClientRect().left;
+		y += this.screenshotUI.element.getBoundingClientRect().top;
+		
+		mouseX = copiedTextDraw.x;
+		mouseY = copiedTextDraw.y;
+		
+		scaleX = 1.0;
+		scaleY = 1.0;
+		
+		copiedTextDraws.push(copiedTextDraw);
 	}
-	else
+	else if(fromTextDrawOrProject instanceof Project)
 	{
-		if(viewOutputElement && viewOutputElement.entityUI)
+		for(let i = 0; i < fromTextDrawOrProject.textDrawList.length; i++)
 		{
-			viewOutputElement.value = this.generateExport(callback, textDraws);
-		}
-		else
-		{
-			new EntityUI(dialogUI.contentUI, "textarea", {value: this.generateExport(callback, textDraws), id: "viewOutput"});
+			let copiedTextDraw = {};
+			fromTextDrawOrProject.textDrawList[i].copyTextDraw(copiedTextDraw);
+			copiedTextDraw.width = fromTextDrawOrProject.textDrawList[i].getRectRight() - fromTextDrawOrProject.textDrawList[i].getRectLeft();
+			copiedTextDraw.height = fromTextDrawOrProject.textDrawList[i].getRectBottom() - fromTextDrawOrProject.textDrawList[i].getRectTop();
 			
-			dialogUI.contentUI.appendStaticLine();
+			copiedTextDraws.push(copiedTextDraw);
 		}
+		
+		mouseX = x - this.screenshotUI.element.getBoundingClientRect().left;
+		mouseY = y - this.screenshotUI.element.getBoundingClientRect().top;
 	}
+	
+	let dialogUI = new ExportDialogUI("body", title, (callback, output, clicked) => { this.updateExportDialog(dialogUI, callback, output, copiedTextDraws); if(output == 0 || clicked) this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	
+	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
+	
+	this.dialogsUI.push(dialogUI);
 };
 
-Main.prototype.generateExport = function(callback, textDraws)
+Main.prototype.updateExportDialog = function(dialogUI, callback, output, textDraws)
 {
 	let code = "\r\n#include <a_samp>\r\n\r\n";
 	
@@ -585,14 +575,21 @@ Main.prototype.generateExport = function(callback, textDraws)
 	
 	code += "}\r\n";
 	
-	return code;
+	if(output == 0)
+	{
+		let downloadUI = new EntityUI(null, "a", {href: "data:text/plain;charset=utf-8," + encodeURIComponent(code), download: "exported.pwn"});
+		downloadUI.element.click();
+	}
+	else
+	{
+		dialogUI.viewOutputUI.element.value = code;
+	}
 };
 
-Main.prototype.downloadExport = function(callback, textDraws)
+Main.prototype.hideDialog = function(dialogUI)
 {
-	let downloadUI = new EntityUI(null, "a", {href: "data:text/plain;charset=utf-8," + encodeURIComponent(this.generateExport(callback, textDraws)), download: "exported.pwn"});
-	
-	downloadUI.element.click();
+	this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1);
+	dialogUI.remove();
 };
 
 Main.prototype.updateControlList = function()
@@ -1258,7 +1255,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				this.saveProjects();
 			}
 		}
-		else
+		else if(e.target == this.optionsUI.element)
 		{
 			this.clickTop = false;
 			this.clickBottom = false;
@@ -1339,6 +1336,13 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					}
 				}
 			}
+		}
+		else
+		{
+			this.clickTop = false;
+			this.clickBottom = false;
+			this.clickLeft = false;
+			this.clickRight = false;
 		}
 		
 		if(cursor.length != 0)
