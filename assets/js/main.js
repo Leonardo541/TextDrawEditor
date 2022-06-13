@@ -351,6 +351,7 @@ Main.prototype.contextMenuProject = function(project, x, y)
 		this.contextMenuUI.remove();
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
+	this.contextMenuUI.appendItem("Import Project", () => { this.showImportDialog("Import Project", x, y, project); });
 	this.contextMenuUI.appendItem("Export Project", () => { this.showExportDialog("Export Project", x, y, project); });
 	this.contextMenuUI.appendStaticLine();
 	this.contextMenuUI.appendItem("Remove Project", () => { this.removeProject(project) });
@@ -467,9 +468,6 @@ Main.prototype.showCreateDialog = function(text, x, y, fromTextDraw)
 
 Main.prototype.showExportDialog = function(title, x, y, fromTextDrawOrProject)
 {
-	let mouseX;
-	let mouseY;
-	
 	let scaleX = this.screenshotUI.width / 640.0;
 	let scaleY = this.screenshotUI.height / 448.0;
 	
@@ -491,12 +489,6 @@ Main.prototype.showExportDialog = function(title, x, y, fromTextDrawOrProject)
 		x += this.screenshotUI.element.getBoundingClientRect().left;
 		y += this.screenshotUI.element.getBoundingClientRect().top;
 		
-		mouseX = copiedTextDraw.x;
-		mouseY = copiedTextDraw.y;
-		
-		scaleX = 1.0;
-		scaleY = 1.0;
-		
 		copiedTextDraws.push(copiedTextDraw);
 	}
 	else if(fromTextDrawOrProject instanceof Project)
@@ -510,19 +502,16 @@ Main.prototype.showExportDialog = function(title, x, y, fromTextDrawOrProject)
 			
 			copiedTextDraws.push(copiedTextDraw);
 		}
-		
-		mouseX = x - this.screenshotUI.element.getBoundingClientRect().left;
-		mouseY = y - this.screenshotUI.element.getBoundingClientRect().top;
 	}
 	
-	let dialogUI = new ExportDialogUI("body", title, (callback, output, clicked) => { this.updateExportDialog(dialogUI, callback, output, copiedTextDraws); if(output == 0 || clicked) this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	let dialogUI = new ExportDialogUI("body", title, (callback, output, clicked) => { this.acceptExportDialog(dialogUI, callback, output, copiedTextDraws); if(output == 0 || clicked) this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
 	this.dialogsUI.push(dialogUI);
 };
 
-Main.prototype.updateExportDialog = function(dialogUI, callback, output, textDraws)
+Main.prototype.acceptExportDialog = function(dialogUI, callback, output, textDraws)
 {
 	let code = "\r\n#include <a_samp>\r\n\r\n";
 	
@@ -585,6 +574,42 @@ Main.prototype.updateExportDialog = function(dialogUI, callback, output, textDra
 		dialogUI.viewOutputUI.element.value = code;
 	}
 };
+
+Main.prototype.showImportDialog = function(title, x, y, toProject)
+{
+	let dialogUI = new ImportDialogUI("body", title, (input) => { this.acceptImportDialog(dialogUI, input, toProject); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	
+	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
+	
+	this.dialogsUI.push(dialogUI);
+};
+
+Main.prototype.acceptImportDialog = function(dialogUI, input, toProject)
+{
+	if(input == 1)
+		dialogUI.inputAsText(dialogUI.viewInputUI.element.value);
+	
+	let textDraws = dialogUI.textDraws;
+	
+	for(let i = 0; i < textDraws.length; i++)
+	{
+		let textDraw = toProject.createTextDraw(textDraws[i].text, textDraws[i].x, textDraws[i].y);
+		textDraw.fromTextDraw(textDraws[i]);
+	}
+	
+	if(this.currentProject == toProject)
+	{
+		this.updateControlList();
+		this.updateControls();
+	}
+	
+	this.repaintedThumbnailAll = false;
+	
+	this.repaint();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+}
 
 Main.prototype.hideDialog = function(dialogUI)
 {

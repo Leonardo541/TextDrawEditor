@@ -8,7 +8,7 @@ A TextDraw Editor built in Vanilla JS
 
 - [x] TextDraw Editor
 - [x] Save data in local storage
-- [ ] Import *.pwn files
+- [x] Import *.pwn files
 - [x] export *.pwn files
 - [x] Dialogs to create, import, export, etc
 - [ ] Add support for TextDraw Sprite
