@@ -112,7 +112,7 @@ TextureDictionary.prototype.processTxdTextureData = function(bytes, pos, end)
 			break;
 		
 		default:
-			switch(rasterFormat)
+			switch(rasterFormat & 0xFFF)
 			{
 				case 0x0500: // D3DFMT_A8R8G8B8
 					while(idx < size)

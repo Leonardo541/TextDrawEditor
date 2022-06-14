@@ -247,7 +247,37 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
 	}
 	else if(textureUI)
 	{
-		this.context.drawImage(textureUI.element, 0, 0, textureUI.element.width, textureUI.element.height, textDraw.getRectLeft() * scaleX, textDraw.getRectTop() * scaleY, (textDraw.getRectRight() - textDraw.getRectLeft()) * scaleX, (textDraw.getRectBottom() - textDraw.getRectTop()) * scaleY);
+		let width = (textDraw.getRectRight() - textDraw.getRectLeft()) * scaleX;
+		let height = (textDraw.getRectBottom() - textDraw.getRectTop()) * scaleY;
+		
+		if(width < 0)
+		{
+			scaleX = -1.0;
+			
+			x *= -1.0;
+			width *= -1.0;
+		}
+		else
+		{
+			scaleX = 1.0;
+		}
+		
+		if(height < 0)
+		{
+			scaleY = -1.0;
+			
+			y *= -1.0;
+			height *= -1.0;
+		}
+		else
+		{
+			scaleY = 1.0;
+		}
+		
+		this.context.save();
+		this.context.scale(scaleX, scaleY);
+		this.context.drawImage(textureUI.element, 0, 0, textureUI.element.width, textureUI.element.height, x, y, width, height);
+		this.context.restore();
 	}
 };
 
