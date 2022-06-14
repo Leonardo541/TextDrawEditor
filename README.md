@@ -11,7 +11,8 @@ A TextDraw Editor built in Vanilla JS
 - [x] Import *.pwn files
 - [x] export *.pwn files
 - [x] Dialogs to create, import, export, etc
-- [ ] Add support for TextDraw Sprite
+- [x] Add support for TextDraw Sprite
+- [ ] Add support for TextDraw Model Preview
 - [ ] Add guide system (lines, grids, etc)
 
 ## Tested on

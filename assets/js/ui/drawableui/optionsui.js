@@ -139,6 +139,9 @@ OptionsUI.prototype.paint = function(textDraw, option)
 		y = this.height - 24;
 	}
 	
+	if(textDraw.font == 4)
+		x += 20;
+	
 	this.resizeRectLeft = x;
 	this.resizeRectTop = y;
 	this.resizeRectRight = x + 20;
@@ -171,22 +174,32 @@ OptionsUI.prototype.paint = function(textDraw, option)
 	
 	this.context.drawImage(this.imageMoveUI.element, 0, 0, 16, 16, x, y, 16, 16);
 	
-	x += 20;
-	
-	this.resizeLetterRectLeft = x;
-	this.resizeLetterRectTop = y;
-	this.resizeLetterRectRight = x + 20;
-	this.resizeLetterRectBottom = y + 20;
-	
-	if(option == "resize-letter")
+	if(textDraw.font != 4)
 	{
-		this.context.beginPath();
-		this.context.setLineDash([1]);
-		this.context.rect(x - 2, y - 2, 20, 20);
-		this.context.stroke();
+		x += 20;
+		
+		this.resizeLetterRectLeft = x;
+		this.resizeLetterRectTop = y;
+		this.resizeLetterRectRight = x + 20;
+		this.resizeLetterRectBottom = y + 20;
+		
+		if(option == "resize-letter")
+		{
+			this.context.beginPath();
+			this.context.setLineDash([1]);
+			this.context.rect(x - 2, y - 2, 20, 20);
+			this.context.stroke();
+		}
+		
+		this.context.drawImage(this.imageResizeLetterUI.element, 0, 0, 16, 16, x, y, 16, 16);
 	}
-	
-	this.context.drawImage(this.imageResizeLetterUI.element, 0, 0, 16, 16, x, y, 16, 16);
+	else
+	{
+		this.resizeLetterRectLeft = 0;
+		this.resizeLetterRectTop = 0;
+		this.resizeLetterRectRight = 0;
+		this.resizeLetterRectBottom = 0;
+	}
 };
 
 OptionsUI.prototype.isInRect = function(x, y)

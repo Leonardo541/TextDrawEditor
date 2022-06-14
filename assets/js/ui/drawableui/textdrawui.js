@@ -29,6 +29,7 @@ TextDrawUI.prototype.clear = function()
 TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 {
 	let fontUI = null;
+	let textureUI = null;
 	
 	if(textDraw.font == 0)
 	{
@@ -46,10 +47,14 @@ TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 	{
 		fontUI = textDraw.main.font1UI;
 	}
+	else if(textDraw.font == 4)
+	{
+		textureUI = TextureManager.instance.loadTexture(textDraw.text);
+	}
 	
 	if(detectLines)
 	{
-		if(fontUI != null)
+		if(fontUI)
 		{
 			this.drawString(textDraw, fontUI, 0, 0, textDraw.text, false, true);
 		}
@@ -63,21 +68,25 @@ TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 		}
 	}
 	
-	let scaleX = textDraw.main.screenshotUI.width / 640.0;
-	let scaleY = textDraw.main.screenshotUI.height / 448.0;
-	
-	let left = textDraw.getRectLeft() * scaleX - 4.0;
-	let top = textDraw.getRectTop() * scaleY - 4.0;
-	let right = textDraw.getRectRight() * scaleX + 4.0;
-	let bottom = textDraw.getStringRectBottom() * scaleY + 4.0;
-	
-	this.context.fillStyle = textDraw.boxColor.toRGBA();
-	this.context.fillRect(left, top, right - left, bottom - top);
+	if(textDraw.font != 4 || !textureUI)
+	{
+		let scaleX = textDraw.main.screenshotUI.width / 640.0;
+		let scaleY = textDraw.main.screenshotUI.height / 448.0;
+		
+		let left = textDraw.getRectLeft() * scaleX - 4.0;
+		let top = textDraw.getRectTop() * scaleY - 4.0;
+		let right = textDraw.getRectRight() * scaleX + 4.0;
+		let bottom = textDraw.getStringRectBottom() * scaleY + 4.0;
+		
+		this.context.fillStyle = textDraw.boxColor.toRGBA();
+		this.context.fillRect(left, top, right - left, bottom - top);
+	}
 };
 
 TextDrawUI.prototype.paint = function(textDraw, faster)
 {
 	let fontUI = null;
+	let textureUI = null;
 	
 	if(textDraw.font == 0)
 	{
@@ -94,6 +103,10 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
 	else if(textDraw.font == 3)
 	{
 		fontUI = textDraw.main.font1UI;
+	}
+	else if(textDraw.font == 4)
+	{
+		textureUI = TextureManager.instance.loadTexture(textDraw.text);
 	}
 	
 	let scaleX;
@@ -113,7 +126,7 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
 	}
 	else
 	{
-		if(fontUI != null)
+		if(fontUI)
 		{
 			this.drawString(textDraw, fontUI, 0, 0, textDraw.text, false, true);
 		}
@@ -141,7 +154,7 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
     let x = textDraw.getRectLeft() * scaleX;
 	let y = textDraw.getRectTop() * scaleY;
     
-	if(!faster)
+	if(!faster && (textDraw.font != 4 || !textureUI))
 	{
 		let left = textDraw.getRectLeft() * scaleX - 4.0;
 		let top = textDraw.getRectTop() * scaleY - 4.0;
@@ -152,7 +165,7 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
 		this.context.fillRect(left, top, right - left, bottom - top);
 	}
 	
-	if(fontUI != null)
+	if(fontUI)
 	{
 		if(textDraw.backgroundColor != 0x00000000)
 		{
@@ -231,6 +244,10 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
 		this.context.scale(letterSizeX, letterSizeY * 0.25);
 		this.drawString(textDraw, fontUI, 0, 0, textDraw.text, true, false);
 		this.context.restore();
+	}
+	else if(textureUI)
+	{
+		this.context.drawImage(textureUI.element, 0, 0, textureUI.element.width, textureUI.element.height, textDraw.getRectLeft() * scaleX, textDraw.getRectTop() * scaleY, (textDraw.getRectRight() - textDraw.getRectLeft()) * scaleX, (textDraw.getRectBottom() - textDraw.getRectTop()) * scaleY);
 	}
 };
 

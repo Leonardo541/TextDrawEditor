@@ -147,7 +147,16 @@ canvas
 	border-right: 1px solid #808080;
 }
 
-#controls .textDrawList
+#screen
+{
+	display: table-cell;
+	position: relative;
+	background-color: #262626;
+	border-left: 1px solid #262626;
+	border-right: 1px solid #808080;
+}
+
+.textDrawList
 {
 	width: 240px;
 	height: 120px;
@@ -159,7 +168,7 @@ canvas
 	overflow-y: scroll;
 }
 
-#controls .textDrawItem
+.textDrawItem
 {
 	position: relative;
 	width: 100%;
@@ -169,17 +178,12 @@ canvas
 	cursor: pointer;
 }
 
-#controls .textDrawItem:hover
+.textDrawItem:hover
 {
 	background-color: #6d6d6d;
 }
 
-#controls .textDrawItem:last-child
-{
-	border-bottom: none;
-}
-
-#controls .textDrawItem canvas
+.textDrawItem canvas
 {
 	height: 24px;
 	border-right: 1px solid #292929;
@@ -187,23 +191,46 @@ canvas
 	user-select: none;
 }
 
-#controls .textDrawItem span
+.textDrawItem span
 {
 	margin-left: 32px;
 }
 
-#controls .currentTextDrawItem
+.textDrawItem span:first-child
+{
+	margin-left: 2px;
+}
+
+.currentTextDrawItem
 {
 	background-color: #808080;
 }
 
-#screen
+.lastTextDrawItem
 {
-	display: table-cell;
-	position: relative;
-	background-color: #262626;
-	border-left: 1px solid #262626;
-	border-right: 1px solid #808080;
+	border-bottom: none;
+}
+
+.textureList
+{
+	width: 440px;
+	height: 140px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.textureItem
+{
+	display: inline-block;
+	margin: 2px;
+	background-color: #3a3a3a;
+	border: 1px solid #292929;
+	font-size: 0px;
+}
+
+.textureItem:hover
+{
+	background-color: #6d6d6d;
 }
 
 .contextMenu

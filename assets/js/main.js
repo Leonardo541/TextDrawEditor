@@ -92,6 +92,8 @@ function Main()
 	this.control1024x768UI = new ButtonUI(this.scrollableControlsUI, {innerText: "1024x768", onclick: (e) => { this.screenshotChange("./assets/images/1024x768.png"); }});
 	this.scrollableControlsUI.appendLineBreak();
 	this.controlCustomUI = new FileBoxUI(this.scrollableControlsUI, {accept: "image/*", onchange: (e) => { this.screenshotCustom(e); }});
+	this.scrollableControlsUI.appendStaticLine();
+	this.controlTxdUI = new ButtonUI(this.scrollableControlsUI, {innerText: "Texture Dictionary", onclick: (e) => { this.showTextureDictionaryDialog(); }});
 	this.scrollableControlsUI.appendSpacing();
 	
 	this.screenshotUI = new ScreenshotUI(this.scrollableScreenUI, {});
@@ -138,6 +140,8 @@ function Main()
 	window.addEventListener("resize", (e) => { this.checkScrollBars(e); this.dialogsUI.forEach(dialogUI => dialogUI.move(dialogUI.element.offsetLeft, dialogUI.element.offsetTop)); });
 	
 	this.checkScrollBars();
+	
+	TextureDictionary.updateEventListeners.push(this.repaint.bind(this));
 }
 
 Main.prototype.addProject = function()
@@ -421,6 +425,15 @@ Main.prototype.contextMenuScreen = function(x, y)
 	this.contextMenuUI.updateSubMenuPosition();
 };
 
+Main.prototype.textureContextMenu = function(text, x, y)
+{
+	if(this.contextMenuUI)
+		this.contextMenuUI.remove();
+	
+	this.contextMenuUI = new ContextMenuUI("body", x, y);
+	this.contextMenuUI.appendItem("Copy", () => {  navigator.clipboard.writeText(text); });
+};
+
 Main.prototype.showCreateDialog = function(text, x, y, fromTextDraw)
 {
 	let mouseX;
@@ -534,6 +547,11 @@ Main.prototype.acceptExportDialog = function(dialogUI, callback, output, textDra
 		if(i != 0)
 			code += "\r\n";
 		
+		let paramFont = textDraws[i].font.toString();
+		
+		if(paramFont == 4)
+			paramFont = "TEXT_DRAW_FONT_SPRITE_DRAW";
+		
 		code += "\t" + textDraws[i].name + " = TextDrawCreate(" + textDraws[i].x.toPlainString() + ", " + textDraws[i].y.toPlainString() + ", " + JSON.stringify(textDraws[i].text) + ");\r\n";
 		code += "\tTextDrawLetterSize(" + textDraws[i].name + ", " + textDraws[i].letterSizeX.toPlainString() + ", " + textDraws[i].letterSizeY.toPlainString() + ");\r\n";
 		code += "\tTextDrawTextSize(" + textDraws[i].name + ", " + textDraws[i].textSizeX.toPlainString() + ", " + textDraws[i].textSizeY.toPlainString() + ");\r\n";
@@ -544,7 +562,7 @@ Main.prototype.acceptExportDialog = function(dialogUI, callback, output, textDra
 		code += "\tTextDrawSetShadow(" + textDraws[i].name + ", " + textDraws[i].setShadow.toString() + ");\r\n";
 		code += "\tTextDrawSetOutline(" + textDraws[i].name + ", " + textDraws[i].setOutline.toString() + ");\r\n";
 		code += "\tTextDrawBackgroundColor(" + textDraws[i].name + ", 0x" + textDraws[i].backgroundColor.toString(16).toUpperCase().padZero(8) + ");\r\n";
-		code += "\tTextDrawFont(" + textDraws[i].name + ", " + textDraws[i].font.toString() + ");\r\n";
+		code += "\tTextDrawFont(" + textDraws[i].name + ", " + paramFont + ");\r\n";
 		code += "\tTextDrawSetProportional(" + textDraws[i].name + ", " + textDraws[i].setProportional.toString() + ");\r\n";
 	}
 	
@@ -611,6 +629,28 @@ Main.prototype.acceptImportDialog = function(dialogUI, input, toProject)
 	this.saveProjects();
 }
 
+Main.prototype.showTextureDictionaryDialog = function()
+{
+	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof TextureDictionaryDialogUI);
+	
+	if(dialogUI)
+	{
+		dialogUI.focus();
+		return;
+	}
+	
+	dialogUI = new TextureDictionaryDialogUI("body", "Texture Dictionary", () => { this.hideDialog(dialogUI); }, (textureDictionary) => { this.showTextureExplorerDialog(textureDictionary); });
+	
+	this.dialogsUI.push(dialogUI);
+};
+
+Main.prototype.showTextureExplorerDialog = function(textureDictionary)
+{
+	dialogUI = new TextureExplorerDialogUI("body", "Texture Explorer", textureDictionary, () => { this.hideDialog(dialogUI); }, (text, x, y) => { this.textureContextMenu(text, x, y); });
+	
+	this.dialogsUI.push(dialogUI);
+};
+
 Main.prototype.hideDialog = function(dialogUI)
 {
 	this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1);
@@ -625,8 +665,14 @@ Main.prototype.updateControlList = function()
 	{
 		for(let i = 0; i < this.currentProject.textDrawList.length; i++)
 		{
+			if(this.currentProject.textDrawList[i].textDrawItemUI.element.classList.contains("lastTextDrawItem"))
+				this.currentProject.textDrawList[i].textDrawItemUI.element.classList.remove("lastTextDrawItem");
+			
 			this.controlListUI.element.appendChild(this.currentProject.textDrawList[i].textDrawItemUI.element);
 		}
+		
+		if(this.controlListUI.hasScrollBar())
+			this.currentProject.textDrawList[this.currentProject.textDrawList.length - 1].textDrawItemUI.element.classList.add("lastTextDrawItem");
 	}
 }
 
@@ -881,11 +927,16 @@ Main.prototype.fontChange = function(e)
 {
 	if(this.currentProject && this.currentProject.currentTextDraw)
 	{
-		this.currentProject.currentTextDraw.font = parseInt(e.target.value);
+		this.currentProject.currentTextDraw.changeFont(parseInt(e.target.value));
 		this.saveProjectsEnabled = true;
+		
+		this.updateControls();
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
+		
+		this.optionsUI.clear();
+		this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 	}
 };
 
@@ -914,7 +965,7 @@ Main.prototype.screenshotCustom = function(e)
 	{
 		let file = files[0];
 		
-		if(file.type.match('image.*'))
+		if(file.type.match("image.*"))
 		{
 			let reader = new FileReader();
 			
@@ -1166,7 +1217,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				{
 					this.currentProject.currentTextDraw.offsetRect(0, mouseY / scaleY - this.currentProject.currentTextDraw.getRectTop());
 				}
-				else if(this.clickOption == "resize-letter")
+				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw.font != 4)
 				{
 					this.currentProject.currentTextDraw.offsetRect(0, mouseY / scaleY - this.currentProject.currentTextDraw.getRectTop());
 					this.currentProject.currentTextDraw.letterSizeY -= (mouseY - y) / scaleY / 9.0 / this.currentProject.currentTextDraw.linesCount;
@@ -1190,7 +1241,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				{
 					this.currentProject.currentTextDraw.offsetRect(0, mouseY / scaleY - this.currentProject.currentTextDraw.getRectBottom());
 				}
-				else if(this.clickOption == "resize-letter")
+				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw.font != 4)
 				{
 					this.currentProject.currentTextDraw.letterSizeY = (mouseY - y) / scaleY / 9.0 / this.currentProject.currentTextDraw.linesCount;
 				}
@@ -1214,7 +1265,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				{
 					this.currentProject.currentTextDraw.offsetRect(mouseX / scaleX - this.currentProject.currentTextDraw.getRectLeft(), 0);
 				}
-				else if(this.clickOption == "resize-letter")
+				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw.font != 4)
 				{
 					if(this.currentProject.currentTextDraw.alignment == 1)
 						this.currentProject.currentTextDraw.offsetRect(mouseX / scaleX - this.currentProject.currentTextDraw.getRectLeft(), 0);
@@ -1240,7 +1291,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				{
 					this.currentProject.currentTextDraw.offsetRect(mouseX / scaleX - this.currentProject.currentTextDraw.getRectRight(), 0);
 				}
-				else if(this.clickOption == "resize-letter")
+				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw.font != 4)
 				{
 					if(this.currentProject.currentTextDraw.alignment == 3)
 						this.currentProject.currentTextDraw.offsetRect(mouseX / scaleX - this.currentProject.currentTextDraw.getRectRight(), 0);
