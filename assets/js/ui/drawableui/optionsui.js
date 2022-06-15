@@ -56,10 +56,166 @@ OptionsUI.prototype.clear = function()
 	this.context.clearRect(0, 0, this.width, this.height);
 }
 
+OptionsUI.prototype.paintGuideGrids = function(currentGuideGrid, guideGrids, option)
+{
+	if(guideGrids.length == 0)
+		return;
+	
+	let scaleX = guideGrids[0].main.screenshotUI.width / 640.0;
+	let scaleY = guideGrids[0].main.screenshotUI.height / 448.0;
+	
+	for(let i = 0; i < guideGrids.length; i++)
+	{
+		let guideGrid = guideGrids[i];
+		
+		let horizontalLineCount = guideGrid.getHorizontalLineCount();
+		let verticalLineCount = guideGrid.getVerticalLineCount();
+		
+		if(horizontalLineCount >= 0 && verticalLineCount > 0)
+		{
+			this.context.beginPath();
+			
+			if(guideGrid == currentGuideGrid)
+			{
+				this.context.setLineDash([5]);
+			}
+			else
+			{
+				this.context.setLineDash([]);
+			}
+			
+			let minX = Math.round(guideGrid.getVerticalLine(0) * scaleX);
+			let maxX = Math.round(guideGrid.getVerticalLine(verticalLineCount - 1) * scaleX);
+			
+			for(let j = 0; j < horizontalLineCount; j++)
+			{
+				let line = Math.round(guideGrid.getHorizontalLine(j) * scaleY);
+				
+				this.context.moveTo(minX, line);
+				this.context.lineTo(maxX, line);
+			}
+			
+			let minY = Math.round(guideGrid.getHorizontalLine(0) * scaleY);
+			let maxY = Math.round(guideGrid.getHorizontalLine(horizontalLineCount - 1) * scaleY);
+			
+			for(let j = 0; j < verticalLineCount; j++)
+			{
+				let line = Math.round(guideGrid.getVerticalLine(j) * scaleX);
+				
+				this.context.moveTo(line, minY);
+				this.context.lineTo(line, maxY);
+			}
+			
+			this.context.stroke();
+			
+			if(guideGrid == currentGuideGrid)
+			{
+				this.context.fillStyle = "#000000";
+				
+				for(let j = 0; j < horizontalLineCount; j++)
+				{
+					let line = Math.round(guideGrid.getHorizontalLine(j) * scaleY);
+					
+					this.context.fillRect(minX - 2, line - 2, 4, 4);
+					this.context.fillRect(maxX - 2, line - 2, 4, 4);
+				}
+				
+				for(let j = 1; j < (verticalLineCount - 1); j++)
+				{
+					let line = Math.round(guideGrid.getVerticalLine(j) * scaleX);
+					
+					this.context.fillRect(line - 2, minY - 2, 4, 4);
+					this.context.fillRect(line - 2, maxY - 2, 4, 4);
+				}
+			}
+		}
+	}
+	
+	if(currentGuideGrid)
+	{
+		let left = currentGuideGrid.getRectLeft() * scaleX;
+		let top = currentGuideGrid.getRectTop() * scaleY;
+		let right = currentGuideGrid.getRectRight() * scaleX;
+		let bottom = currentGuideGrid.getRectBottom() * scaleY;
+		
+		this.drawOptions(left, top, right, bottom, option, false);
+	}
+};
+
+OptionsUI.prototype.paintGuideLines = function(currentGuideLine, guideLines, option)
+{
+	if(guideLines.length == 0)
+		return;
+	
+	let scaleX = guideLines[0].main.screenshotUI.width / 640.0;
+	let scaleY = guideLines[0].main.screenshotUI.height / 448.0;
+	
+	
+	for(let i = 0; i < guideLines.length; i++)
+	{
+		let guideLine = guideLines[i];
+		
+		this.context.beginPath();
+		
+		if(guideLine == currentGuideLine)
+		{
+			this.context.setLineDash([5]);
+		}
+		else
+		{
+			this.context.setLineDash([]);
+		}
+		
+		let x = guideLine.x * scaleX;
+		let y = guideLine.y * scaleY;
+		
+		if(guideLine.style == 0)
+		{
+			this.context.moveTo(x, y);
+			this.context.lineTo(x + guideLine.size * scaleX, y);
+		}
+		else
+		{
+			this.context.moveTo(x, y);
+			this.context.lineTo(x, y + guideLine.size * scaleY);
+		}
+		
+		this.context.stroke();
+		
+		if(guideLine == currentGuideLine)
+		{
+			this.context.fillStyle = "#000000";
+			this.context.fillRect(x - 2, y - 2, 4, 4);
+			
+			if(guideLine.style == 0)
+			{
+				this.context.fillRect(x + guideLine.size * scaleX - 2, y - 2, 4, 4);
+			}
+			else
+			{
+				this.context.fillRect(x - 2, y + guideLine.size * scaleY - 2, 4, 4);
+			}
+		}
+	}
+	
+	if(currentGuideLine)
+	{
+		let left = currentGuideLine.getRectLeft() * scaleX;
+		let top = currentGuideLine.getRectTop() * scaleY;
+		let right = currentGuideLine.getRectRight() * scaleX;
+		let bottom = currentGuideLine.getRectBottom() * scaleY;
+		
+		this.drawOptions(left, top, right, bottom, option, false);
+	}
+};
+
 OptionsUI.prototype.paint = function(textDraw, option)
 {
+	if(!textDraw)
+		return;
+	
 	let scaleX = textDraw.main.screenshotUI.width / 640.0;
-    let scaleY = textDraw.main.screenshotUI.height / 448.0;
+	let scaleY = textDraw.main.screenshotUI.height / 448.0;
 	
 	let left = 0.0;
 	let top = 0.0;
@@ -81,17 +237,22 @@ OptionsUI.prototype.paint = function(textDraw, option)
 		bottom = textDraw.getRectBottom() * scaleY;
 	}
 	
-	this.rectLeft = left;
-	this.rectTop = top;
-	this.rectRight = right;
-	this.rectBottom = bottom;
-	
 	this.context.beginPath();
 	this.context.setLineDash([5]);
 	this.context.rect(Math.round(left), Math.round(top), Math.round(right - left), Math.round(bottom - top));
 	this.context.stroke();
 	
-    let x;
+	this.drawOptions(left, top, right, bottom, option, textDraw.font != 4);
+};
+
+OptionsUI.prototype.drawOptions = function(left, top, right, bottom, option, enableResizeLetter)
+{
+	this.rectLeft = left;
+	this.rectTop = top;
+	this.rectRight = right;
+	this.rectBottom = bottom;
+	
+	let x;
 	let y;
 	
 	if(right > left)
@@ -139,7 +300,7 @@ OptionsUI.prototype.paint = function(textDraw, option)
 		y = this.height - 24;
 	}
 	
-	if(textDraw.font == 4)
+	if(!enableResizeLetter)
 		x += 20;
 	
 	this.resizeRectLeft = x;
@@ -174,7 +335,7 @@ OptionsUI.prototype.paint = function(textDraw, option)
 	
 	this.context.drawImage(this.imageMoveUI.element, 0, 0, 16, 16, x, y, 16, 16);
 	
-	if(textDraw.font != 4)
+	if(enableResizeLetter)
 	{
 		x += 20;
 		

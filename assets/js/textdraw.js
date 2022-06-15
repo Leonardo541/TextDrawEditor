@@ -170,9 +170,7 @@ TextDraw.prototype.setRectRight = function(rectRight)
 			this.x = rectRight;
 			break;
 	}
-	
-	return 0;
-}
+};
 
 TextDraw.prototype.setRectBottom = function(rectBottom)
 {
@@ -226,7 +224,7 @@ TextDraw.prototype.getRectLeft = function()
 TextDraw.prototype.getRectTop = function()
 {
 	return this.y;
-}
+};
 
 TextDraw.prototype.getRectRight = function()
 {
@@ -251,7 +249,7 @@ TextDraw.prototype.getRectRight = function()
 	}
 	
 	return rectRight;
-}
+};
 
 TextDraw.prototype.getRectBottom = function()
 {
@@ -329,6 +327,14 @@ TextDraw.prototype.getStringRectBottom = function()
 		return this.getRectBottom();
 	
 	return this.getStringRectTop() + 9.0 * this.linesCount * this.letterSizeY;
+};
+
+TextDraw.prototype.getMargin = function()
+{
+	if(this.font == 4 || this.useBox == 0)
+		return 0.0;
+	
+	return 4.0;
 };
 
 TextDraw.prototype.changeAlignment = function(alignment)

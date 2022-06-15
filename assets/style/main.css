@@ -248,6 +248,9 @@ canvas
 	position: relative;
 	margin: 2px;
 	padding: 5px 20px;
+	background-repeat: no-repeat;
+	background-size: 16px;
+	background-position: 2px 3px;
 	font-family: arial;
 	font-size: 10px;
 	color: #000000;

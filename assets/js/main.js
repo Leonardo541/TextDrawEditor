@@ -149,6 +149,7 @@ Main.prototype.addProject = function()
 	let project = new Project(this);
 	
 	project.currentTextDraw = project.createTextDraw("Example", 10, 10);
+	project.currentAnyObject = project.currentTextDraw;
 	
 	this.projects.push(project);
 	
@@ -182,12 +183,12 @@ Main.prototype.changeProject = function(project)
 	if(this.currentProject == project && project.projectTabUI.element.classList.contains("currentProjectTab"))
 		return;
 	
-	if(this.currentProject != null)
+	if(this.currentProject)
 		this.currentProject.projectTabUI.element.classList.remove("currentProjectTab");
 	
 	this.currentProject = project;
 	
-	if(this.currentProject != null)
+	if(this.currentProject)
 		this.currentProject.projectTabUI.element.classList.add("currentProjectTab");
 	
 	this.saveProjectsEnabled = true;
@@ -229,11 +230,41 @@ Main.prototype.loadProjects = function()
 				if(j == savedCurrentTextDrawIdx)
 				{
 					project.currentTextDraw = textDraw;
+					project.currentAnyObject = textDraw;
+					
 					project.currentTextDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
 				}
 			}
 			
-			project.textDrawCount = savedProjects[i].textDrawCount;
+			let savedGuideGrids = savedProjects[i].guideGrids ?? [];
+			let savedCurrentGuideGridIdx = savedProjects[i].currentGuideGridIdx ?? -1;
+			
+			for(let j = 0; j < savedGuideGrids.length; j++)
+			{
+				let guideGrid = new GuideGrid(this, savedGuideGrids[j].name, savedGuideGrids[j].x, savedGuideGrids[j].y, savedGuideGrids[j].width, savedGuideGrids[j].height, savedGuideGrids[j].margin, savedGuideGrids[j].padding, savedGuideGrids[j].rows, savedGuideGrids[j].columns);
+				project.guideGrids.push(guideGrid);
+				
+				if(j == savedCurrentGuideGridIdx)
+				{
+					project.currentGuideGrid = guideGrid;
+					project.currentAnyObject = guideGrid;
+				}
+			}
+			
+			let savedGuideLines = savedProjects[i].guideLines ?? [];
+			let savedCurrentGuideLineIdx = savedProjects[i].currentGuideLineIdx ?? -1;
+			
+			for(let j = 0; j < savedGuideLines.length; j++)
+			{
+				let guideLine = new GuideLine(this, savedGuideLines[j].name, savedGuideLines[j].x, savedGuideLines[j].y, savedGuideLines[j].size, savedGuideLines[j].padding, savedGuideLines[j].style);
+				project.guideLines.push(guideLine);
+				
+				if(j == savedCurrentGuideLineIdx)
+				{
+					project.currentGuideLine = guideLine;
+					project.currentAnyObject = guideLine;
+				}
+			}
 			
 			this.projects.push(project);
 			
@@ -260,12 +291,12 @@ Main.prototype.saveProjects = function()
 	if(this.saveProjectsEnabled)
 	{
 		let savedProjects = [];
-		let savedCurrentProjectIdx = 0;
+		let savedCurrentProjectIdx = -1;
 		
 		for(let i = 0; i < this.projects.length; i++)
 		{
 			let savedTextDraws = [];
-			let savedCurrentTextDrawIdx = 0;
+			let savedCurrentTextDrawIdx = -1;
 			
 			for(let j = 0; j < this.projects[i].textDrawList.length; j++)
 			{
@@ -279,7 +310,37 @@ Main.prototype.saveProjects = function()
 					savedCurrentTextDrawIdx = j;
 			}
 			
-			savedProjects.push({textDraws: savedTextDraws, textDrawCount: this.projects[i].textDrawCount, currentTextDrawIdx: savedCurrentTextDrawIdx});
+			let savedGuideGrids = [];
+			let savedCurrentGuideGridIdx = -1;
+			
+			for(let j = 0; j < this.projects[i].guideGrids.length; j++)
+			{
+				let savedGuideGrid = {};
+				
+				this.projects[i].guideGrids[j].copyGuideGrid(savedGuideGrid);
+				
+				savedGuideGrids.push(savedGuideGrid);
+				
+				if(this.projects[i].guideGrids[j] == this.projects[i].currentGuideGrid)
+					savedCurrentGuideGridIdx = j;
+			}
+			
+			let savedGuideLines = [];
+			let savedCurrentGuideLineIdx = -1;
+			
+			for(let j = 0; j < this.projects[i].guideLines.length; j++)
+			{
+				let savedGuideLine = {};
+				
+				this.projects[i].guideLines[j].copyGuideLine(savedGuideLine);
+				
+				savedGuideLines.push(savedGuideLine);
+				
+				if(this.projects[i].guideLines[j] == this.projects[i].currentGuideLine)
+					savedCurrentGuideLineIdx = j;
+			}
+			
+			savedProjects.push({textDraws: savedTextDraws, currentTextDrawIdx: savedCurrentTextDrawIdx, guideGrids: savedGuideGrids, currentGuideGridIdx: savedCurrentGuideGridIdx, guideLines: savedGuideLines, currentGuideLineIdx: savedCurrentGuideLineIdx});
 			
 			if(this.projects[i] == this.currentProject)
 				savedCurrentProjectIdx = i;
@@ -322,26 +383,150 @@ Main.prototype.removeTextDraw = function (textDraw)
 	else
 	{
 		this.repaint();
+		
+		this.saveProjectsEnabled = true;
+		this.saveProjects();
 	}
+};
+
+Main.prototype.changeTextDraw = function(textDraw, notCheckOtherCurrent)
+{
+	if(!notCheckOtherCurrent)
+	{
+		if(this.currentProject.currentGuideGrid)
+			this.changeGuideGrid(null, true);
+		
+		if(this.currentProject.currentGuideLine)
+			this.changeGuideLine(null, true);
+	}
+	
+	if(this.currentProject.currentTextDraw == textDraw && textDraw.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
+		return;
+	
+	if(this.currentProject.currentTextDraw)
+		this.currentProject.currentTextDraw.textDrawItemUI.element.classList.remove("currentTextDrawItem");
+	
+	this.currentProject.currentTextDraw = textDraw;
+	this.currentProject.currentAnyObject = textDraw;
+	
+	if(this.currentProject.currentTextDraw)
+		this.currentProject.currentTextDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
+	
+	this.updateControls();
+	
+	this.repaint();
 	
 	this.saveProjectsEnabled = true;
 	this.saveProjects();
 };
 
-Main.prototype.changeTextDraw = function(textDraw)
+Main.prototype.createGuideGrid = function(x, y, width, height, margin, padding, rows, columns)
 {
-	if(this.currentProject.currentTextDraw == textDraw && textDraw.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
+	let guideGrid = this.currentProject.createGuideGrid(x, y, width, height, margin, padding, rows, columns);
+	
+	this.changeGuideGrid(guideGrid);
+};
+
+Main.prototype.removeGuideGrid = function(guideGrid)
+{
+	for(let i = 0; i < this.currentProject.guideGrids.length; i++)
+	{
+		if(this.currentProject.guideGrids[i] == guideGrid)
+		{
+			this.currentProject.guideGrids.splice(i, 1);
+			break;
+		}
+	}
+	
+	if(this.currentProject.currentGuideGrid == guideGrid)
+	{
+		this.changeGuideGrid(null);
+	}
+	else
+	{
+		this.repaint();
+		
+		this.saveProjectsEnabled = true;
+		this.saveProjects();
+	}
+};
+
+Main.prototype.changeGuideGrid = function(guideGrid, notCheckOtherCurrent)
+{
+	if(!notCheckOtherCurrent)
+	{
+		if(this.currentProject.currentTextDraw)
+			this.changeTextDraw(null, true);
+		
+		if(this.currentProject.currentGuideLine)
+			this.changeGuideLine(null, true);
+	}
+	
+	if(this.currentProject.currentGuideGrid == guideGrid)
 		return;
 	
-	if(this.currentProject.currentTextDraw != null)
-		this.currentProject.currentTextDraw.textDrawItemUI.element.classList.remove("currentTextDrawItem");
+	this.currentProject.currentGuideGrid = guideGrid;
+	this.currentProject.currentAnyObject = guideGrid;
 	
-	this.currentProject.currentTextDraw = textDraw;
+	if(this.clickOption == "resize-letter")
+		this.clickOption = "resize";
 	
-	if(this.currentProject.currentTextDraw != null)
-		this.currentProject.currentTextDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
+	this.repaint();
 	
-	this.updateControls();
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+};
+
+Main.prototype.createGuideLine = function(x, y, size, padding, style)
+{
+	let guideGrid = this.currentProject.createGuideLine(x, y, size, padding, style);
+	
+	this.changeGuideLine(guideGrid);
+};
+
+Main.prototype.removeGuideLine = function(guideLine)
+{
+	for(let i = 0; i < this.currentProject.guideLines.length; i++)
+	{
+		if(this.currentProject.guideLines[i] == guideLine)
+		{
+			this.currentProject.guideLines.splice(i, 1);
+			break;
+		}
+	}
+	
+	if(this.currentProject.currentGuideLine == guideLine)
+	{
+		this.changeGuideLine(null);
+	}
+	else
+	{
+		this.repaint();
+		
+		this.saveProjectsEnabled = true;
+		this.saveProjects();
+	}
+};
+
+Main.prototype.changeGuideLine = function(guideLine, notCheckOtherCurrent)
+{
+	if(!notCheckOtherCurrent)
+	{
+		if(this.currentProject.currentTextDraw)
+			this.changeTextDraw(null, true);
+		
+		if(this.currentProject.currentGuideGrid)
+			this.changeGuideGrid(null, true);
+	}
+	
+	if(this.currentProject.currentGuideLine == guideLine)
+		return;
+	
+	this.currentProject.currentGuideLine = guideLine;
+	this.currentProject.currentAnyObject = guideLine;
+	
+	if(this.clickOption == "resize-letter")
+		this.clickOption = "resize";
 	
 	this.repaint();
 	
@@ -389,7 +574,10 @@ Main.prototype.contextMenuScreen = function(x, y)
 	let scaleY = this.screenshotUI.height / 448.0;
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Create TextDraw", () => { this.showCreateDialog("Example", x, y); });
+	this.contextMenuUI.appendItem("Create TextDraw", () => { this.showCreateDialog("Example", x, y); }).element.style.backgroundImage = "url(./assets/images/icon-create.png)";
+	this.contextMenuUI.appendStaticLine();
+	this.contextMenuUI.appendItem("Create Guide Grid", () => { this.showGuideGridDialog(x, y); }).element.style.backgroundImage = "url(./assets/images/icon-guide-grid.png)";
+	this.contextMenuUI.appendItem("Create Guide Line", () => { this.showGuideLineDialog(x, y); }).element.style.backgroundImage = "url(./assets/images/icon-guide-line.png)";
 	
 	let firstItem = true;
 	
@@ -410,8 +598,14 @@ Main.prototype.contextMenuScreen = function(x, y)
 				firstItem = false;
 			}
 			
-			let contextItemUI = this.contextMenuUI.appendItem(textDraw.name, () => {});
+			let contextItemUI = this.contextMenuUI.appendItem(textDraw.name, false);
 			let contextSubMenuUI = new ContextMenuUI(contextItemUI, 0, 0);
+			
+			if(this.currentProject.currentTextDraw == textDraw)
+			{
+				contextItemUI.element.style.fontStyle = "italic";
+				contextSubMenuUI.element.style.fontStyle = "normal";
+			}
 			
 			contextSubMenuUI.appendItem("Select", () => { this.changeTextDraw(textDraw); });
 			contextSubMenuUI.appendStaticLine();
@@ -422,10 +616,91 @@ Main.prototype.contextMenuScreen = function(x, y)
 		}
 	}
 	
+	firstItem = true;
+	
+	for(let i = 0; i < this.currentProject.guideGrids.length; i++)
+	{
+		let guideGrid = this.currentProject.guideGrids[i];
+		
+		let left = guideGrid.getRectLeft() * scaleX;
+		let top = guideGrid.getRectTop() * scaleY;
+		let right = guideGrid.getRectRight() * scaleX;
+		let bottom = guideGrid.getRectBottom() * scaleY;
+		
+		if(left <= mouseX && mouseX < right && top <= mouseY && mouseY < bottom)
+		{
+			if(firstItem)
+			{
+				this.contextMenuUI.appendStaticLine();
+				firstItem = false;
+			}
+			
+			let contextItemUI = this.contextMenuUI.appendItem(guideGrid.name, false);
+			let contextSubMenuUI = new ContextMenuUI(contextItemUI, 0, 0);
+			
+			if(this.currentProject.currentGuideGrid == guideGrid)
+			{
+				contextItemUI.element.style.fontStyle = "italic";
+				contextSubMenuUI.element.style.fontStyle = "normal";
+			}
+			
+			contextSubMenuUI.appendItem("Select", () => { this.changeGuideGrid(guideGrid); });
+			contextSubMenuUI.appendStaticLine();
+			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid); });
+			contextSubMenuUI.appendItem("Remove", () => { this.removeGuideGrid(guideGrid); });
+		}
+	}
+	
+	firstItem = true;
+	
+	for(let i = 0; i < this.currentProject.guideLines.length; i++)
+	{
+		let guideLine = this.currentProject.guideLines[i];
+		
+		let left = guideLine.getRectLeft() * scaleX;
+		let top = guideLine.getRectTop() * scaleY;
+		let right = guideLine.getRectRight() * scaleX;
+		let bottom = guideLine.getRectBottom() * scaleY;
+		
+		if(guideLine.style == 0)
+		{
+			top -= 10;
+			bottom += 10;
+		}
+		else
+		{
+			left -= 10;
+			right += 10;
+		}
+		
+		if(left <= mouseX && mouseX < right && top <= mouseY && mouseY < bottom)
+		{
+			if(firstItem)
+			{
+				this.contextMenuUI.appendStaticLine();
+				firstItem = false;
+			}
+			
+			let contextItemUI = this.contextMenuUI.appendItem(guideLine.name, false);
+			let contextSubMenuUI = new ContextMenuUI(contextItemUI, 0, 0);
+			
+			if(this.currentProject.currentGuideLine == guideLine)
+			{
+				contextItemUI.element.style.fontStyle = "italic";
+				contextSubMenuUI.element.style.fontStyle = "normal";
+			}
+			
+			contextSubMenuUI.appendItem("Select", () => { this.changeGuideLine(guideLine); });
+			contextSubMenuUI.appendStaticLine();
+			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine); });
+			contextSubMenuUI.appendItem("Remove", () => { this.removeGuideLine(guideLine); });
+		}
+	}
+	
 	this.contextMenuUI.updateSubMenuPosition();
 };
 
-Main.prototype.textureContextMenu = function(text, x, y)
+Main.prototype.contextMenuTexture = function(text, x, y)
 {
 	if(this.contextMenuUI)
 		this.contextMenuUI.remove();
@@ -629,6 +904,115 @@ Main.prototype.acceptImportDialog = function(dialogUI, input, toProject)
 	this.saveProjects();
 }
 
+Main.prototype.showGuideGridDialog = function(x, y, fromGuideGrid)
+{
+	let mouseX;
+	let mouseY;
+	
+	let scaleX = this.screenshotUI.width / 640.0;
+	let scaleY = this.screenshotUI.height / 448.0;
+	
+	let width;
+	let height;
+	let margin;
+	let padding;
+	let rows;
+	let columns;
+	
+	if(fromGuideGrid)
+	{
+		x = fromGuideGrid.getRectLeft() + (fromGuideGrid.getRectRight() - fromGuideGrid.getRectLeft()) / 2;
+		y = fromGuideGrid.getRectTop() + (fromGuideGrid.getRectBottom() - fromGuideGrid.getRectTop()) / 2;
+		
+		x *= scaleX;
+		y *= scaleY;
+		
+		x += this.screenshotUI.element.getBoundingClientRect().left;
+		y += this.screenshotUI.element.getBoundingClientRect().top;
+		
+		mouseX = fromGuideGrid.x;
+		mouseY = fromGuideGrid.y;
+		
+		scaleX = 1.0;
+		scaleY = 1.0;
+		
+		width = fromGuideGrid.width;
+		height = fromGuideGrid.height;
+		margin = fromGuideGrid.margin;
+		padding = fromGuideGrid.padding;
+		rows = fromGuideGrid.rows;
+		columns = fromGuideGrid.columns;
+	}
+	else
+	{
+		mouseX = x - this.screenshotUI.element.getBoundingClientRect().left;
+		mouseY = y - this.screenshotUI.element.getBoundingClientRect().top;
+		
+		width = 100;
+		height = 100;
+		margin = 0;
+		padding = 0;
+		rows = 3;
+		columns = 3;
+	}
+	
+	let dialogUI = new GuideGridDialogUI("body", "Create Guide Grid", mouseX / scaleX, mouseY / scaleY, width, height, margin, padding, rows, columns, (x, y, width, height, margin, padding, rows, columns) => { this.createGuideGrid(x, y, width, height, margin, padding, rows, columns); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	
+	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
+	
+	this.dialogsUI.push(dialogUI);
+};
+
+Main.prototype.showGuideLineDialog = function(x, y, fromGuideLine)
+{
+	let mouseX;
+	let mouseY;
+	
+	let scaleX = this.screenshotUI.width / 640.0;
+	let scaleY = this.screenshotUI.height / 448.0;
+	
+	let size;
+	let padding;
+	let style;
+	
+	if(fromGuideLine)
+	{
+		x = fromGuideLine.getRectLeft() + (fromGuideLine.getRectRight() - fromGuideLine.getRectLeft()) / 2;
+		y = fromGuideLine.getRectTop() + (fromGuideLine.getRectBottom() - fromGuideLine.getRectTop()) / 2;
+		
+		x *= scaleX;
+		y *= scaleY;
+		
+		x += this.screenshotUI.element.getBoundingClientRect().left;
+		y += this.screenshotUI.element.getBoundingClientRect().top;
+		
+		mouseX = fromGuideLine.x;
+		mouseY = fromGuideLine.y;
+		
+		scaleX = 1.0;
+		scaleY = 1.0;
+		
+		size = fromGuideLine.size;
+		padding = fromGuideLine.padding;
+		style = fromGuideLine.style;
+	}
+	else
+	{
+		mouseX = x - this.screenshotUI.element.getBoundingClientRect().left;
+		mouseY = y - this.screenshotUI.element.getBoundingClientRect().top;
+		
+		size = 100;
+		padding = 0;
+		style = 0;
+	}
+	
+	let dialogUI = new GuideLineDialogUI("body", "Create Guide Line", mouseX / scaleX, mouseY / scaleY, size, padding, style, (x, y, size, padding, style) => { this.createGuideLine(x, y, size, padding, style); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	
+	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
+	
+	this.dialogsUI.push(dialogUI);
+};
+
 Main.prototype.showTextureDictionaryDialog = function()
 {
 	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof TextureDictionaryDialogUI);
@@ -646,7 +1030,7 @@ Main.prototype.showTextureDictionaryDialog = function()
 
 Main.prototype.showTextureExplorerDialog = function(textureDictionary)
 {
-	dialogUI = new TextureExplorerDialogUI("body", "Texture Explorer", textureDictionary, () => { this.hideDialog(dialogUI); }, (text, x, y) => { this.textureContextMenu(text, x, y); });
+	dialogUI = new TextureExplorerDialogUI("body", "Texture Explorer", textureDictionary, () => { this.hideDialog(dialogUI); }, (text, x, y) => { this.contextMenuTexture(text, x, y); });
 	
 	this.dialogsUI.push(dialogUI);
 };
@@ -755,6 +1139,8 @@ Main.prototype.xChange = function(e)
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
 		
 		this.optionsUI.clear();
+		this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+		this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 		this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 	}
 };
@@ -770,6 +1156,8 @@ Main.prototype.yChange = function(e)
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
 		
 		this.optionsUI.clear();
+		this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+		this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 		this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 	}
 };
@@ -785,6 +1173,8 @@ Main.prototype.letterSizeXChange = function(e)
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
 		
 		this.optionsUI.clear();
+		this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+		this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 		this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 	}
 };
@@ -800,6 +1190,8 @@ Main.prototype.letterSizeYChange = function(e)
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
 		
 		this.optionsUI.clear();
+		this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+		this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 		this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 	}
 };
@@ -815,6 +1207,8 @@ Main.prototype.textSizeXChange = function(e)
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
 		
 		this.optionsUI.clear();
+		this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+		this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 		this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 	}
 };
@@ -830,6 +1224,8 @@ Main.prototype.textSizeYChange = function(e)
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
 		
 		this.optionsUI.clear();
+		this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+		this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 		this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 	}
 };
@@ -847,6 +1243,8 @@ Main.prototype.alignmentChange = function(e)
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
 		
 		this.optionsUI.clear();
+		this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+		this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 		this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 	}
 };
@@ -936,6 +1334,8 @@ Main.prototype.fontChange = function(e)
 		this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
 		
 		this.optionsUI.clear();
+		this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+		this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 		this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 	}
 };
@@ -1008,6 +1408,9 @@ Main.prototype.repaint = function()
 	
 	if(this.currentProject)
 	{
+		this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+		this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
+		
 		for(let i = 0; i < this.currentProject.textDrawList.length; i++)
 		{
 			if(this.currentProject.textDrawList[i] == this.currentProject.currentTextDraw)
@@ -1086,6 +1489,124 @@ Main.prototype.repaintThumbnailAll = function()
 		
 		this.repaintedThumbnailAll = true;
 	}
+};
+
+Main.prototype.getHorizontalNearestLine = function(x, y, d)
+{
+	let nearestLine = false;
+	let nearestDist = d;
+	
+	if(this.currentProject)
+	{
+		for(let i = 0; i < this.currentProject.guideGrids.length; i++)
+		{
+			let guideGrid = this.currentProject.guideGrids[i];
+			
+			if(guideGrid == this.currentProject.currentGuideGrid)
+				continue;
+			
+			let horizontalLineCount = guideGrid.getHorizontalLineCount();
+			let verticalLineCount = guideGrid.getVerticalLineCount();
+			
+			if(horizontalLineCount >= 0 && verticalLineCount > 0)
+			{
+				if(guideGrid.getRectLeft() <= x && x <= guideGrid.getRectRight())
+				{
+					for(let j = 0; j < horizontalLineCount; j++)
+					{
+						let line = guideGrid.getHorizontalLine(j);
+						let dist = Math.abs(line - y);
+						
+						if(dist < nearestDist)
+						{
+							nearestLine = {y: line, margin: guideGrid.margin, padding: guideGrid.padding, isFirst: j == 0, isLast: j == (verticalLineCount - 1)};
+							nearestDist = dist;
+						}
+					}
+				}
+			}
+		}
+		
+		for(let i = 0; i < this.currentProject.guideLines.length; i++)
+		{
+			let guideLine = this.currentProject.guideLines[i];
+			
+			if(guideLine == this.currentProject.currentGuideLine || guideLine.style == 1)
+				continue;
+			
+			if(guideLine.getRectLeft() <= x && x <= guideLine.getRectRight())
+			{
+				let dist = Math.abs(guideLine.y - y);
+				
+				if(dist < nearestDist)
+				{
+					nearestLine = {y: guideLine.y, padding: guideLine.padding, isFirst: false, isLast: false};
+					nearestDist = dist;
+				}
+			}
+		}
+	}
+	
+	return nearestLine;
+};
+
+Main.prototype.getVerticalNearestLine = function(x, y, d)
+{
+	let nearestLine = false;
+	let nearestDist = d;
+	
+	if(this.currentProject)
+	{
+		for(let i = 0; i < this.currentProject.guideGrids.length; i++)
+		{
+			let guideGrid = this.currentProject.guideGrids[i];
+			
+			if(guideGrid == this.currentProject.currentGuideGrid)
+				continue;
+			
+			let horizontalLineCount = guideGrid.getHorizontalLineCount();
+			let verticalLineCount = guideGrid.getVerticalLineCount();
+			
+			if(horizontalLineCount >= 0 && verticalLineCount > 0)
+			{
+				if(guideGrid.getRectTop() <= y && y <= guideGrid.getRectBottom())
+				{
+					for(let j = 0; j < verticalLineCount; j++)
+					{
+						let line = guideGrid.getVerticalLine(j);
+						let dist = Math.abs(line - x);
+						
+						if(dist < nearestDist)
+						{
+							nearestLine = {x: line, margin: guideGrid.margin, padding: guideGrid.padding, isFirst: j == 0, isLast: j == (horizontalLineCount - 1)};
+							nearestDist = dist;
+						}
+					}
+				}
+			}
+		}
+		
+		for(let i = 0; i < this.currentProject.guideLines.length; i++)
+		{
+			let guideLine = this.currentProject.guideLines[i];
+			
+			if(guideLine == this.currentProject.currentGuideLine || guideLine.style == 0)
+				continue;
+			
+			if(guideLine.getRectTop() <= y && y <= guideLine.getRectBottom())
+			{
+				let dist = Math.abs(guideLine.x - x);
+				
+				if(dist < nearestDist)
+				{
+					nearestLine = {x: guideLine.x, padding: guideLine.padding, isFirst: false, isLast: false};
+					nearestDist = dist;
+				}
+			}
+		}
+	}
+	
+	return nearestLine;
 };
 
 Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
@@ -1193,7 +1714,10 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				}
 			}
 		}
-		
+	}
+	
+	if(this.currentProject && this.currentProject.currentAnyObject)
+	{
 		let mouseX = e.clientX - this.screenshotUI.element.getBoundingClientRect().left;
 		let mouseY = e.clientY - this.screenshotUI.element.getBoundingClientRect().top;
 		
@@ -1204,23 +1728,53 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			let scaleX = this.screenshotUI.width / 640.0;
 			let scaleY = this.screenshotUI.height / 448.0;
 			
-			let x = this.currentProject.currentTextDraw.getStringRectLeft() * scaleX;
-			let y = this.currentProject.currentTextDraw.getStringRectTop() * scaleY;
-			
 			if(this.clickTop)
 			{
 				if(this.clickOption == "resize")
 				{
-					this.currentProject.currentTextDraw.setRectTop(mouseY / scaleY);
+					let nearestLine = this.getHorizontalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleY);
+					
+					if(nearestLine !== false)
+					{
+						this.currentProject.currentAnyObject.setRectTop(nearestLine.y + this.currentProject.currentAnyObject.getMargin() + (nearestLine.isLast ? nearestLine.margin : nearestLine.padding));
+					}
+					else
+					{
+						this.currentProject.currentAnyObject.setRectTop(mouseY / scaleY);
+					}
 				}
 				else if(this.clickOption == "move")
 				{
-					this.currentProject.currentTextDraw.offsetRect(0, mouseY / scaleY - this.currentProject.currentTextDraw.getRectTop());
+					let nearestLine = this.getHorizontalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleY);
+					
+					if(nearestLine !== false)
+					{
+						this.currentProject.currentAnyObject.offsetRect(0, nearestLine.y + this.currentProject.currentAnyObject.getMargin() + (nearestLine.isLast ? nearestLine.margin : nearestLine.padding) - this.currentProject.currentAnyObject.getRectTop());
+					}
+					else
+					{
+						this.currentProject.currentAnyObject.offsetRect(0, mouseY / scaleY - this.currentProject.currentAnyObject.getRectTop());
+					}
 				}
-				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw.font != 4)
+				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw && this.currentProject.currentTextDraw.font != 4)
 				{
-					this.currentProject.currentTextDraw.offsetRect(0, mouseY / scaleY - this.currentProject.currentTextDraw.getRectTop());
-					this.currentProject.currentTextDraw.letterSizeY -= (mouseY - y) / scaleY / 9.0 / this.currentProject.currentTextDraw.linesCount;
+					let y;
+					
+					let nearestLine = this.getHorizontalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleY);
+					
+					if(nearestLine !== false)
+					{
+						y = nearestLine.y + this.currentProject.currentTextDraw.getMargin() + (nearestLine.isLast ? nearestLine.margin : nearestLine.padding);
+					}
+					else
+					{
+						y = mouseY / scaleY;
+					}
+					
+					let top = this.currentProject.currentTextDraw.getStringRectTop();
+					
+					this.currentProject.currentTextDraw.offsetRect(0, y - this.currentProject.currentTextDraw.getRectTop());
+					this.currentProject.currentTextDraw.letterSizeY -= (y - top) / 9.0 / this.currentProject.currentTextDraw.linesCount;
 				}
 				
 				cursor += "n";
@@ -1235,15 +1789,46 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			{
 				if(this.clickOption == "resize")
 				{
-					this.currentProject.currentTextDraw.setRectBottom(mouseY / scaleY);
+					let nearestLine = this.getHorizontalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleY);
+					
+					if(nearestLine !== false)
+					{
+						this.currentProject.currentAnyObject.setRectBottom(nearestLine.y - this.currentProject.currentAnyObject.getMargin() - (nearestLine.isFirst ? nearestLine.margin : nearestLine.padding));
+					}
+					else
+					{
+						this.currentProject.currentAnyObject.setRectBottom(mouseY / scaleY);
+					}
 				}
 				else if(this.clickOption == "move")
 				{
-					this.currentProject.currentTextDraw.offsetRect(0, mouseY / scaleY - this.currentProject.currentTextDraw.getRectBottom());
+					let nearestLine = this.getHorizontalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleY);
+					
+					if(nearestLine !== false)
+					{
+						this.currentProject.currentAnyObject.offsetRect(0, nearestLine.y - this.currentProject.currentAnyObject.getMargin() - (nearestLine.isFirst ? nearestLine.margin : nearestLine.padding) - this.currentProject.currentAnyObject.getRectBottom());
+					}
+					else
+					{
+						this.currentProject.currentAnyObject.offsetRect(0, mouseY / scaleY - this.currentProject.currentAnyObject.getRectBottom());
+					}
 				}
-				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw.font != 4)
+				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw && this.currentProject.currentTextDraw.font != 4)
 				{
-					this.currentProject.currentTextDraw.letterSizeY = (mouseY - y) / scaleY / 9.0 / this.currentProject.currentTextDraw.linesCount;
+					let y;
+					
+					let nearestLine = this.getHorizontalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleY);
+					
+					if(nearestLine !== false)
+					{
+						y = nearestLine.y - this.currentProject.currentAnyObject.getMargin() - (nearestLine.isFirst ? nearestLine.margin : nearestLine.padding);
+					}
+					else
+					{
+						y = mouseY / scaleY;
+					}
+					
+					this.currentProject.currentTextDraw.letterSizeY = (y - this.currentProject.currentTextDraw.getStringRectTop()) / 9.0 / this.currentProject.currentTextDraw.linesCount;
 				}
 				
 				cursor += "s";
@@ -1259,18 +1844,51 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			{
 				if(this.clickOption == "resize")
 				{
-					this.currentProject.currentTextDraw.setRectLeft(mouseX / scaleX);
+					let nearestLine = this.getVerticalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleX);
+					
+					if(nearestLine !== false)
+					{
+						this.currentProject.currentAnyObject.setRectLeft(nearestLine.x + this.currentProject.currentAnyObject.getMargin() + (nearestLine.isLast ? nearestLine.margin : nearestLine.padding));
+					}
+					else
+					{
+						this.currentProject.currentAnyObject.setRectLeft(mouseX / scaleX);
+					}
 				}
 				else if(this.clickOption == "move")
 				{
-					this.currentProject.currentTextDraw.offsetRect(mouseX / scaleX - this.currentProject.currentTextDraw.getRectLeft(), 0);
-				}
-				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw.font != 4)
-				{
-					if(this.currentProject.currentTextDraw.alignment == 1)
-						this.currentProject.currentTextDraw.offsetRect(mouseX / scaleX - this.currentProject.currentTextDraw.getRectLeft(), 0);
+					let nearestLine = this.getVerticalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleX);
 					
-					this.currentProject.currentTextDraw.letterSizeX -= (mouseX - x) / scaleX / this.currentProject.currentTextDraw.stringWidth;
+					if(nearestLine !== false)
+					{
+						this.currentProject.currentAnyObject.offsetRect(nearestLine.x + this.currentProject.currentAnyObject.getMargin() + (nearestLine.isLast ? nearestLine.margin : nearestLine.padding) - this.currentProject.currentAnyObject.getRectLeft(), 0);
+					}
+					else
+					{
+						this.currentProject.currentAnyObject.offsetRect(mouseX / scaleX - this.currentProject.currentAnyObject.getRectLeft(), 0);
+					}
+				}
+				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw && this.currentProject.currentTextDraw.font != 4)
+				{
+					let x;
+					
+					let nearestLine = this.getVerticalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleX);
+					
+					if(nearestLine !== false)
+					{
+						x = nearestLine.x + this.currentProject.currentAnyObject.getMargin() + (nearestLine.isLast ? nearestLine.margin : nearestLine.padding);
+					}
+					else
+					{
+						x = mouseX / scaleX;
+					}
+					
+					let left = this.currentProject.currentTextDraw.getStringRectLeft();
+					
+					if(this.currentProject.currentTextDraw.alignment == 1)
+						this.currentProject.currentTextDraw.offsetRect(x - this.currentProject.currentTextDraw.getRectLeft(), 0);
+					
+					this.currentProject.currentTextDraw.letterSizeX -= (x - left) / this.currentProject.currentTextDraw.stringWidth;
 				}
 				
 				cursor += "w";
@@ -1285,18 +1903,51 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			{
 				if(this.clickOption == "resize")
 				{
-					this.currentProject.currentTextDraw.setRectRight(mouseX / scaleX);
+					let nearestLine = this.getVerticalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleX);
+					
+					if(nearestLine !== false)
+					{
+						this.currentProject.currentAnyObject.setRectRight(nearestLine.x - this.currentProject.currentAnyObject.getMargin() - (nearestLine.isFirst ? nearestLine.margin : nearestLine.padding));
+					}
+					else
+					{
+						this.currentProject.currentAnyObject.setRectRight(mouseX / scaleX);
+					}
 				}
 				else if(this.clickOption == "move")
 				{
-					this.currentProject.currentTextDraw.offsetRect(mouseX / scaleX - this.currentProject.currentTextDraw.getRectRight(), 0);
-				}
-				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw.font != 4)
-				{
-					if(this.currentProject.currentTextDraw.alignment == 3)
-						this.currentProject.currentTextDraw.offsetRect(mouseX / scaleX - this.currentProject.currentTextDraw.getRectRight(), 0);
+					let nearestLine = this.getVerticalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleX);
 					
-					this.currentProject.currentTextDraw.letterSizeX = (mouseX - x) / scaleX / this.currentProject.currentTextDraw.stringWidth;
+					if(nearestLine !== false)
+					{
+						this.currentProject.currentAnyObject.offsetRect(nearestLine.x - this.currentProject.currentAnyObject.getMargin() - (nearestLine.isFirst ? nearestLine.margin : nearestLine.padding) - this.currentProject.currentAnyObject.getRectRight(), 0);
+					}
+					else
+					{
+						this.currentProject.currentAnyObject.offsetRect(mouseX / scaleX - this.currentProject.currentAnyObject.getRectRight(), 0);
+					}
+				}
+				else if(this.clickOption == "resize-letter" && this.currentProject.currentTextDraw && this.currentProject.currentTextDraw.font != 4)
+				{
+					let x;
+					
+					let nearestLine = this.getVerticalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleX);
+					
+					if(nearestLine !== false)
+					{
+						x = nearestLine.x - this.currentProject.currentAnyObject.getMargin() - (nearestLine.isFirst ? nearestLine.margin : nearestLine.padding);
+					}
+					else
+					{
+						x = mouseX / scaleX;
+					}
+					
+					let left = this.currentProject.currentTextDraw.getStringRectLeft();
+					
+					if(this.currentProject.currentTextDraw.alignment == 3)
+						this.currentProject.currentTextDraw.offsetRect(x - this.currentProject.currentTextDraw.getRectRight(), 0);
+					
+					this.currentProject.currentTextDraw.letterSizeX = (x - left) / this.currentProject.currentTextDraw.stringWidth;
 				}
 				
 				cursor += "e";
@@ -1308,27 +1959,44 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				}
 			}
 			
-			this.updateControls();
-			
-			this.boxTextDrawUI.clear();
-			
-			if(this.clicked)
+			if(this.currentProject.currentTextDraw)
 			{
-				this.boxTextDrawUI.paintBox(this.currentProject.currentTextDraw, this.clickOption != "resize-letter");
-			}
-			
-			this.currentTextDrawUI.clear();
-			this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
-			
-			this.optionsUI.clear();
-			this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
-			
-			if(buttonUp)
-			{
-				this.repaintThumbnail();
+				this.updateControls();
 				
-				this.saveProjectsEnabled = true;
-				this.saveProjects();
+				this.boxTextDrawUI.clear();
+				
+				if(this.clicked)
+				{
+					this.boxTextDrawUI.paintBox(this.currentProject.currentTextDraw, this.clickOption != "resize-letter");
+				}
+				
+				this.currentTextDrawUI.clear();
+				this.currentTextDrawUI.paint(this.currentProject.currentTextDraw, this.clicked);
+				
+				this.optionsUI.clear();
+				this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+				this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
+				this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
+				
+				if(buttonUp)
+				{
+					this.repaintThumbnail();
+					
+					this.saveProjectsEnabled = true;
+					this.saveProjects();
+				}
+			}
+			else
+			{
+				this.optionsUI.clear();
+				this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+				this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
+				
+				if(buttonUp)
+				{
+					this.saveProjectsEnabled = true;
+					this.saveProjects();
+				}
 			}
 		}
 		else if(e.target == this.optionsUI.element)
@@ -1345,6 +2013,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					this.clickOption = "resize";
 					
 					this.optionsUI.clear();
+					this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+					this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 					this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 				}
 			}
@@ -1355,6 +2025,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					this.clickOption = "move";
 					
 					this.optionsUI.clear();
+					this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+					this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 					this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 				}
 			}
@@ -1365,12 +2037,14 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					this.clickOption = "resize-letter";
 					
 					this.optionsUI.clear();
+					this.optionsUI.paintGuideGrids(this.currentProject.currentGuideGrid, this.currentProject.guideGrids, this.clickOption);
+					this.optionsUI.paintGuideLines(this.currentProject.currentGuideLine, this.currentProject.guideLines, this.clickOption);
 					this.optionsUI.paint(this.currentProject.currentTextDraw, this.clickOption);
 				}
 			}
 			else if(this.optionsUI.isInRect(mouseX, mouseY))
 			{
-				if(Math.abs(mouseY - this.optionsUI.rectTop) < 4)
+				if(Math.abs(mouseY - this.optionsUI.rectTop) < 4 && (!this.currentProject.currentGuideLine || this.currentProject.currentGuideLine.style == 1 || this.clickOption == "move"))
 				{
 					cursor += "n";
 					
@@ -1380,7 +2054,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 						this.clickTop = true;
 					}
 				}
-				else if(Math.abs(mouseY - this.optionsUI.rectBottom) < 4)
+				else if(Math.abs(mouseY - this.optionsUI.rectBottom) < 4 && (!this.currentProject.currentGuideLine || this.currentProject.currentGuideLine.style == 1))
 				{
 					cursor += "s";
 					
@@ -1391,7 +2065,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					}
 				}
 				
-				if(Math.abs(mouseX - this.optionsUI.rectLeft) < 4)
+				if(Math.abs(mouseX - this.optionsUI.rectLeft) < 4 && (!this.currentProject.currentGuideLine || this.currentProject.currentGuideLine.style == 0 || this.clickOption == "move"))
 				{
 					cursor += "w";
 					
@@ -1401,7 +2075,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 						this.clickLeft = true;
 					}
 				}
-				else if(Math.abs(mouseX - this.optionsUI.rectRight) < 4)
+				else if(Math.abs(mouseX - this.optionsUI.rectRight) < 4 && (!this.currentProject.currentGuideLine || this.currentProject.currentGuideLine.style == 0))
 				{
 					cursor += "e";
 					

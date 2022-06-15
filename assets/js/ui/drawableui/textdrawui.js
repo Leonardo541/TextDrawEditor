@@ -68,15 +68,15 @@ TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 		}
 	}
 	
-	if(textDraw.font != 4 || !textureUI)
+	if(textDraw.useBox && (textDraw.font != 4 || !textureUI))
 	{
 		let scaleX = textDraw.main.screenshotUI.width / 640.0;
 		let scaleY = textDraw.main.screenshotUI.height / 448.0;
 		
-		let left = textDraw.getRectLeft() * scaleX - 4.0;
-		let top = textDraw.getRectTop() * scaleY - 4.0;
-		let right = textDraw.getRectRight() * scaleX + 4.0;
-		let bottom = textDraw.getStringRectBottom() * scaleY + 4.0;
+		let left = textDraw.getRectLeft() * scaleX - textDraw.getMargin();
+		let top = textDraw.getRectTop() * scaleY - textDraw.getMargin()
+		let right = textDraw.getRectRight() * scaleX + textDraw.getMargin();
+		let bottom = textDraw.getStringRectBottom() * scaleY + textDraw.getMargin();
 		
 		this.context.fillStyle = textDraw.boxColor.toRGBA();
 		this.context.fillRect(left, top, right - left, bottom - top);
@@ -154,12 +154,12 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
     let x = textDraw.getRectLeft() * scaleX;
 	let y = textDraw.getRectTop() * scaleY;
     
-	if(!faster && (textDraw.font != 4 || !textureUI))
+	if(!faster && textDraw.useBox && (textDraw.font != 4 || !textureUI))
 	{
-		let left = textDraw.getRectLeft() * scaleX - 4.0;
-		let top = textDraw.getRectTop() * scaleY - 4.0;
-		let right = textDraw.getRectRight() * scaleX + 4.0;
-		let bottom = textDraw.getStringRectBottom() * scaleY + 4.0;
+		let left = textDraw.getRectLeft() * scaleX - textDraw.getMargin();
+		let top = textDraw.getRectTop() * scaleY - textDraw.getMargin();
+		let right = textDraw.getRectRight() * scaleX + textDraw.getMargin();
+		let bottom = textDraw.getStringRectBottom() * scaleY + textDraw.getMargin();
 		
 		this.context.fillStyle = textDraw.boxColor.toRGBA();
 		this.context.fillRect(left, top, right - left, bottom - top);

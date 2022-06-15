@@ -13,7 +13,11 @@ ContextMenuUI.prototype.appendItem = function(text, click)
 {
 	let setting;
 	
-	if(click)
+	if(click === false)
+	{
+		setting = {innerText: text, class: "contextItem"};
+	}
+	else if(click)
 	{
 		setting = {innerText: text, class: "contextItem", click: () => { click(); this.remove(); }};
 	}
@@ -58,6 +62,22 @@ ContextMenuUI.prototype.updateSubMenuPosition = function()
 		subMenuList[i].element.style.top = subMenuPosY + "px";
 		subMenuList[i].updateSubMenuPosition();
 	}
+};
+
+ContextMenuUI.prototype.remove = function()
+{
+	if(this.element.parentNode && this.element.parentNode.entityUI && this.element.parentNode.entityUI instanceof EntityUI)
+	{
+		let contextItemUI = this.element.parentNode.entityUI;
+		
+		if(contextItemUI.element.parentNode && contextItemUI.element.parentNode.entityUI && contextItemUI.element.parentNode.entityUI instanceof ContextMenuUI)
+		{
+			contextItemUI.element.parentNode.entityUI.remove();
+			return;
+		}
+	}
+	
+	EntityUI.prototype.remove.call(this);
 };
 
 ContextMenuUI.prototype.isInBoundingClientRect = function(x, y)
