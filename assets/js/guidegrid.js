@@ -99,8 +99,3 @@ GuideGrid.prototype.getRectBottom = function()
 {
 	return this.y + this.height;
 };
-
-GuideGrid.prototype.getMargin = function()
-{
-	return this.margin;
-};

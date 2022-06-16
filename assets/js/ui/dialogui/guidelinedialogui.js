@@ -23,7 +23,7 @@ function GuideLineDialogUI(parent, title, x, y, size, padding, style, clickAccep
 	this.styleUI.appendOption("Vertical");
 	this.styleUI.element.selectedIndex = style;
 	this.contentUI.appendStaticLine();
-	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(parseFloat(this.xUI.element.value), parseFloat(this.yUI.element.value), parseFloat(this.sizeUI.element.value), parseInt(this.paddingUI.element.value), this.styleUI.element.selectedIndex); }});
+	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(parseFloat(this.xUI.element.value), parseFloat(this.yUI.element.value), parseFloat(this.sizeUI.element.value), parseFloat(this.paddingUI.element.value), this.styleUI.element.selectedIndex); }});
 	this.buttonCancelUI = new ButtonUI(this.buttonsUI, {innerText: "Cancel", click: () => { clickCancel(); }});
 }
 

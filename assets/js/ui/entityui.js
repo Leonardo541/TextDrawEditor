@@ -5,7 +5,7 @@ function EntityUI(parent, tagName, setting)
 	
 	for(key in setting)
 	{
-		if(key === "class")
+		if(key == "class")
 		{
 			if(typeof setting.class === "string")
 			{
@@ -17,6 +17,16 @@ function EntityUI(parent, tagName, setting)
 				{
 					this.element.classList.add(setting.class[cls]);
 				}
+			}
+			
+			continue;
+		}
+		
+		if(key == "style")
+		{
+			for(sty in setting.style)
+			{
+				this.element.style[sty] = setting.style[sty];
 			}
 			
 			continue;

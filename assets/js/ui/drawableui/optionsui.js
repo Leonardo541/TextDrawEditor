@@ -150,7 +150,6 @@ OptionsUI.prototype.paintGuideLines = function(currentGuideLine, guideLines, opt
 	let scaleX = guideLines[0].main.screenshotUI.width / 640.0;
 	let scaleY = guideLines[0].main.screenshotUI.height / 448.0;
 	
-	
 	for(let i = 0; i < guideLines.length; i++)
 	{
 		let guideLine = guideLines[i];

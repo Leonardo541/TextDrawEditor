@@ -79,8 +79,3 @@ GuideLine.prototype.getRectBottom = function()
 	
 	return this.y;
 };
-
-GuideLine.prototype.getMargin = function()
-{
-	return 0;
-};
