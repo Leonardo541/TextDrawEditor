@@ -2,6 +2,11 @@
 function GuideLine(main, name, x, y, size, padding, style)
 {
 	this.main = main;
+	
+	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: () => { main.changeGuideLine(this); }, contextmenu: (e) => { main.contextMenuGuideLine(this, e.clientX, e.clientY); e.preventDefault(); }});
+	this.thumbnailUI = new EntityUI(this.textDrawItemUI, "img", { src: "./assets/images/icon-guide-line.png", width: "24", height: "24", draggable: false });
+	this.nameUI = new EntityUI(this.textDrawItemUI, "span", {innerText: name});
+	
 	this.name = name;
 	this.x = x;
 	this.y = y;

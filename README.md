@@ -13,7 +13,7 @@ A TextDraw Editor built in Vanilla JS
 - [x] Dialogs to create, import, export, etc
 - [x] Add support for TextDraw Sprite
 - [ ] Add support for TextDraw Model Preview
-- [ ] Add guide system (lines, grids, etc)
+- [x] Add guide system (grids and lines)
 
 ## Tested on
 

@@ -177,8 +177,9 @@ function Main()
 	if(this.projects.length == 0)
 		this.addProject();
 	
-	this.movingTextDraw = false;
-	this.movingTextDrawIdx = -1;
+	this.movingAnyObject = false;
+	this.movingAnyObjectList = [];
+	this.movingAnyObjectIdx = -1;
 	
 	this.clicked = false;
 	this.clickLeft = false;
@@ -244,6 +245,40 @@ Main.prototype.changeProject = function(project)
 	if(this.currentProject)
 		this.currentProject.projectTabUI.element.classList.add("currentProjectTab");
 	
+	if(project)
+	{
+		if(project.currentTextDraw)
+		{
+			this.textDrawControlsUI.element.style.display = "";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "none";
+		}
+		else if(project.currentGuideGrid)
+		{
+			this.textDrawControlsUI.element.style.display = "none";
+			this.guideGridControlsUI.element.style.display = "";
+			this.guideLineControlsUI.element.style.display = "none";
+		}
+		else if(project.currentGuideLine)
+		{
+			this.textDrawControlsUI.element.style.display = "none";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "";
+		}
+		else
+		{
+			this.textDrawControlsUI.element.style.display = "";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "none";
+		}
+	}
+	else
+	{
+		this.textDrawControlsUI.element.style.display = "";
+		this.guideGridControlsUI.element.style.display = "none";
+		this.guideLineControlsUI.element.style.display = "none";
+	}
+	
 	this.saveProjectsEnabled = true;
 	this.saveProjects();
 	
@@ -251,6 +286,8 @@ Main.prototype.changeProject = function(project)
 	this.updateControls();
 	this.updateGuideGridControls();
 	this.updateGuideLineControls();
+	
+	this.checkScrollBars();
 	
 	this.repaint();
 	
@@ -289,9 +326,12 @@ Main.prototype.loadProjects = function()
 					
 					project.currentTextDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
 					
-					this.textDrawControlsUI.element.style.display = "";
-					this.guideGridControlsUI.element.style.display = "none";
-					this.guideLineControlsUI.element.style.display = "none";
+					if(i == savedCurrentProjectIdx)
+					{
+						this.textDrawControlsUI.element.style.display = "";
+						this.guideGridControlsUI.element.style.display = "none";
+						this.guideLineControlsUI.element.style.display = "none";
+					}
 				}
 			}
 			
@@ -308,9 +348,14 @@ Main.prototype.loadProjects = function()
 					project.currentGuideGrid = guideGrid;
 					project.currentAnyObject = guideGrid;
 					
-					this.textDrawControlsUI.element.style.display = "none";
-					this.guideGridControlsUI.element.style.display = "";
-					this.guideLineControlsUI.element.style.display = "none";
+					project.currentGuideGrid.textDrawItemUI.element.classList.add("currentTextDrawItem");
+					
+					if(i == savedCurrentProjectIdx)
+					{
+						this.textDrawControlsUI.element.style.display = "none";
+						this.guideGridControlsUI.element.style.display = "";
+						this.guideLineControlsUI.element.style.display = "none";
+					}
 				}
 			}
 			
@@ -327,9 +372,14 @@ Main.prototype.loadProjects = function()
 					project.currentGuideLine = guideLine;
 					project.currentAnyObject = guideLine;
 					
-					this.textDrawControlsUI.element.style.display = "none";
-					this.guideGridControlsUI.element.style.display = "none";
-					this.guideLineControlsUI.element.style.display = "";
+					project.currentGuideLine.textDrawItemUI.element.classList.add("currentTextDrawItem");
+					
+					if(i == savedCurrentProjectIdx)
+					{
+						this.textDrawControlsUI.element.style.display = "none";
+						this.guideGridControlsUI.element.style.display = "none";
+						this.guideLineControlsUI.element.style.display = "";
+					}
 				}
 			}
 			
@@ -502,6 +552,7 @@ Main.prototype.createGuideGrid = function(x, y, width, height, margin, padding, 
 {
 	let guideGrid = this.currentProject.createGuideGrid(x, y, width, height, margin, padding, rows, columns);
 	
+	this.updateControlList();
 	this.changeGuideGrid(guideGrid);
 };
 
@@ -515,6 +566,8 @@ Main.prototype.removeGuideGrid = function(guideGrid)
 			break;
 		}
 	}
+	
+	guideGrid.textDrawItemUI.remove();
 	
 	if(this.currentProject.currentGuideGrid == guideGrid)
 	{
@@ -540,11 +593,17 @@ Main.prototype.changeGuideGrid = function(guideGrid, notCheckOtherCurrent)
 			this.changeGuideLine(null, true);
 	}
 	
-	if(this.currentProject.currentGuideGrid == guideGrid)
+	if(this.currentProject.currentGuideGrid == guideGrid && guideGrid.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
 		return;
+	
+	if(this.currentProject.currentGuideGrid)
+		this.currentProject.currentGuideGrid.textDrawItemUI.element.classList.remove("currentTextDrawItem");
 	
 	this.currentProject.currentGuideGrid = guideGrid;
 	this.currentProject.currentAnyObject = guideGrid;
+	
+	if(this.currentProject.currentGuideGrid)
+		this.currentProject.currentGuideGrid.textDrawItemUI.element.classList.add("currentTextDrawItem");
 	
 	this.updateGuideGridControls();
 	
@@ -570,6 +629,7 @@ Main.prototype.createGuideLine = function(x, y, size, padding, style)
 {
 	let guideGrid = this.currentProject.createGuideLine(x, y, size, padding, style);
 	
+	this.updateControlList();
 	this.changeGuideLine(guideGrid);
 };
 
@@ -583,6 +643,8 @@ Main.prototype.removeGuideLine = function(guideLine)
 			break;
 		}
 	}
+	
+	guideLine.textDrawItemUI.remove();
 	
 	if(this.currentProject.currentGuideLine == guideLine)
 	{
@@ -608,11 +670,17 @@ Main.prototype.changeGuideLine = function(guideLine, notCheckOtherCurrent)
 			this.changeGuideGrid(null, true);
 	}
 	
-	if(this.currentProject.currentGuideLine == guideLine)
+	if(this.currentProject.currentGuideLine == guideLine && guideLine.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
 		return;
+	
+	if(this.currentProject.currentGuideLine)
+		this.currentProject.currentGuideLine.textDrawItemUI.element.classList.remove("currentTextDrawItem");
 	
 	this.currentProject.currentGuideLine = guideLine;
 	this.currentProject.currentAnyObject = guideLine;
+	
+	if(this.currentProject.currentGuideLine)
+		this.currentProject.currentGuideLine.textDrawItemUI.element.classList.add("currentTextDrawItem");
 	
 	this.updateGuideLineControls();
 	
@@ -660,6 +728,30 @@ Main.prototype.contextMenuTextDraw = function(textDraw, x, y)
 	this.contextMenuUI.appendItem("Remove TextDraw", () => { this.removeTextDraw(textDraw) });
 	
 	this.changeTextDraw(textDraw);
+};
+
+Main.prototype.contextMenuGuideGrid = function(guideGrid, x, y)
+{
+	if(this.contextMenuUI)
+		this.contextMenuUI.remove();
+	
+	this.contextMenuUI = new ContextMenuUI("body", x, y);
+	this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid); });
+	this.contextMenuUI.appendItem("Remove", () => { this.removeGuideGrid(guideGrid); });
+	
+	this.changeGuideGrid(guideGrid);
+};
+
+Main.prototype.contextMenuGuideLine = function(guideLine, x, y)
+{
+	if(this.contextMenuUI)
+		this.contextMenuUI.remove();
+	
+	this.contextMenuUI = new ContextMenuUI("body", x, y);
+	this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine); });
+	this.contextMenuUI.appendItem("Remove", () => { this.removeGuideLine(guideLine); });
+	
+	this.changeGuideLine(guideLine);
 };
 
 Main.prototype.contextMenuScreen = function(x, y)
@@ -1149,16 +1241,40 @@ Main.prototype.updateControlList = function()
 	
 	if(this.currentProject)
 	{
+		let lastTextDrawItemUI = null;
+		
 		for(let i = 0; i < this.currentProject.textDrawList.length; i++)
 		{
 			if(this.currentProject.textDrawList[i].textDrawItemUI.element.classList.contains("lastTextDrawItem"))
 				this.currentProject.textDrawList[i].textDrawItemUI.element.classList.remove("lastTextDrawItem");
 			
 			this.controlListUI.element.appendChild(this.currentProject.textDrawList[i].textDrawItemUI.element);
+			
+			lastTextDrawItemUI = this.currentProject.textDrawList[i].textDrawItemUI;
 		}
 		
-		if(this.controlListUI.hasScrollBar())
-			this.currentProject.textDrawList[this.currentProject.textDrawList.length - 1].textDrawItemUI.element.classList.add("lastTextDrawItem");
+		for(let i = 0; i < this.currentProject.guideGrids.length; i++)
+		{
+			if(this.currentProject.guideGrids[i].textDrawItemUI.element.classList.contains("lastTextDrawItem"))
+				this.currentProject.guideGrids[i].textDrawItemUI.element.classList.remove("lastTextDrawItem");
+			
+			this.controlListUI.element.appendChild(this.currentProject.guideGrids[i].textDrawItemUI.element);
+			
+			lastTextDrawItemUI = this.currentProject.guideGrids[i].textDrawItemUI;
+		}
+		
+		for(let i = 0; i < this.currentProject.guideLines.length; i++)
+		{
+			if(this.currentProject.guideLines[i].textDrawItemUI.element.classList.contains("lastTextDrawItem"))
+				this.currentProject.guideLines[i].textDrawItemUI.element.classList.remove("lastTextDrawItem");
+			
+			this.controlListUI.element.appendChild(this.currentProject.guideLines[i].textDrawItemUI.element);
+			
+			lastTextDrawItemUI = this.currentProject.guideLines[i].textDrawItemUI;
+		}
+		
+		if(lastTextDrawItemUI && this.controlListUI.hasScrollBar())
+			lastTextDrawItemUI.element.classList.add("lastTextDrawItem");
 	}
 }
 
@@ -1986,28 +2102,28 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 		}
 	}
 	
-	if(this.currentProject && this.currentProject.currentTextDraw)
+	if(this.currentProject && this.currentProject.currentAnyObject)
 	{
-		if(this.movingTextDraw)
+		if(this.movingAnyObject)
 		{
 			let moveTo = -1;
 			
-			for(let i = 0; i < this.currentProject.textDrawList.length; i++)
+			for(let i = 0; i < this.movingAnyObjectList.length; i++)
 			{
-				if(this.movingTextDrawIdx == i)
+				if(this.movingAnyObjectIdx == i)
 					continue;
 				
-				if(this.movingTextDrawIdx > i)
+				if(this.movingAnyObjectIdx > i)
 				{
-					if(this.currentProject.textDrawList[i].textDrawItemUI.element.getBoundingClientRect().bottom > e.clientY)
+					if(this.movingAnyObjectList[i].textDrawItemUI.element.getBoundingClientRect().bottom > e.clientY)
 					{
 						moveTo = i;
 						break;
 					}
 				}
-				else if(this.movingTextDrawIdx < i)
+				else if(this.movingAnyObjectIdx < i)
 				{
-					if(this.currentProject.textDrawList[i].thumbnailUI.element.getBoundingClientRect().top < e.clientY)
+					if(this.movingAnyObjectList[i].thumbnailUI.element.getBoundingClientRect().top < e.clientY)
 					{
 						moveTo = i;
 					}
@@ -2016,14 +2132,14 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			
 			if(moveTo != -1)
 			{
-				let textDraw = this.currentProject.textDrawList[this.movingTextDrawIdx];
+				let anyObject = this.movingAnyObjectList[this.movingAnyObjectIdx];
 				
-				this.currentProject.textDrawList.splice(this.movingTextDrawIdx, 1);
-				this.currentProject.textDrawList.splice(moveTo, 0, textDraw);
+				this.movingAnyObjectList.splice(this.movingAnyObjectIdx, 1);
+				this.movingAnyObjectList.splice(moveTo, 0, anyObject);
 				
 				this.updateControlList();
 				
-				this.movingTextDrawIdx = moveTo;
+				this.movingAnyObjectIdx = moveTo;
 			}
 			
 			if(buttonUp)
@@ -2031,8 +2147,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				document.body.style.cursor = "";
 				document.body.style.userSelect = "";
 				
-				this.movingTextDraw = false;
-				this.movingTextDrawIdx = -1;
+				this.movingAnyObject = false;
+				this.movingAnyObjectIdx = -1;
 			}
 			
 			return;
@@ -2047,10 +2163,43 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					document.body.style.cursor = "move";
 					document.body.style.userSelect = "none";
 					
-					this.movingTextDraw = true;
-					this.movingTextDrawIdx = i;
+					this.movingAnyObject = true;
+					this.movingAnyObjectList = this.currentProject.textDrawList;
+					this.movingAnyObjectIdx = i;
 					
 					this.changeTextDraw(this.currentProject.textDrawList[i]);
+					return;
+				}
+			}
+			
+			for(let i = 0; i < this.currentProject.guideGrids.length; i++)
+			{
+				if(this.currentProject.guideGrids[i].thumbnailUI.isInBoundingClientRect(e.clientX, e.clientY))
+				{
+					document.body.style.cursor = "move";
+					document.body.style.userSelect = "none";
+					
+					this.movingAnyObject = true;
+					this.movingAnyObjectList = this.currentProject.guideGrids;
+					this.movingAnyObjectIdx = i;
+					
+					this.changeGuideGrid(this.currentProject.guideGrids[i]);
+					return;
+				}
+			}
+			
+			for(let i = 0; i < this.currentProject.guideLines.length; i++)
+			{
+				if(this.currentProject.guideLines[i].thumbnailUI.isInBoundingClientRect(e.clientX, e.clientY))
+				{
+					document.body.style.cursor = "move";
+					document.body.style.userSelect = "none";
+					
+					this.movingAnyObject = true;
+					this.movingAnyObjectList = this.currentProject.guideLines;
+					this.movingAnyObjectIdx = i;
+					
+					this.changeGuideLine(this.currentProject.guideLines[i]);
 					return;
 				}
 			}

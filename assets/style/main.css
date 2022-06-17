@@ -183,8 +183,10 @@ canvas
 	background-color: #6d6d6d;
 }
 
-.textDrawItem canvas
+.textDrawItem canvas, .textDrawItem img
 {
+	display: block;
+	position: absolute;
 	height: 24px;
 	border-right: 1px solid #292929;
 	cursor: move;
