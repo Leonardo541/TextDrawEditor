@@ -337,6 +337,14 @@ TextDraw.prototype.getMargin = function()
 	return 4.0;
 };
 
+TextDraw.prototype.getBoxColor = function()
+{
+	if(this.font == 4)
+		return this.color;
+	
+	return this.boxColor;
+}
+
 TextDraw.prototype.changeAlignment = function(alignment)
 {
 	let rectLeft = this.getRectLeft();

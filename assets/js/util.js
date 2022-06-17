@@ -68,3 +68,20 @@ Number.prototype.toRGBA = function()
 	
 	return "rgba(" + red + ", " + green + ", " + blue + ", " + alpha + ")";
 }; 
+
+Number.prototype.toRGB = function()
+{
+	let color = this.valueOf();
+	
+	let red = (color >> 24) & 0xFF;
+	let green = (color >> 16) & 0xFF;
+	let blue = (color >> 8) & 0xFF;
+	
+	return "rgb(" + red + ", " + green + ", " + blue + ")";
+}; 
+
+Number.prototype.getAlpha = function()
+{
+	let color = this.valueOf();
+	return (color & 0xFF) / 0xFF;
+}; 

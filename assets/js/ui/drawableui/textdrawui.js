@@ -49,7 +49,7 @@ TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 	}
 	else if(textDraw.font == 4)
 	{
-		textureUI = TextureManager.instance.loadTexture(textDraw.text);
+		textureUI = TextureManager.instance.loadTexture(textDraw.text, textDraw.color);
 	}
 	
 	if(detectLines)
@@ -78,7 +78,7 @@ TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 		let right = textDraw.getRectRight() * scaleX + textDraw.getMargin();
 		let bottom = textDraw.getStringRectBottom() * scaleY + textDraw.getMargin();
 		
-		this.context.fillStyle = textDraw.boxColor.toRGBA();
+		this.context.fillStyle = textDraw.getBoxColor().toRGBA();
 		this.context.fillRect(left, top, right - left, bottom - top);
 	}
 };
@@ -106,7 +106,7 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
 	}
 	else if(textDraw.font == 4)
 	{
-		textureUI = TextureManager.instance.loadTexture(textDraw.text);
+		textureUI = TextureManager.instance.loadTexture(textDraw.text, textDraw.color);
 	}
 	
 	let scaleX;
@@ -161,7 +161,7 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
 		let right = textDraw.getRectRight() * scaleX + textDraw.getMargin();
 		let bottom = textDraw.getStringRectBottom() * scaleY + textDraw.getMargin();
 		
-		this.context.fillStyle = textDraw.boxColor.toRGBA();
+		this.context.fillStyle = textDraw.getBoxColor().toRGBA();
 		this.context.fillRect(left, top, right - left, bottom - top);
 	}
 	
