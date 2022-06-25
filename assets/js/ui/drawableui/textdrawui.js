@@ -68,7 +68,7 @@ TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 		}
 	}
 	
-	if(textDraw.useBox && (textDraw.font != 4 || !textureUI))
+	if((textDraw.font != 4 && textDraw.font != 5 && textDraw.useBox) || (textDraw.font == 4 && !textureUI) || textDraw.font == 5)
 	{
 		let scaleX = textDraw.main.screenshotUI.width / 640.0;
 		let scaleY = textDraw.main.screenshotUI.height / 448.0;
@@ -154,7 +154,7 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
     let x = textDraw.getRectLeft() * scaleX;
 	let y = textDraw.getRectTop() * scaleY;
     
-	if(!faster && textDraw.useBox && (textDraw.font != 4 || !textureUI))
+	if(!faster && ((textDraw.font != 4 && textDraw.font != 5 && textDraw.useBox) || (textDraw.font == 4 && !textureUI) || textDraw.font == 5))
 	{
 		let left = textDraw.getRectLeft() * scaleX - textDraw.getMargin();
 		let top = textDraw.getRectTop() * scaleY - textDraw.getMargin();

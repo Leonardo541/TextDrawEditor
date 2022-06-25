@@ -241,7 +241,7 @@ OptionsUI.prototype.paint = function(textDraw, option)
 	this.context.rect(Math.round(left), Math.round(top), Math.round(right - left), Math.round(bottom - top));
 	this.context.stroke();
 	
-	this.drawOptions(left, top, right, bottom, option, textDraw.font != 4);
+	this.drawOptions(left, top, right, bottom, option, textDraw.font != 4 && textDraw.font != 5);
 };
 
 OptionsUI.prototype.drawOptions = function(left, top, right, bottom, option, enableResizeLetter)
@@ -254,13 +254,15 @@ OptionsUI.prototype.drawOptions = function(left, top, right, bottom, option, ena
 	let x;
 	let y;
 	
+	let w = enableResizeLetter ? 60 : 40;
+	
 	if(right > left)
 	{
-		x = right - 56;
+		x = right - (w - 4);
 	}
 	else
 	{
-		x = left - 56;
+		x = left - (w - 4);
 	}
 	
 	if(bottom < top)
@@ -284,9 +286,9 @@ OptionsUI.prototype.drawOptions = function(left, top, right, bottom, option, ena
 		x = 4;
 	}
 	
-	if(x > (this.width - 60))
+	if(x > (this.width - w))
 	{
-		x = this.width - 60;
+		x = this.width - w;
 	}
 	
 	if(y < 4)
@@ -298,9 +300,6 @@ OptionsUI.prototype.drawOptions = function(left, top, right, bottom, option, ena
 	{
 		y = this.height - 24;
 	}
-	
-	if(!enableResizeLetter)
-		x += 20;
 	
 	this.resizeRectLeft = x;
 	this.resizeRectTop = y;

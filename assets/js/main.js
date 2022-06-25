@@ -1017,7 +1017,13 @@ Main.prototype.acceptExportDialog = function(dialogUI, callback, output, textDra
 		let paramFont = textDraws[i].font.toString();
 		
 		if(paramFont == 4)
+		{
 			paramFont = "TEXT_DRAW_FONT_SPRITE_DRAW";
+		}
+		else if(paramFont == 5)
+		{
+			paramFont = "TEXT_DRAW_FONT_MODEL_PREVIEW";
+		}
 		
 		code += "\t" + textDraws[i].name + " = TextDrawCreate(" + textDraws[i].x.toPlainString() + ", " + textDraws[i].y.toPlainString() + ", " + JSON.stringify(textDraws[i].text) + ");\r\n";
 		code += "\tTextDrawLetterSize(" + textDraws[i].name + ", " + textDraws[i].letterSizeX.toPlainString() + ", " + textDraws[i].letterSizeY.toPlainString() + ");\r\n";

@@ -293,7 +293,13 @@ ImportDialogUI.prototype.inputAsText = function(text)
 					let paramFont = Number(params[1]);
 					
 					if(params[1] == "TEXT_DRAW_FONT_SPRITE_DRAW")
+					{
 						paramFont = 4;
+					}
+					else if(params[1] == "TEXT_DRAW_FONT_MODEL_PREVIEW")
+					{
+						paramFont = 5;
+					}
 					
 					if(typeof paramFont == "number")
 					{

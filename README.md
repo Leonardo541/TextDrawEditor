@@ -4,16 +4,13 @@ A TextDraw Editor built in Vanilla JS
 
 :warning: Work in progress
 
-## Progress list
+## Features
 
-- [x] TextDraw Editor
-- [x] Save data in local storage
-- [x] Import *.pwn files
-- [x] export *.pwn files
-- [x] Dialogs to create, import, export, etc
-- [x] Add support for TextDraw Sprite
-- [ ] Add support for TextDraw Model Preview
-- [x] Add guide system (grids and lines)
+- TextDraw Editor browser-based
+- TextDraw Sprite supported
+- TextDraw draggable and resizable
+- Guide system (lines, grids)
+- Import / export *.pwn files
 
 ## Tested on
 

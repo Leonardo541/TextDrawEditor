@@ -78,7 +78,7 @@ TextDraw.prototype.fromTextDraw = function(textDraw)
 
 TextDraw.prototype.offsetRect = function(offsetX, offsetY)
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 	{
 		this.x += offsetX;
 		this.y += offsetY;
@@ -111,7 +111,7 @@ TextDraw.prototype.offsetRect = function(offsetX, offsetY)
 
 TextDraw.prototype.setRectLeft = function(rectLeft)
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 	{
 		this.textSizeX = this.getRectRight() - rectLeft;
 		this.x = rectLeft;
@@ -137,7 +137,7 @@ TextDraw.prototype.setRectLeft = function(rectLeft)
 
 TextDraw.prototype.setRectTop = function(rectTop)
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 	{
 		this.textSizeY = this.getRectBottom() - rectTop;
 		this.y = rectTop;
@@ -149,7 +149,7 @@ TextDraw.prototype.setRectTop = function(rectTop)
 
 TextDraw.prototype.setRectRight = function(rectRight)
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 	{
 		this.textSizeX = rectRight - this.x;
 		return;
@@ -174,7 +174,7 @@ TextDraw.prototype.setRectRight = function(rectRight)
 
 TextDraw.prototype.setRectBottom = function(rectBottom)
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 	{
 		this.textSizeY = rectBottom - this.y;
 		return;
@@ -198,7 +198,7 @@ TextDraw.prototype.setRectBottom = function(rectBottom)
 
 TextDraw.prototype.getRectLeft = function()
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 		return this.x;
 	
 	let rectLeft = 0;
@@ -228,7 +228,7 @@ TextDraw.prototype.getRectTop = function()
 
 TextDraw.prototype.getRectRight = function()
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 		return this.x + this.textSizeX;
 	
 	let rectRight = 0;
@@ -253,7 +253,7 @@ TextDraw.prototype.getRectRight = function()
 
 TextDraw.prototype.getRectBottom = function()
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 		return this.y + this.textSizeY;
 	
 	let rectBottom = 0;
@@ -278,7 +278,7 @@ TextDraw.prototype.getRectBottom = function()
 
 TextDraw.prototype.getPaddingLeft = function()
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 		return 0;
 	
 	let paddingLeft = 0;
@@ -315,7 +315,7 @@ TextDraw.prototype.getStringRectTop = function()
 
 TextDraw.prototype.getStringRectRight = function()
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 		return this.getRectRight();
 	
 	return this.getStringRectLeft() + this.stringWidth * this.letterSizeX;
@@ -323,7 +323,7 @@ TextDraw.prototype.getStringRectRight = function()
 
 TextDraw.prototype.getStringRectBottom = function()
 {
-	if(this.font == 4)
+	if(this.font == 4 || this.font == 5)
 		return this.getRectBottom();
 	
 	return this.getStringRectTop() + 9.0 * this.linesCount * this.letterSizeY;
@@ -331,7 +331,7 @@ TextDraw.prototype.getStringRectBottom = function()
 
 TextDraw.prototype.getMargin = function()
 {
-	if(this.font == 4 || this.useBox == 0)
+	if(this.font == 4 || this.font == 5 || this.useBox == 0)
 		return 0.0;
 	
 	return 4.0;
@@ -341,6 +341,9 @@ TextDraw.prototype.getBoxColor = function()
 {
 	if(this.font == 4)
 		return this.color;
+	
+	if(this.font == 5)
+		return this.color & this.backgroundColor;
 	
 	return this.boxColor;
 }
@@ -381,6 +384,7 @@ TextDraw.prototype.changeFont = function(font)
 		case 2:
 		case 3:
 		case 4:
+		case 5:
 			this.font = font;
 			break;
 	}
