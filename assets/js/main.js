@@ -1608,6 +1608,7 @@ Main.prototype.guideGridNameChange = function(e)
 {
 	if(this.currentProject && this.currentProject.currentGuideGrid)
 	{
+		this.currentProject.currentGuideGrid.nameUI.element.innerHTML = e.target.value;
 		this.currentProject.currentGuideGrid.name = e.target.value;
 		this.saveProjectsEnabled = true;
 	}
@@ -1743,6 +1744,7 @@ Main.prototype.guideLineNameChange = function(e)
 {
 	if(this.currentProject && this.currentProject.currentGuideLine)
 	{
+		this.currentProject.currentGuideLine.nameUI.element.innerHTML = e.target.value;
 		this.currentProject.currentGuideLine.name = e.target.value;
 		this.saveProjectsEnabled = true;
 	}
@@ -2145,6 +2147,11 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				
 				this.updateControlList();
 				
+				if(this.movingAnyObjectList == this.currentProject.textDrawList)
+				{
+					this.repaint();
+				}
+				
 				this.movingAnyObjectIdx = moveTo;
 			}
 			
@@ -2155,6 +2162,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				
 				this.movingAnyObject = false;
 				this.movingAnyObjectIdx = -1;
+				
+				this.saveProjectsEnabled = true;
+				this.saveProjects();
 			}
 			
 			return;
