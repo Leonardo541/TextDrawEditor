@@ -15,10 +15,17 @@ function ImportDialogUI(parent, title, clickAccept, clickCancel)
 	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(this.inputUI.element.selectedIndex); }});
 	this.buttonCancelUI = new ButtonUI(this.buttonsUI, {innerText: "Cancel", click: () => { clickCancel(); }});
 	
+	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
+	
 	this.textDraws = [];
 }
 
 ImportDialogUI.prototype = Object.create(DialogUI.prototype);
+
+ImportDialogUI.prototype.sizeChanged = function()
+{
+	this.inputUI.element.style.width = this.viewInputUI.element.offsetWidth + "px";
+};
 
 ImportDialogUI.prototype.changeOption = function()
 {
@@ -37,6 +44,10 @@ ImportDialogUI.prototype.changeOption = function()
 		
 		if(this.viewInputUI)
 		{
+			this.resizeObserver.unobserve(this.viewInputUI.element);
+			
+			this.inputUI.element.style.width = "";
+			
 			if(this.viewInputUI.element.nextSibling && this.viewInputUI.element.nextSibling.entityUI)
 				this.viewInputUI.element.nextSibling.entityUI.remove();
 			
@@ -63,6 +74,8 @@ ImportDialogUI.prototype.changeOption = function()
 		{
 			this.viewInputUI = new EntityUI(this.contentUI, "textarea", {});
 			this.contentUI.appendStaticLine();
+			
+			this.resizeObserver.observe(this.viewInputUI.element);
 		}
 	}
 	
@@ -438,4 +451,10 @@ ImportDialogUI.prototype.getTextDrawAt = function(name)
 	}
 	
 	return null;
+};
+
+ImportDialogUI.prototype.remove = function()
+{
+	this.resizeObserver.disconnect();
+	DialogUI.prototype.remove.call(this);
 };

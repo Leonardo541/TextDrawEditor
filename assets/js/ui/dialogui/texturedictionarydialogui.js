@@ -3,10 +3,13 @@ function TextureDictionaryDialogUI(parent, title, clickAccept, clickExplorer)
 {
 	DialogUI.call(this, parent, title);
 	
-	this.txdListUI = new EntityUI(this.contentUI, "div", {class: "textDrawList"});
+	this.txdListUI = new EntityUI(this.contentUI, "div", {class: ["textDrawList", "resizable"]});
 	this.fileInputUI = new FileBoxUI(this.contentUI, {accept: ".txd", multiple: "multiple", onchange: (e) => { this.loadTxd(e);  }});
 	this.contentUI.appendStaticLine();
 	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(); }});
+	
+	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
+	this.resizeObserver.observe(this.txdListUI.element);
 	
 	this.updateTxdListBind = this.updateTxdList.bind(this, clickExplorer);
 	
@@ -16,6 +19,11 @@ function TextureDictionaryDialogUI(parent, title, clickAccept, clickExplorer)
 }
 
 TextureDictionaryDialogUI.prototype = Object.create(DialogUI.prototype);
+
+TextureDictionaryDialogUI.prototype.sizeChanged = function()
+{
+	this.fileInputUI.element.style.width = this.txdListUI.element.offsetWidth + "px";
+};
 
 TextureDictionaryDialogUI.prototype.loadTxd = function(e)
 {
@@ -81,6 +89,7 @@ TextureDictionaryDialogUI.prototype.updateTxdList = function(clickExplorer)
 
 TextureDictionaryDialogUI.prototype.remove = function()
 {
+	this.resizeObserver.disconnect();
 	TextureDictionary.updateEventListeners.splice(TextureDictionary.updateEventListeners.indexOf(this.updateTxdListBind), 1);
 	DialogUI.prototype.remove.call(this);
 };

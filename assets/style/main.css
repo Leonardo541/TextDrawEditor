@@ -354,6 +354,11 @@ canvas
 	scrollbar-width: thin;
 }
 
+.resizable
+{
+	resize: both;
+}
+
 .spacing
 {
 	height: 4px;

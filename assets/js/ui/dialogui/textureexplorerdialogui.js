@@ -3,7 +3,7 @@ function TextureExplorerDialogUI(parent, title, textureDictionary, clickAccept, 
 {
 	DialogUI.call(this, parent, title);
 	
-	this.texListUI = new EntityUI(this.contentUI, "div", {class: "textureList"});
+	this.texListUI = new EntityUI(this.contentUI, "div", {class: ["textureList", "resizable"]});
 	
 	for(let i = 0; i < textureDictionary.textures.length; i++)
 	{

@@ -18,9 +18,17 @@ function ExportDialogUI(parent, title, clickAccept, clickCancel)
 	this.viewOutputUI = null;
 	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(this.callbackUI.element.selectedIndex, this.outputUI.element.selectedIndex, true); }});
 	this.buttonCancelUI = new ButtonUI(this.buttonsUI, {innerText: "Cancel", click: () => { clickCancel(); }});
+	
+	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
 }
 
 ExportDialogUI.prototype = Object.create(DialogUI.prototype);
+
+ExportDialogUI.prototype.sizeChanged = function()
+{
+	this.callbackUI.element.style.width = this.viewOutputUI.element.offsetWidth + "px";
+	this.outputUI.element.style.width = this.viewOutputUI.element.offsetWidth + "px";
+};
 
 ExportDialogUI.prototype.changeOption = function(clickAccept)
 {
@@ -34,6 +42,11 @@ ExportDialogUI.prototype.changeOption = function(clickAccept)
 	{
 		if(this.viewOutputUI)
 		{
+			this.resizeObserver.unobserve(this.viewOutputUI.element);
+			
+			this.callbackUI.element.style.width = "";
+			this.outputUI.element.style.width = "";
+			
 			if(this.viewOutputUI.element.nextSibling && this.viewOutputUI.element.nextSibling.entityUI)
 				this.viewOutputUI.element.nextSibling.entityUI.remove();
 			
@@ -47,6 +60,8 @@ ExportDialogUI.prototype.changeOption = function(clickAccept)
 		{
 			this.viewOutputUI = new EntityUI(this.contentUI, "textarea", {});
 			this.contentUI.appendStaticLine();
+			
+			this.resizeObserver.observe(this.viewOutputUI.element);
 		}
 		
 		clickAccept(callback, output, false);
@@ -57,4 +72,10 @@ ExportDialogUI.prototype.changeOption = function(clickAccept)
 	
 	if(oldWidth != newWidth || oldHeight != newHeight)
 		this.move(this.element.offsetLeft + (oldWidth - newWidth) / 2, this.element.offsetTop + (oldHeight - newHeight) / 2);
+};
+
+ExportDialogUI.prototype.remove = function()
+{
+	this.resizeObserver.disconnect();
+	DialogUI.prototype.remove.call(this);
 };
