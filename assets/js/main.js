@@ -1549,7 +1549,7 @@ Main.prototype.showTextureDictionaryDialog = function()
 
 Main.prototype.showTextureExplorerDialog = function(textureDictionary)
 {
-	dialogUI = new TextureExplorerDialogUI("body", "Texture Explorer", textureDictionary, () => { this.hideDialog(dialogUI); }, (text, x, y) => { this.contextMenuTexture(text, x, y); });
+	let dialogUI = new TextureExplorerDialogUI("body", "Texture Explorer", textureDictionary, () => { this.hideDialog(dialogUI); }, (text, x, y) => { this.contextMenuTexture(text, x, y); });
 	
 	this.dialogsUI.push(dialogUI);
 };
