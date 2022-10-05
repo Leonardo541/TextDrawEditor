@@ -208,6 +208,24 @@ OptionsUI.prototype.paintGuideLines = function(currentGuideLine, guideLines, opt
 	}
 };
 
+OptionsUI.prototype.paintMultipleSelection = function(multipleSelection, option)
+{
+	let scaleX = multipleSelection.main.screenshotUI.width / 640.0;
+	let scaleY = multipleSelection.main.screenshotUI.height / 448.0;
+	
+	let left = multipleSelection.getRectLeft() * scaleX;
+	let top = multipleSelection.getRectTop() * scaleY;
+	let right = multipleSelection.getRectRight() * scaleX;
+	let bottom = multipleSelection.getRectBottom() * scaleY;
+	
+	this.context.beginPath();
+	this.context.setLineDash([5]);
+	this.context.rect(Math.round(left), Math.round(top), Math.round(right - left), Math.round(bottom - top));
+	this.context.stroke();
+	
+	this.drawOptions(left, top, right, bottom, option, false);
+};
+
 OptionsUI.prototype.paint = function(textDraw, option)
 {
 	if(!textDraw)

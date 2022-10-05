@@ -176,6 +176,7 @@ canvas
 	border-bottom: 1px solid #292929;
 	box-sizing: border-box;
 	cursor: pointer;
+	user-select: none;
 }
 
 .textDrawItem:hover
@@ -203,7 +204,7 @@ canvas
 	margin-left: 2px;
 }
 
-.currentTextDrawItem
+.currentTextDrawItem, .currentTextDrawItem:hover
 {
 	background-color: #808080;
 }

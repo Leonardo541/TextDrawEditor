@@ -7,15 +7,10 @@ function Project(main)
 	this.thumbnailUI = new DrawableUI(this.projectTabUI, { width: "64", height: "64" });
 	
 	this.textDrawList = [];
-	this.currentTextDraw = null;
-	
 	this.guideGrids = [];
-	this.currentGuideGrid = null;
-	
 	this.guideLines = [];
-	this.currentGuideLine = null;
 	
-	this.currentAnyObject = null;
+	this.multipleSelection = new MultipleSelection(main);
 }
 
 Project.prototype.createTextDraw = function(text, x, y)
@@ -58,4 +53,24 @@ Project.prototype.getNewName = function(prefix, list)
 		if(!used)
 			return name;
 	}
+};
+
+Project.prototype.getCurrentTextDraw = function()
+{
+	return this.multipleSelection.getCurrentTextDraw();
+};
+
+Project.prototype.getCurrentGuideGrid = function()
+{
+	return this.multipleSelection.getCurrentGuideGrid();
+};
+
+Project.prototype.getCurrentGuideLine = function()
+{
+	return this.multipleSelection.getCurrentGuideLine();
+};
+
+Project.prototype.getCurrentAnyObject = function()
+{
+	return this.multipleSelection.getCurrentAnyObject();
 };

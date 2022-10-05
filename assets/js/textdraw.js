@@ -3,7 +3,7 @@ function TextDraw(main, name, text, x, y)
 {
 	this.main = main;
 	
-	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: () => { main.changeTextDraw(this); }, contextmenu: (e) => { main.contextMenuTextDraw(this, e.clientX, e.clientY); e.preventDefault(); }});
+	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: (e) => { if(e.shiftKey) { main.adjacentAnyObject(this, e.ctrlKey); } else if(e.ctrlKey) { main.toggleAnyObject(this); } else { main.changeTextDraw(this); } }, contextmenu: (e) => { main.contextMenuTextDraw(this, e.clientX, e.clientY); e.preventDefault(); }});
 	this.thumbnailUI = new DrawableUI(this.textDrawItemUI, { width: "24", height: "24" });
 	this.nameUI = new EntityUI(this.textDrawItemUI, "span", {innerText: name});
 	

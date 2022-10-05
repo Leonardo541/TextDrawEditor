@@ -83,7 +83,7 @@ TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 	}
 };
 
-TextDrawUI.prototype.paint = function(textDraw, faster)
+TextDrawUI.prototype.paint = function(textDraw, faster, useBox)
 {
 	let fontUI = null;
 	let textureUI = null;
@@ -154,7 +154,7 @@ TextDrawUI.prototype.paint = function(textDraw, faster)
     let x = textDraw.getRectLeft() * scaleX;
 	let y = textDraw.getRectTop() * scaleY;
     
-	if(!faster && ((textDraw.font != 4 && textDraw.font != 5 && textDraw.useBox) || (textDraw.font == 4 && !textureUI) || textDraw.font == 5))
+	if((!faster || useBox) && ((textDraw.font != 4 && textDraw.font != 5 && textDraw.useBox) || (textDraw.font == 4 && !textureUI) || textDraw.font == 5))
 	{
 		let left = textDraw.getRectLeft() * scaleX - textDraw.getMargin();
 		let top = textDraw.getRectTop() * scaleY - textDraw.getMargin();

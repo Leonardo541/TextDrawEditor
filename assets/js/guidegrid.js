@@ -3,7 +3,7 @@ function GuideGrid(main, name, x, y, width, height, margin, padding, rows, colum
 {
 	this.main = main;
 	
-	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: () => { main.changeGuideGrid(this); }, contextmenu: (e) => { main.contextMenuGuideGrid(this, e.clientX, e.clientY); e.preventDefault(); }});
+	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: (e) => { if(e.shiftKey) { main.adjacentAnyObject(this, e.ctrlKey); } else if(e.ctrlKey) { main.toggleAnyObject(this); } else { main.changeGuideGrid(this); } }, contextmenu: (e) => { main.contextMenuGuideGrid(this, e.clientX, e.clientY); e.preventDefault(); }});
 	this.thumbnailUI = new EntityUI(this.textDrawItemUI, "img", { src: "./assets/images/icon-guide-grid.png", width: "24", height: "24", draggable: false });
 	this.nameUI = new EntityUI(this.textDrawItemUI, "span", {innerText: name});
 	

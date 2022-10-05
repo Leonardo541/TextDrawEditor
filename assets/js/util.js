@@ -85,3 +85,13 @@ Number.prototype.getAlpha = function()
 	let color = this.valueOf();
 	return (color & 0xFF) / 0xFF;
 }; 
+
+Number.prototype.getPercentOf = function(min, max)
+{
+	let val = this.valueOf();
+	
+	let total = max - min;
+	let value = val - min;
+	
+	return value * 100 / total;
+};

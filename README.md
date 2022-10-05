@@ -10,6 +10,7 @@ A TextDraw Editor built in Vanilla JS
 - TextDraw Sprite supported
 - TextDraw draggable and resizable
 - Guide system (lines, grids)
+- Multiple Selection
 - Import / export *.pwn files
 
 ## Tested on
