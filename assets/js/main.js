@@ -2407,7 +2407,7 @@ Main.prototype.getHorizontalNearestLine = function(x, y, d)
 		{
 			let guideGrid = this.currentProject.guideGrids[i];
 			
-			if(guideGrid == this.currentProject.getCurrentGuideGrid())
+			if(this.currentProject.multipleSelection.isSelected(guideGrid))
 				continue;
 			
 			let horizontalLineCount = guideGrid.getHorizontalLineCount();
@@ -2436,7 +2436,7 @@ Main.prototype.getHorizontalNearestLine = function(x, y, d)
 		{
 			let guideLine = this.currentProject.guideLines[i];
 			
-			if(guideLine == this.currentProject.getCurrentGuideLine() || guideLine.style == 1)
+			if(this.currentProject.multipleSelection.isSelected(guideLine) || guideLine.style == 1)
 				continue;
 			
 			if(guideLine.getRectLeft() <= x && x <= guideLine.getRectRight())
@@ -2466,7 +2466,7 @@ Main.prototype.getVerticalNearestLine = function(x, y, d)
 		{
 			let guideGrid = this.currentProject.guideGrids[i];
 			
-			if(guideGrid == this.currentProject.getCurrentGuideGrid())
+			if(this.currentProject.multipleSelection.isSelected(guideGrid))
 				continue;
 			
 			let horizontalLineCount = guideGrid.getHorizontalLineCount();
@@ -2495,7 +2495,7 @@ Main.prototype.getVerticalNearestLine = function(x, y, d)
 		{
 			let guideLine = this.currentProject.guideLines[i];
 			
-			if(guideLine == this.currentProject.getCurrentGuideLine() || guideLine.style == 0)
+			if(this.currentProject.multipleSelection.isSelected(guideLine) || guideLine.style == 0)
 				continue;
 			
 			if(guideLine.getRectTop() <= y && y <= guideLine.getRectBottom())
