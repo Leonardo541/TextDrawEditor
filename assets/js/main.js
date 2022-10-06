@@ -2667,7 +2667,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			return;
 		}
 		
-		if(buttonDown)
+		if(buttonDown && this.controlListUI.isInBoundingClientRect(e.clientX, e.clientY))
 		{
 			for(let i = 0; i < this.currentProject.textDrawList.length; i++)
 			{
