@@ -59,6 +59,12 @@ input.textBoxRight
 	margin-left: 4px;
 }
 
+input[type=checkbox]
+{
+	width: 14px;
+	margin-right: 0px;
+}
+
 textarea
 {
 	width: 480px;

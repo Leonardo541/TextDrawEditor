@@ -149,6 +149,10 @@ function Main()
 	this.multipleControlsUI.appendLineBreak();
 	this.controlMultipleWidthUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxLeft", keyup: (e) => { this.multipleWidthChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.saveProjects(); }});
 	this.controlMultipleHeightUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxRight", keyup: (e) => { this.multipleHeightChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.saveProjects(); }});
+	this.multipleControlsUI.appendLineBreak();
+	this.controlMultipleLetterSizeOnResizeLabelUI = new EntityUI(this.multipleControlsUI, "label", {});
+	this.controlMultipleLetterSizeOnResizeCheckboxUI = new TextBoxUI(this.controlMultipleLetterSizeOnResizeLabelUI, {type: "checkbox", checked: "checked", change: (e) => { this.multipleLetterSizeOnResizeChange(e); }});
+	this.controlMultipleLetterSizeOnResizeLabelUI.appendStaticText("Change letter size on resize");
 	
 	this.scrollableControlsUI.appendStaticLine();
 	this.control640x480UI = new ButtonUI(this.scrollableControlsUI, {innerText: "640x480", onclick: (e) => { this.screenshotChange("./assets/images/640x480.png"); }});
@@ -182,6 +186,8 @@ function Main()
 	this.saveProjectsEnabled = false;
 	
 	this.repaintedThumbnailAll = true;
+	
+	this.letterSizeOnResize = true;
 	
 	this.loadProjects();
 	
@@ -2265,6 +2271,14 @@ Main.prototype.multipleHeightChange = function(e)
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
 		this.optionsUI.paintGuideLines(this.currentProject.getCurrentGuideLine(), this.currentProject.guideLines, this.clickOption);
 		this.optionsUI.paintMultipleSelection(this.currentProject.multipleSelection, this.clickOption);
+	}
+};
+
+Main.prototype.multipleLetterSizeOnResizeChange = function(e)
+{
+	if(this.currentProject && this.currentProject.multipleSelection.selections.length > 1)
+	{
+		this.letterSizeOnResize = e.target.checked;
 	}
 };
 
