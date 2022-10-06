@@ -2394,7 +2394,7 @@ Main.prototype.repaintThumbnail = function()
 		if(this.aboveTextDrawUI.width != 0 && this.aboveTextDrawUI.height != 0)
 			this.currentProject.thumbnailUI.context.drawImage(this.aboveTextDrawUI.element, 0, 0, this.aboveTextDrawUI.width, this.aboveTextDrawUI.height, 0, 0, 64, 64);
 		
-		if(this.currentProject.getCurrentTextDraw())
+		if(this.currentProject.getCurrentTextDraw() && this.currentProject.getCurrentTextDraw().visibility)
 		{
 			this.currentProject.getCurrentTextDraw().thumbnailUI.context.clearRect(0, 0, 64, 64);
 			
@@ -2422,8 +2422,13 @@ Main.prototype.repaintThumbnailAll = function()
 			
 			for(let j = 0; j < this.projects[i].textDrawList.length; j++)
 			{
+				let visibility = this.projects[i].textDrawList[j].visibility;
+				this.projects[i].textDrawList[j].visibility = true;
+				
 				this.currentTextDrawUI.clear();
 				this.currentTextDrawUI.paint(this.projects[i].textDrawList[j], false);
+				
+				this.projects[i].textDrawList[j].visibility = visibility;
 				
 				this.projects[i].textDrawList[j].thumbnailUI.context.clearRect(0, 0, 24, 24);
 				this.projects[i].textDrawList[j].thumbnailUI.context.drawImage(this.currentTextDrawUI.element, 0, 0, this.currentTextDrawUI.width, this.currentTextDrawUI.height, 0, 0, 24, 24);
@@ -2445,7 +2450,7 @@ Main.prototype.getHorizontalNearestLine = function(x, y, d)
 		{
 			let guideGrid = this.currentProject.guideGrids[i];
 			
-			if(this.currentProject.multipleSelection.isSelected(guideGrid))
+			if(!guideGrid.visibility || this.currentProject.multipleSelection.isSelected(guideGrid))
 				continue;
 			
 			let horizontalLineCount = guideGrid.getHorizontalLineCount();
@@ -2474,7 +2479,7 @@ Main.prototype.getHorizontalNearestLine = function(x, y, d)
 		{
 			let guideLine = this.currentProject.guideLines[i];
 			
-			if(this.currentProject.multipleSelection.isSelected(guideLine) || guideLine.style == 1)
+			if(!guideLine.visibility || this.currentProject.multipleSelection.isSelected(guideLine) || guideLine.style == 1)
 				continue;
 			
 			if(guideLine.getRectLeft() <= x && x <= guideLine.getRectRight())
@@ -2504,7 +2509,7 @@ Main.prototype.getVerticalNearestLine = function(x, y, d)
 		{
 			let guideGrid = this.currentProject.guideGrids[i];
 			
-			if(this.currentProject.multipleSelection.isSelected(guideGrid))
+			if(!guideGrid.visibility || this.currentProject.multipleSelection.isSelected(guideGrid))
 				continue;
 			
 			let horizontalLineCount = guideGrid.getHorizontalLineCount();
@@ -2533,7 +2538,7 @@ Main.prototype.getVerticalNearestLine = function(x, y, d)
 		{
 			let guideLine = this.currentProject.guideLines[i];
 			
-			if(this.currentProject.multipleSelection.isSelected(guideLine) || guideLine.style == 0)
+			if(!guideLine.visibility || this.currentProject.multipleSelection.isSelected(guideLine) || guideLine.style == 0)
 				continue;
 			
 			if(guideLine.getRectTop() <= y && y <= guideLine.getRectBottom())
