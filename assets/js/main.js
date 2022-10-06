@@ -345,6 +345,12 @@ Main.prototype.loadProjects = function()
 				project.textDrawList.push(textDraw);
 				textDraw.fromTextDraw(savedTextDraws[j]);
 				
+				if(savedTextDraws[j].hidden)
+				{
+					textDraw.visibility = false;
+					textDraw.visibilityUI.element.style.backgroundPositionY = "-24px";
+				}
+				
 				if(j == savedCurrentTextDrawIdx)
 				{
 					project.multipleSelection = new MultipleSelection(this);
@@ -384,6 +390,12 @@ Main.prototype.loadProjects = function()
 				let guideGrid = new GuideGrid(this, savedGuideGrids[j].name, savedGuideGrids[j].x, savedGuideGrids[j].y, savedGuideGrids[j].width, savedGuideGrids[j].height, savedGuideGrids[j].margin, savedGuideGrids[j].padding, savedGuideGrids[j].rows, savedGuideGrids[j].columns);
 				project.guideGrids.push(guideGrid);
 				
+				if(savedGuideGrids[j].hidden)
+				{
+					guideGrid.visibility = false;
+					guideGrid.visibilityUI.element.style.backgroundPositionY = "-24px";
+				}
+				
 				if(j == savedCurrentGuideGridIdx)
 				{
 					project.multipleSelection = new MultipleSelection(this);
@@ -422,6 +434,12 @@ Main.prototype.loadProjects = function()
 			{
 				let guideLine = new GuideLine(this, savedGuideLines[j].name, savedGuideLines[j].x, savedGuideLines[j].y, savedGuideLines[j].size, savedGuideLines[j].padding, savedGuideLines[j].style);
 				project.guideLines.push(guideLine);
+				
+				if(savedGuideLines[j].hidden)
+				{
+					guideLine.visibility = false;
+					guideLine.visibilityUI.element.style.backgroundPositionY = "-24px";
+				}
 				
 				if(j == savedCurrentGuideLineIdx)
 				{
@@ -495,6 +513,9 @@ Main.prototype.saveProjects = function()
 				
 				this.projects[i].textDrawList[j].copyTextDraw(savedTextDraw);
 				
+				if(!this.projects[i].textDrawList[j].visibility)
+					savedTextDraw.hidden = true;
+				
 				if(this.projects[i].multipleSelection.isSelected(this.projects[i].textDrawList[j]))
 					savedTextDraw.selected = true;
 				
@@ -513,6 +534,9 @@ Main.prototype.saveProjects = function()
 				
 				this.projects[i].guideGrids[j].copyGuideGrid(savedGuideGrid);
 				
+				if(!this.projects[i].guideGrids[j].visibility)
+					savedGuideGrid.hidden = true;
+				
 				if(this.projects[i].multipleSelection.isSelected(this.projects[i].guideGrids[j]))
 					savedGuideGrid.selected = true;
 				
@@ -530,6 +554,9 @@ Main.prototype.saveProjects = function()
 				let savedGuideLine = {};
 				
 				this.projects[i].guideLines[j].copyGuideLine(savedGuideLine);
+				
+				if(!this.projects[i].guideLines[j].visibility)
+					savedGuideLine.hidden = true;
 				
 				if(this.projects[i].multipleSelection.isSelected(this.projects[i].guideLines[j]))
 					savedGuideLine.selected = true;
@@ -1018,6 +1045,17 @@ Main.prototype.toggleAnyObject = function(anyObject)
 		this.saveProjectsEnabled = true;
 		this.saveProjects();
 	}
+};
+
+Main.prototype.visibilityAnyObject = function(anyObject)
+{
+	anyObject.visibility = !anyObject.visibility;
+	anyObject.visibilityUI.element.style.backgroundPositionY = anyObject.visibility ? "0px" : "-24px";
+	
+	this.repaint();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
 };
 
 Main.prototype.contextMenuProject = function(project, x, y)

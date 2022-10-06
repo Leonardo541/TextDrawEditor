@@ -154,8 +154,8 @@ MultipleSelection.prototype.recalculateSize = function()
 MultipleSelection.prototype.offsetRect = function(offsetX, offsetY)
 {
 	if(this.selections.length == 1)
-		this.selections[0].offsetRect(offsetX, offsetY);
-		
+		return this.selections[0].offsetRect(offsetX, offsetY);
+	
 	this.rectLeft += offsetX;
 	this.rectRight += offsetX;
 	this.rectTop += offsetY;

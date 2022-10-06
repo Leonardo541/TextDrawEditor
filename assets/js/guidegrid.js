@@ -6,6 +6,7 @@ function GuideGrid(main, name, x, y, width, height, margin, padding, rows, colum
 	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: (e) => { if(e.shiftKey) { main.adjacentAnyObject(this, e.ctrlKey); } else if(e.ctrlKey) { main.toggleAnyObject(this); } else { main.changeGuideGrid(this); } }, contextmenu: (e) => { main.contextMenuGuideGrid(this, e.clientX, e.clientY); e.preventDefault(); }});
 	this.thumbnailUI = new EntityUI(this.textDrawItemUI, "img", { src: "./assets/images/icon-guide-grid.png", width: "24", height: "24", draggable: false });
 	this.nameUI = new EntityUI(this.textDrawItemUI, "span", {innerText: name});
+	this.visibilityUI = new EntityUI(this.textDrawItemUI, "div", {class: "visibility", onclick: (e) => { main.visibilityAnyObject(this); e.stopPropagation(); }});
 	
 	this.name = name;
 	this.x = x;
@@ -16,6 +17,8 @@ function GuideGrid(main, name, x, y, width, height, margin, padding, rows, colum
 	this.padding = padding;
 	this.rows = rows;
 	this.columns = columns;
+	
+	this.visibility = true;
 }
 
 GuideGrid.prototype.copyGuideGrid = function(guideGrid)

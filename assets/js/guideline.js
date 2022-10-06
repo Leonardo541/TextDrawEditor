@@ -6,6 +6,7 @@ function GuideLine(main, name, x, y, size, padding, style)
 	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: (e) => { if(e.shiftKey) { main.adjacentAnyObject(this, e.ctrlKey); } else if(e.ctrlKey) { main.toggleAnyObject(this); } else { main.changeGuideLine(this); } }, contextmenu: (e) => { main.contextMenuGuideLine(this, e.clientX, e.clientY); e.preventDefault(); }});
 	this.thumbnailUI = new EntityUI(this.textDrawItemUI, "img", { src: "./assets/images/icon-guide-line.png", width: "24", height: "24", draggable: false });
 	this.nameUI = new EntityUI(this.textDrawItemUI, "span", {innerText: name});
+	this.visibilityUI = new EntityUI(this.textDrawItemUI, "div", {class: "visibility", onclick: (e) => { main.visibilityAnyObject(this); e.stopPropagation(); }});
 	
 	this.name = name;
 	this.x = x;
@@ -13,6 +14,8 @@ function GuideLine(main, name, x, y, size, padding, style)
 	this.size = size;
 	this.padding = padding;
 	this.style = style;
+	
+	this.visibility = true;
 }
 
 GuideLine.prototype.copyGuideLine = function(guideLine)

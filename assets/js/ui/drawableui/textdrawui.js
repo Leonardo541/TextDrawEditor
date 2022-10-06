@@ -28,6 +28,9 @@ TextDrawUI.prototype.clear = function()
 
 TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 {
+	if(!textDraw.visibility)
+		return;
+	
 	let fontUI = null;
 	let textureUI = null;
 	
@@ -85,6 +88,9 @@ TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 
 TextDrawUI.prototype.paint = function(textDraw, faster, useBox)
 {
+	if(!textDraw.visibility)
+		return;
+	
 	let fontUI = null;
 	let textureUI = null;
 	

@@ -68,6 +68,9 @@ OptionsUI.prototype.paintGuideGrids = function(currentGuideGrid, guideGrids, opt
 	{
 		let guideGrid = guideGrids[i];
 		
+		if(guideGrid != currentGuideGrid && !guideGrid.visibility)
+			continue;
+		
 		let horizontalLineCount = guideGrid.getHorizontalLineCount();
 		let verticalLineCount = guideGrid.getVerticalLineCount();
 		
@@ -153,6 +156,9 @@ OptionsUI.prototype.paintGuideLines = function(currentGuideLine, guideLines, opt
 	for(let i = 0; i < guideLines.length; i++)
 	{
 		let guideLine = guideLines[i];
+		
+		if(guideLine != currentGuideLine && !guideLine.visibility)
+			continue;
 		
 		this.context.beginPath();
 		

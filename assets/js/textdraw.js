@@ -6,6 +6,7 @@ function TextDraw(main, name, text, x, y)
 	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: (e) => { if(e.shiftKey) { main.adjacentAnyObject(this, e.ctrlKey); } else if(e.ctrlKey) { main.toggleAnyObject(this); } else { main.changeTextDraw(this); } }, contextmenu: (e) => { main.contextMenuTextDraw(this, e.clientX, e.clientY); e.preventDefault(); }});
 	this.thumbnailUI = new DrawableUI(this.textDrawItemUI, { width: "24", height: "24" });
 	this.nameUI = new EntityUI(this.textDrawItemUI, "span", {innerText: name});
+	this.visibilityUI = new EntityUI(this.textDrawItemUI, "div", {class: "visibility", onclick: (e) => { main.visibilityAnyObject(this); e.stopPropagation(); }});
 	
 	this.linesWidth = [];
 	this.linesCount = 0;
@@ -30,6 +31,8 @@ function TextDraw(main, name, text, x, y)
 	this.backgroundColor = 0x000000FF;
 	this.font = 1;
 	this.setProportional = 1;
+	
+	this.visibility = true;
 }
 
 TextDraw.prototype.copyTextDraw = function(textDraw)
