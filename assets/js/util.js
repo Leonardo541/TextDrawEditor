@@ -55,7 +55,7 @@ Number.prototype.toPlainString = function()
 	}
 
     return str;
-}
+};
 
 Number.prototype.toRGBA = function()
 {
@@ -67,7 +67,7 @@ Number.prototype.toRGBA = function()
 	let alpha = (color & 0xFF) / 0xFF;
 	
 	return "rgba(" + red + ", " + green + ", " + blue + ", " + alpha + ")";
-}; 
+};
 
 Number.prototype.toRGB = function()
 {
@@ -78,13 +78,19 @@ Number.prototype.toRGB = function()
 	let blue = (color >> 8) & 0xFF;
 	
 	return "rgb(" + red + ", " + green + ", " + blue + ")";
-}; 
+};
+
+Number.prototype.getRGB = function()
+{
+	let color = this.valueOf();
+	return (color >> 8) & 0xFFFFFF;
+};
 
 Number.prototype.getAlpha = function()
 {
 	let color = this.valueOf();
 	return (color & 0xFF) / 0xFF;
-}; 
+};
 
 Number.prototype.getPercentOf = function(min, max)
 {

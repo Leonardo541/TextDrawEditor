@@ -61,7 +61,8 @@ function Main()
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Color");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlColorUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.colorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.colorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlColorPickerUI = new TextBoxUI(this.textDrawControlsUI, {type: "color", change: (e) => { this.colorPickerChange(e); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Use Box");
 	this.textDrawControlsUI.appendLineBreak();
@@ -69,7 +70,8 @@ function Main()
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Box Color");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlBoxColorUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.boxColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlBoxColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.boxColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlBoxColorPickerUI = new TextBoxUI(this.textDrawControlsUI, {type: "color", change: (e) => { this.boxColorPickerChange(e); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Set Shadow");
 	this.textDrawControlsUI.appendLineBreak();
@@ -81,7 +83,8 @@ function Main()
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Background Color");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlBackgroundColorUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.backgroundColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlBackgroundColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.backgroundColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlBackgroundColorPickerUI = new TextBoxUI(this.textDrawControlsUI, {type: "color", change: (e) => { this.backgroundColorPickerChange(e); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Font");
 	this.textDrawControlsUI.appendLineBreak();
@@ -1661,11 +1664,14 @@ Main.prototype.updateControls = function()
 		this.controlTextSizeYUI.element.value = this.currentProject.getCurrentTextDraw().textSizeY.toPlainString();
 		this.controlAlignmentUI.element.value = this.currentProject.getCurrentTextDraw().alignment.toString();
 		this.controlColorUI.element.value = this.currentProject.getCurrentTextDraw().color.toString(16).toUpperCase().padZero(8);
+		this.controlColorPickerUI.element.value = "#" + this.currentProject.getCurrentTextDraw().color.getRGB().toString(16).toUpperCase().padZero(6);
 		this.controlUseBoxUI.element.value = this.currentProject.getCurrentTextDraw().useBox.toString();
 		this.controlBoxColorUI.element.value = this.currentProject.getCurrentTextDraw().boxColor.toString(16).toUpperCase().padZero(8);
+		this.controlBoxColorPickerUI.element.value = "#" + this.currentProject.getCurrentTextDraw().boxColor.getRGB().toString(16).toUpperCase().padZero(6);
 		this.controlSetShadowUI.element.value = this.currentProject.getCurrentTextDraw().setShadow.toString();
 		this.controlSetOutlineUI.element.value = this.currentProject.getCurrentTextDraw().setOutline.toString();
 		this.controlBackgroundColorUI.element.value = this.currentProject.getCurrentTextDraw().backgroundColor.toString(16).toUpperCase().padZero(8);
+		this.controlBackgroundColorPickerUI.element.value = "#" + this.currentProject.getCurrentTextDraw().backgroundColor.getRGB().toString(16).toUpperCase().padZero(6);
 		this.controlFontUI.element.value = this.currentProject.getCurrentTextDraw().font.toString();
 		this.controlSetProportionalUI.element.value = this.currentProject.getCurrentTextDraw().setProportional.toString();
 	}
@@ -1681,6 +1687,7 @@ Main.prototype.updateControls = function()
 		this.controlTextSizeYUI.element.value = "";
 		this.controlAlignmentUI.element.value = "";
 		this.controlColorUI.element.value = "";
+		this.controlColorPickerUI.element.value = "#000000";
 		this.controlUseBoxUI.element.value = "";
 		this.controlBoxColorUI.element.value = "";
 		this.controlSetShadowUI.element.value = "";
@@ -1843,6 +1850,30 @@ Main.prototype.colorChange = function(e)
 		this.currentProject.getCurrentTextDraw().color = parseInt(e.target.value, 16);
 		this.saveProjectsEnabled = true;
 		
+		this.controlColorPickerUI.element.value = "#" + this.currentProject.getCurrentTextDraw().color.getRGB().toString(16).toUpperCase().padZero(6);
+		
+		this.currentTextDrawUI.clear();
+		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
+	}
+};
+
+Main.prototype.colorPickerChange = function(e)
+{
+	if(this.currentProject && this.currentProject.getCurrentTextDraw())
+	{
+		let rgb = parseInt(e.target.value.substring(1), 16);
+		
+		let red = (rgb >> 16) & 0xFF;
+		let green = (rgb >> 8) & 0xFF;
+		let blue = rgb & 0xFF;
+		let alpha = this.currentProject.getCurrentTextDraw().color & 0xFF;
+		
+		this.currentProject.getCurrentTextDraw().color = ((red << 24) + (green << 16) + (blue << 8) + (alpha)) >>> 0;
+		this.saveProjectsEnabled = true;
+		this.saveProjects();
+		
+		this.controlColorUI.element.value = this.currentProject.getCurrentTextDraw().color.toString(16).toUpperCase().padZero(8);
+		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
 	}
@@ -1866,6 +1897,30 @@ Main.prototype.boxColorChange = function(e)
 	{
 		this.currentProject.getCurrentTextDraw().boxColor = parseInt(e.target.value, 16);
 		this.saveProjectsEnabled = true;
+		
+		this.controlBoxColorPickerUI.element.value = "#" + this.currentProject.getCurrentTextDraw().boxColor.getRGB().toString(16).toUpperCase().padZero(6);
+		
+		this.currentTextDrawUI.clear();
+		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
+	}
+};
+
+Main.prototype.boxColorPickerChange = function(e)
+{
+	if(this.currentProject && this.currentProject.getCurrentTextDraw())
+	{
+		let rgb = parseInt(e.target.value.substring(1), 16);
+		
+		let red = (rgb >> 16) & 0xFF;
+		let green = (rgb >> 8) & 0xFF;
+		let blue = rgb & 0xFF;
+		let alpha = this.currentProject.getCurrentTextDraw().boxColor & 0xFF;
+		
+		this.currentProject.getCurrentTextDraw().boxColor = ((red << 24) + (green << 16) + (blue << 8) + (alpha)) >>> 0;
+		this.saveProjectsEnabled = true;
+		this.saveProjects();
+		
+		this.controlBoxColorUI.element.value = this.currentProject.getCurrentTextDraw().boxColor.toString(16).toUpperCase().padZero(8);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -1902,6 +1957,30 @@ Main.prototype.backgroundColorChange = function(e)
 	{
 		this.currentProject.getCurrentTextDraw().backgroundColor = parseInt(e.target.value, 16);
 		this.saveProjectsEnabled = true;
+		
+		this.controlBackgroundColorPickerUI.element.value = "#" + this.currentProject.getCurrentTextDraw().backgroundColor.getRGB().toString(16).toUpperCase().padZero(6);
+		
+		this.currentTextDrawUI.clear();
+		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
+	}
+};
+
+Main.prototype.backgroundColorPickerChange = function(e)
+{
+	if(this.currentProject && this.currentProject.getCurrentTextDraw())
+	{
+		let rgb = parseInt(e.target.value.substring(1), 16);
+		
+		let red = (rgb >> 16) & 0xFF;
+		let green = (rgb >> 8) & 0xFF;
+		let blue = rgb & 0xFF;
+		let alpha = this.currentProject.getCurrentTextDraw().backgroundColor & 0xFF;
+		
+		this.currentProject.getCurrentTextDraw().backgroundColor = ((red << 24) + (green << 16) + (blue << 8) + (alpha)) >>> 0;
+		this.saveProjectsEnabled = true;
+		this.saveProjects();
+		
+		this.controlBackgroundColorUI.element.value = this.currentProject.getCurrentTextDraw().backgroundColor.toString(16).toUpperCase().padZero(8);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
