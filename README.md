@@ -15,8 +15,8 @@ A TextDraw Editor built in Vanilla JS
 
 ## Tested on
 
-- Chrome 102.0.5005.115
-- Firefox 91.10.0esr
-- Firefox 101.0.1
+- Chrome 106.0.5249.103
+- Firefox 102.3.0esr
+- Firefox 105.0.2
 
 Demo at https://leonardo541.github.io/TextDrawEditor/
