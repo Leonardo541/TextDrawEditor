@@ -465,7 +465,7 @@ Main.prototype.loadProjects = function()
 						this.multipleControlsUI.element.style.display = "none";
 					}
 				}
-				else if(savedGuideGrids[j].selected)
+				else if(savedGuideLines[j].selected)
 				{
 					project.multipleSelection.addSelection(guideLine);
 					
