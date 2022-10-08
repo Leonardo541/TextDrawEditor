@@ -208,8 +208,8 @@ function Main()
 	this.clickBottom = false;
 	this.clickOption = "resize";
 	
-	window.addEventListener("mousedown", (e) => { this.checkMouse(e, true, false); });
-	window.addEventListener("mouseup", (e) => { this.checkMouse(e, false, true); });
+	window.addEventListener("mousedown", (e) => { if(e.button != 0) return; this.checkMouse(e, true, false); });
+	window.addEventListener("mouseup", (e) => { if(e.button != 0) return; this.checkMouse(e, false, true); });
 	window.addEventListener("mousemove", (e) => { this.checkMouse(e, false, false); });
 	window.addEventListener("resize", (e) => { this.checkScrollBars(e); this.dialogsUI.forEach(dialogUI => dialogUI.move(dialogUI.element.offsetLeft, dialogUI.element.offsetTop)); });
 	
@@ -748,10 +748,10 @@ Main.prototype.changeGuideGrid = function(guideGrid, notCheckOtherCurrent)
 
 Main.prototype.createGuideLine = function(x, y, size, padding, style)
 {
-	let guideGrid = this.currentProject.createGuideLine(x, y, size, padding, style);
+	let guideLine = this.currentProject.createGuideLine(x, y, size, padding, style);
 	
 	this.updateControlList();
-	this.changeGuideLine(guideGrid);
+	this.changeGuideLine(guideLine);
 };
 
 Main.prototype.removeGuideLine = function(guideLine)
@@ -818,6 +818,137 @@ Main.prototype.changeGuideLine = function(guideLine, notCheckOtherCurrent)
 	
 	if(this.clickOption == "resize-letter")
 		this.clickOption = "resize";
+	
+	this.repaint();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+};
+
+Main.prototype.duplicateMultipleSelection = function(x, y, width, height, fromTextDraws, fromGuideGrids, fromGuideLines)
+{
+	for(let i = 0; i < this.currentProject.multipleSelection.selections.length; i++)
+		this.currentProject.multipleSelection.selections[i].textDrawItemUI.element.classList.remove("currentTextDrawItem");
+	
+	this.currentProject.multipleSelection = new MultipleSelection(this);
+	
+	for(let i = 0; i < fromTextDraws.length; i++)
+	{
+		let textDraw = this.currentProject.createTextDraw(fromTextDraws[i].text, fromTextDraws[i].x, fromTextDraws[i].y);
+		
+		textDraw.fromTextDraw(fromTextDraws[i]);
+		
+		this.currentProject.multipleSelection.addSelection(textDraw);
+		this.currentProject.multipleSelection.selectionLast = textDraw;
+		
+		textDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
+	}
+	
+	for(let i = 0; i < fromGuideGrids.length; i++)
+	{
+		let guideGrid = this.currentProject.createGuideGrid(fromGuideGrids[i].x, fromGuideGrids[i].y, fromGuideGrids[i].width, fromGuideGrids[i].height, fromGuideGrids[i].margin, fromGuideGrids[i].padding, fromGuideGrids[i].rows, fromGuideGrids[i].columns);
+		
+		this.currentProject.multipleSelection.addSelection(guideGrid);
+		this.currentProject.multipleSelection.selectionLast = guideGrid;
+		
+		guideGrid.textDrawItemUI.element.classList.add("currentTextDrawItem");
+	}
+	
+	for(let i = 0; i < fromGuideLines.length; i++)
+	{
+		let guideLine = this.currentProject.createGuideLine(fromGuideLines[i].x, fromGuideLines[i].y, fromGuideLines[i].size, fromGuideLines[i].padding, fromGuideLines[i].style);
+		
+		this.currentProject.multipleSelection.addSelection(guideLine);
+		this.currentProject.multipleSelection.selectionLast = guideLine;
+		
+		guideLine.textDrawItemUI.element.classList.add("currentTextDrawItem");
+	}
+	
+	this.currentProject.multipleSelection.setX(x);
+	this.currentProject.multipleSelection.setY(y);
+	this.currentProject.multipleSelection.setWidth(width);
+	this.currentProject.multipleSelection.setHeight(height);
+	
+	this.updateControlList();
+	this.updateMultipleControls();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+	this.textDrawControlsUI.element.style.display = "none";
+	this.guideGridControlsUI.element.style.display = "none";
+	this.guideLineControlsUI.element.style.display = "none";
+	this.multipleControlsUI.element.style.display = "";
+	
+	this.checkScrollBars();
+	
+	if(this.clickOption == "resize-letter")
+		this.clickOption = "resize";
+	
+	this.repaintedThumbnailAll = false;
+	
+	this.repaint();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+};
+
+Main.prototype.removeMultipleSelection = function()
+{
+	for(let i = 0; i < this.currentProject.multipleSelection.selections.length; i++)
+	{
+		let anyObject = this.currentProject.multipleSelection.selections[i];
+		
+		if(anyObject instanceof TextDraw)
+		{
+			for(let i = 0; i < this.currentProject.textDrawList.length; i++)
+			{
+				if(this.currentProject.textDrawList[i] == anyObject)
+				{
+					this.currentProject.textDrawList.splice(i, 1);
+					break;
+				}
+			}
+			
+			anyObject.textDrawItemUI.remove();
+		}
+		else if(anyObject instanceof GuideGrid)
+		{
+			for(let i = 0; i < this.currentProject.guideGrids.length; i++)
+			{
+				if(this.currentProject.guideGrids[i] == anyObject)
+				{
+					this.currentProject.guideGrids.splice(i, 1);
+					break;
+				}
+			}
+			
+			anyObject.textDrawItemUI.remove();
+		}
+		else if(anyObject instanceof GuideLine)
+		{
+			for(let i = 0; i < this.currentProject.guideLines.length; i++)
+			{
+				if(this.currentProject.guideLines[i] == anyObject)
+				{
+					this.currentProject.guideLines.splice(i, 1);
+					break;
+				}
+			}
+			
+			anyObject.textDrawItemUI.remove();
+		}
+	}
+	
+	this.currentProject.multipleSelection = new MultipleSelection(this);
+	
+	this.updateControls();
+	
+	this.textDrawControlsUI.element.style.display = "";
+	this.guideGridControlsUI.element.style.display = "none";
+	this.guideLineControlsUI.element.style.display = "none";
+	this.multipleControlsUI.element.style.display = "none";
+	
+	this.checkScrollBars();
 	
 	this.repaint();
 	
@@ -1087,12 +1218,21 @@ Main.prototype.contextMenuTextDraw = function(textDraw, x, y)
 		this.contextMenuUI.remove();
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Export TextDraw", () => { this.showExportDialog("Export TextDraw", x, y, textDraw); });
-	this.contextMenuUI.appendStaticLine();
-	this.contextMenuUI.appendItem("Duplicate TextDraw", () => { this.showCreateDialog(textDraw.text, x, y, textDraw); });
-	this.contextMenuUI.appendItem("Remove TextDraw", () => { this.removeTextDraw(textDraw) });
 	
-	this.changeTextDraw(textDraw);
+	if(this.currentProject.multipleSelection.isSelected(textDraw) && this.currentProject.multipleSelection.selections.length > 1)
+	{
+		this.contextMenuUI.appendItem("Duplicate " + this.currentProject.multipleSelection.selections.length + " selected", () => { this.showMultipleSelectionDialog(x, y, this.currentProject.multipleSelection); });
+		this.contextMenuUI.appendItem("Remove " + this.currentProject.multipleSelection.selections.length + " selected", () => { this.removeMultipleSelection() });
+	}
+	else
+	{
+		this.contextMenuUI.appendItem("Export TextDraw", () => { this.showExportDialog("Export TextDraw", x, y, textDraw); });
+		this.contextMenuUI.appendStaticLine();
+		this.contextMenuUI.appendItem("Duplicate TextDraw", () => { this.showCreateDialog(textDraw.text, x, y, textDraw, "Duplicate TextDraw"); });
+		this.contextMenuUI.appendItem("Remove TextDraw", () => { this.removeTextDraw(textDraw) });
+		
+		this.changeTextDraw(textDraw);
+	}
 };
 
 Main.prototype.contextMenuGuideGrid = function(guideGrid, x, y)
@@ -1101,10 +1241,19 @@ Main.prototype.contextMenuGuideGrid = function(guideGrid, x, y)
 		this.contextMenuUI.remove();
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid); });
-	this.contextMenuUI.appendItem("Remove", () => { this.removeGuideGrid(guideGrid); });
 	
-	this.changeGuideGrid(guideGrid);
+	if(this.currentProject.multipleSelection.isSelected(guideGrid) && this.currentProject.multipleSelection.selections.length > 1)
+	{
+		this.contextMenuUI.appendItem("Duplicate " + this.currentProject.multipleSelection.selections.length + " selected", () => { this.showMultipleSelectionDialog(x, y, this.currentProject.multipleSelection); });
+		this.contextMenuUI.appendItem("Remove " + this.currentProject.multipleSelection.selections.length + " selected", () => { this.removeMultipleSelection() });
+	}
+	else
+	{
+		this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid, "Duplicate Guide Grid"); });
+		this.contextMenuUI.appendItem("Remove", () => { this.removeGuideGrid(guideGrid); });
+		
+		this.changeGuideGrid(guideGrid);
+	}
 };
 
 Main.prototype.contextMenuGuideLine = function(guideLine, x, y)
@@ -1113,10 +1262,19 @@ Main.prototype.contextMenuGuideLine = function(guideLine, x, y)
 		this.contextMenuUI.remove();
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine); });
-	this.contextMenuUI.appendItem("Remove", () => { this.removeGuideLine(guideLine); });
 	
-	this.changeGuideLine(guideLine);
+	if(this.currentProject.multipleSelection.isSelected(guideLine) && this.currentProject.multipleSelection.selections.length > 1)
+	{
+		this.contextMenuUI.appendItem("Duplicate " + this.currentProject.multipleSelection.selections.length + " selected", () => { this.showMultipleSelectionDialog(x, y, this.currentProject.multipleSelection); });
+		this.contextMenuUI.appendItem("Remove " + this.currentProject.multipleSelection.selections.length + " selected", () => { this.removeMultipleSelection() });
+	}
+	else
+	{
+		this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine, "Duplicate Guide Line"); });
+		this.contextMenuUI.appendItem("Remove", () => { this.removeGuideLine(guideLine); });
+		
+		this.changeGuideLine(guideLine);
+	}
 };
 
 Main.prototype.contextMenuScreen = function(x, y)
@@ -1168,7 +1326,7 @@ Main.prototype.contextMenuScreen = function(x, y)
 			contextSubMenuUI.appendStaticLine();
 			contextSubMenuUI.appendItem("Export", () => { this.changeTextDraw(textDraw); this.showExportDialog("Export TextDraw", x, y, textDraw); });
 			contextSubMenuUI.appendStaticLine();
-			contextSubMenuUI.appendItem("Duplicate", () => { this.changeTextDraw(textDraw); this.showCreateDialog(textDraw.text, x, y, textDraw); });
+			contextSubMenuUI.appendItem("Duplicate", () => { this.changeTextDraw(textDraw); this.showCreateDialog(textDraw.text, x, y, textDraw, "Duplicate TextDraw"); });
 			contextSubMenuUI.appendItem("Remove", () => { this.removeTextDraw(textDraw); });
 		}
 	}
@@ -1203,7 +1361,7 @@ Main.prototype.contextMenuScreen = function(x, y)
 			
 			contextSubMenuUI.appendItem("Select", () => { this.changeGuideGrid(guideGrid); });
 			contextSubMenuUI.appendStaticLine();
-			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid); });
+			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid, "Duplicate Guide Grid"); });
 			contextSubMenuUI.appendItem("Remove", () => { this.removeGuideGrid(guideGrid); });
 		}
 	}
@@ -1249,8 +1407,30 @@ Main.prototype.contextMenuScreen = function(x, y)
 			
 			contextSubMenuUI.appendItem("Select", () => { this.changeGuideLine(guideLine); });
 			contextSubMenuUI.appendStaticLine();
-			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine); });
+			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine, "Duplicate Guide Line"); });
 			contextSubMenuUI.appendItem("Remove", () => { this.removeGuideLine(guideLine); });
+		}
+	}
+	
+	if(this.currentProject.multipleSelection.selections.length > 1)
+	{
+		let left = this.currentProject.multipleSelection.getRectLeft() * scaleX;
+		let top = this.currentProject.multipleSelection.getRectTop() * scaleY;
+		let right = this.currentProject.multipleSelection.getRectRight() * scaleX;
+		let bottom = this.currentProject.multipleSelection.getRectBottom() * scaleY;
+		
+		if(left <= mouseX && mouseX < right && top <= mouseY && mouseY < bottom)
+		{
+			this.contextMenuUI.appendStaticLine();
+			
+			let contextItemUI = this.contextMenuUI.appendItem(this.currentProject.multipleSelection.selections.length + " selected", false);
+			let contextSubMenuUI = new ContextMenuUI(contextItemUI, 0, 0);
+			
+			contextItemUI.element.style.fontStyle = "italic";
+			contextSubMenuUI.element.style.fontStyle = "normal";
+			
+			contextSubMenuUI.appendItem("Duplicate", () => { this.showMultipleSelectionDialog(x, y, this.currentProject.multipleSelection); });
+			contextSubMenuUI.appendItem("Remove", () => { this.removeMultipleSelection() });
 		}
 	}
 	
@@ -1266,7 +1446,7 @@ Main.prototype.contextMenuTexture = function(text, x, y)
 	this.contextMenuUI.appendItem("Copy", () => {  navigator.clipboard.writeText(text); });
 };
 
-Main.prototype.showCreateDialog = function(text, x, y, fromTextDraw)
+Main.prototype.showCreateDialog = function(text, x, y, fromTextDraw, title = "Create TextDraw")
 {
 	let mouseX;
 	let mouseY;
@@ -1304,7 +1484,7 @@ Main.prototype.showCreateDialog = function(text, x, y, fromTextDraw)
 		mouseY = y - this.screenshotUI.element.getBoundingClientRect().top;
 	}
 	
-	let dialogUI = new CreateDialogUI("body", "Create TextDraw", text, mouseX / scaleX, mouseY / scaleY, (text, x, y) => { this.createTextDraw(text, x, y, copiedTextDraw); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	let dialogUI = new CreateDialogUI("body", title, text, mouseX / scaleX, mouseY / scaleY, (text, x, y) => { if(this.currentProject) { this.createTextDraw(text, x, y, copiedTextDraw); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
@@ -1470,7 +1650,7 @@ Main.prototype.acceptImportDialog = function(dialogUI, input, toProject)
 	this.saveProjects();
 }
 
-Main.prototype.showGuideGridDialog = function(x, y, fromGuideGrid)
+Main.prototype.showGuideGridDialog = function(x, y, fromGuideGrid, title = "Create Guide Grid")
 {
 	let mouseX;
 	let mouseY;
@@ -1522,14 +1702,14 @@ Main.prototype.showGuideGridDialog = function(x, y, fromGuideGrid)
 		columns = 3;
 	}
 	
-	let dialogUI = new GuideGridDialogUI("body", "Create Guide Grid", mouseX / scaleX, mouseY / scaleY, width, height, margin, padding, rows, columns, (x, y, width, height, margin, padding, rows, columns) => { this.createGuideGrid(x, y, width, height, margin, padding, rows, columns); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	let dialogUI = new GuideGridDialogUI("body", title, mouseX / scaleX, mouseY / scaleY, width, height, margin, padding, rows, columns, (x, y, width, height, margin, padding, rows, columns) => { if(this.currentProject) { this.createGuideGrid(x, y, width, height, margin, padding, rows, columns); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
 	this.dialogsUI.push(dialogUI);
 };
 
-Main.prototype.showGuideLineDialog = function(x, y, fromGuideLine)
+Main.prototype.showGuideLineDialog = function(x, y, fromGuideLine, title = "Create Guide Line")
 {
 	let mouseX;
 	let mouseY;
@@ -1572,7 +1752,81 @@ Main.prototype.showGuideLineDialog = function(x, y, fromGuideLine)
 		style = 0;
 	}
 	
-	let dialogUI = new GuideLineDialogUI("body", "Create Guide Line", mouseX / scaleX, mouseY / scaleY, size, padding, style, (x, y, size, padding, style) => { this.createGuideLine(x, y, size, padding, style); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	let dialogUI = new GuideLineDialogUI("body", title, mouseX / scaleX, mouseY / scaleY, size, padding, style, (x, y, size, padding, style) => { if(this.currentProject) { this.createGuideLine(x, y, size, padding, style); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
+	
+	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
+	
+	this.dialogsUI.push(dialogUI);
+};
+
+Main.prototype.showMultipleSelectionDialog = function(x, y, fromMultipleSelection)
+{
+	let mouseX;
+	let mouseY;
+	
+	let scaleX = this.screenshotUI.width / 640.0;
+	let scaleY = this.screenshotUI.height / 448.0;
+	
+	let width, height;
+	
+	let copiedTextDraws = [];
+	let copiedGuideGrids = [];
+	let copiedGuideLines = [];
+	
+	if(fromMultipleSelection)
+	{
+		for(let i = 0; i < fromMultipleSelection.selections.length; i++)
+		{
+			if(fromMultipleSelection.selections[i] instanceof TextDraw)
+			{
+				let copiedTextDraw = {};
+				fromMultipleSelection.selections[i].copyTextDraw(copiedTextDraw);
+				copiedTextDraw.width = fromMultipleSelection.selections[i].getRectRight() - fromMultipleSelection.selections[i].getRectLeft();
+				copiedTextDraw.height = fromMultipleSelection.selections[i].getRectBottom() - fromMultipleSelection.selections[i].getRectTop();
+				copiedTextDraws.push(copiedTextDraw);
+			}
+			else if(fromMultipleSelection.selections[i] instanceof GuideGrid)
+			{
+				let copiedGuideGrid = {};
+				fromMultipleSelection.selections[i].copyGuideGrid(copiedGuideGrid);
+				copiedGuideGrids.push(copiedGuideGrid);
+			}
+			else if(fromMultipleSelection.selections[i] instanceof GuideLine)
+			{
+				let copiedGuideLine = {};
+				fromMultipleSelection.selections[i].copyGuideLine(copiedGuideLine);
+				copiedGuideLines.push(copiedGuideLine);
+			}
+		}
+		
+		x = fromMultipleSelection.getRectLeft() + (fromMultipleSelection.getRectRight() - fromMultipleSelection.getRectLeft()) / 2;
+		y = fromMultipleSelection.getRectTop() + (fromMultipleSelection.getRectBottom() - fromMultipleSelection.getRectTop()) / 2;
+		
+		x *= scaleX;
+		y *= scaleY;
+		
+		x += this.screenshotUI.element.getBoundingClientRect().left;
+		y += this.screenshotUI.element.getBoundingClientRect().top;
+		
+		mouseX = fromMultipleSelection.getX();
+		mouseY = fromMultipleSelection.getY();
+		
+		scaleX = 1.0;
+		scaleY = 1.0;
+		
+		width = fromMultipleSelection.getWidth();
+		height = fromMultipleSelection.getHeight();
+	}
+	else
+	{
+		mouseX = x - this.screenshotUI.element.getBoundingClientRect().left;
+		mouseY = y - this.screenshotUI.element.getBoundingClientRect().top;
+		
+		width = 100;
+		height = 100;
+	}
+	
+	let dialogUI = new MultipleSelectionDialogUI("body", "Duplicate " + fromMultipleSelection.selections.length + " selected", mouseX / scaleX, mouseY / scaleY, width, height, (x, y, width, height) => { if(this.currentProject) { this.duplicateMultipleSelection(x, y, width, height, copiedTextDraws, copiedGuideGrids, copiedGuideLines); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
