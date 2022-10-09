@@ -1850,7 +1850,15 @@ Main.prototype.showTextureDictionaryDialog = function()
 
 Main.prototype.showTextureExplorerDialog = function(textureDictionary)
 {
-	let dialogUI = new TextureExplorerDialogUI("body", "Texture Explorer", textureDictionary, () => { this.hideDialog(dialogUI); }, (text, x, y) => { this.contextMenuTexture(text, x, y); });
+	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof TextureExplorerDialogUI && dialogUI.textureDictionary == textureDictionary);
+	
+	if(dialogUI)
+	{
+		dialogUI.focus();
+		return;
+	}
+	
+	dialogUI = new TextureExplorerDialogUI("body", "Texture Explorer", textureDictionary, () => { this.hideDialog(dialogUI); }, (text, x, y) => { this.contextMenuTexture(text, x, y); });
 	
 	this.dialogsUI.push(dialogUI);
 };

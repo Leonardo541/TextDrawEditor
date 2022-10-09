@@ -11,6 +11,8 @@ function TextureDictionaryDialogUI(parent, title, clickAccept, clickExplorer)
 	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
 	this.resizeObserver.observe(this.txdListUI.element);
 	
+	this.lastTxdItemUI = null;
+	
 	this.updateTxdListBind = this.updateTxdList.bind(this, clickExplorer);
 	
 	TextureDictionary.updateEventListeners.push(this.updateTxdListBind);
@@ -23,6 +25,20 @@ TextureDictionaryDialogUI.prototype = Object.create(DialogUI.prototype);
 TextureDictionaryDialogUI.prototype.sizeChanged = function()
 {
 	this.fileInputUI.element.style.width = this.txdListUI.element.offsetWidth + "px";
+	
+	if(this.lastTxdItemUI)
+	{
+		if(this.txdListUI.hasScrollBar())
+		{
+			if(!this.lastTxdItemUI.element.classList.contains("lastTextDrawItem"))
+				this.lastTxdItemUI.element.classList.add("lastTextDrawItem");
+		}
+		else
+		{
+			if(this.lastTxdItemUI.element.classList.contains("lastTextDrawItem"))
+				this.lastTxdItemUI.element.classList.remove("lastTextDrawItem");
+		}
+	}
 };
 
 TextureDictionaryDialogUI.prototype.loadTxd = function(e)
@@ -79,6 +95,8 @@ TextureDictionaryDialogUI.prototype.updateTxdList = function(clickExplorer)
 	
 	if(this.txdListUI.hasScrollBar())
 		txdItemUI.element.classList.add("lastTextDrawItem");
+	
+	this.lastTxdItemUI = txdItemUI;
 	
 	let newWidth = this.element.offsetWidth;
 	let newHeight = this.element.offsetHeight;

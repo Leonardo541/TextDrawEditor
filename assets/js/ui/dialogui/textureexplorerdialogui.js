@@ -19,6 +19,8 @@ function TextureExplorerDialogUI(parent, title, textureDictionary, clickAccept, 
 	this.contentUI.appendStaticLine();
 	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(); }});
 	
+	this.textureDictionary = textureDictionary;
+	
 	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
 	this.resizeObserver.observe(this.texListUI.element);
 }
