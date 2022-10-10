@@ -148,6 +148,11 @@ MultipleSelection.prototype.recalculateSize = function()
 		this.selections[i].percentTop = this.selections[i].getRectTop().getPercentOf(this.rectTop, this.rectBottom);
 		this.selections[i].percentRight = this.selections[i].getRectRight().getPercentOf(this.rectLeft, this.rectRight);
 		this.selections[i].percentBottom = this.selections[i].getRectBottom().getPercentOf(this.rectTop, this.rectBottom);
+		
+		this.selections[i].oldLetterSizeX = this.selections[i].letterSizeX;
+		this.selections[i].oldLetterSizeY = this.selections[i].letterSizeY;
+		this.selections[i].oldWidth = this.selections[i].getRectRight() - this.selections[i].getRectLeft();
+		this.selections[i].oldHeight = this.selections[i].getRectBottom() - this.selections[i].getRectTop();
 	}
 };
 
@@ -176,17 +181,27 @@ MultipleSelection.prototype.setRectLeft = function(rectLeft)
 	
 	let width = this.getWidth();
 	
+	if(width == 0)
+		width = 0.0000009;
+	
 	for(let i = 0; i < this.selections.length; i++)
 	{
-		let oldWidth = this.selections[i].getRectRight() - this.selections[i].getRectLeft();
-		
 		this.selections[i].setRectLeft(this.rectLeft + this.selections[i].percentLeft / 100 * width);
 		this.selections[i].setRectRight(this.rectLeft + this.selections[i].percentRight / 100 * width);
 		
 		let newWidth = this.selections[i].getRectRight() - this.selections[i].getRectLeft();
 		
 		if(this.main.letterSizeOnResize && this.selections[i] instanceof TextDraw)
-			this.selections[i].letterSizeX = newWidth.getPercentOf(0, oldWidth) / 100 * this.selections[i].letterSizeX;
+		{
+			if(this.selections[i].oldLetterSizeX != 0)
+			{
+				this.selections[i].letterSizeX = newWidth.getPercentOf(0, this.selections[i].oldWidth) / 100 * this.selections[i].oldLetterSizeX;
+			}
+			else
+			{
+				this.selections[i].letterSizeX = 0;
+			}
+		}
 	}
 };
 
@@ -199,17 +214,27 @@ MultipleSelection.prototype.setRectTop = function(rectTop)
 	
 	let height = this.getHeight();
 	
+	if(height == 0)
+		height = 0.0000009;
+	
 	for(let i = 0; i < this.selections.length; i++)
 	{
-		let oldHeight = this.selections[i].getRectBottom() - this.selections[i].getRectTop();
-		
 		this.selections[i].setRectTop(this.rectTop + this.selections[i].percentTop / 100 * height);
 		this.selections[i].setRectBottom(this.rectTop + this.selections[i].percentBottom / 100 * height);
 		
 		let newHeight = this.selections[i].getRectBottom() - this.selections[i].getRectTop();
 		
 		if(this.main.letterSizeOnResize && this.selections[i] instanceof TextDraw)
-			this.selections[i].letterSizeY = newHeight.getPercentOf(0, oldHeight) / 100 * this.selections[i].letterSizeY;
+		{
+			if(this.selections[i].oldLetterSizeY != 0)
+			{
+				this.selections[i].letterSizeY = newHeight.getPercentOf(0, this.selections[i].oldHeight) / 100 * this.selections[i].oldLetterSizeY;
+			}
+			else
+			{
+				this.selections[i].letterSizeY = 0;
+			}
+		}
 	}
 };
 
@@ -222,17 +247,27 @@ MultipleSelection.prototype.setRectRight = function(rectRight)
 	
 	let width = this.getWidth();
 	
+	if(width == 0)
+		width = 0.0000009;
+	
 	for(let i = 0; i < this.selections.length; i++)
 	{
-		let oldWidth = this.selections[i].getRectRight() - this.selections[i].getRectLeft();
-		
 		this.selections[i].setRectLeft(this.rectLeft + this.selections[i].percentLeft / 100 * width);
 		this.selections[i].setRectRight(this.rectLeft + this.selections[i].percentRight / 100 * width);
 		
 		let newWidth = this.selections[i].getRectRight() - this.selections[i].getRectLeft();
 		
 		if(this.main.letterSizeOnResize && this.selections[i] instanceof TextDraw)
-			this.selections[i].letterSizeX = newWidth.getPercentOf(0, oldWidth) / 100 * this.selections[i].letterSizeX;
+		{
+			if(this.selections[i].oldLetterSizeX != 0)
+			{
+				this.selections[i].letterSizeX = newWidth.getPercentOf(0, this.selections[i].oldWidth) / 100 * this.selections[i].oldLetterSizeX;
+			}
+			else
+			{
+				this.selections[i].letterSizeX = 0;
+			}
+		}
 	}
 };
 
@@ -245,17 +280,27 @@ MultipleSelection.prototype.setRectBottom = function(rectBottom)
 	
 	let height = this.getHeight();
 	
+	if(height == 0)
+		height = 0.0000009;
+	
 	for(let i = 0; i < this.selections.length; i++)
 	{
-		let oldHeight = this.selections[i].getRectBottom() - this.selections[i].getRectTop();
-		
 		this.selections[i].setRectTop(this.rectTop + this.selections[i].percentTop / 100 * height);
 		this.selections[i].setRectBottom(this.rectTop + this.selections[i].percentBottom / 100 * height);
 		
 		let newHeight = this.selections[i].getRectBottom() - this.selections[i].getRectTop();
 		
 		if(this.main.letterSizeOnResize && this.selections[i] instanceof TextDraw)
-			this.selections[i].letterSizeY = newHeight.getPercentOf(0, oldHeight) / 100 * this.selections[i].letterSizeY;
+		{
+			if(this.selections[i].oldLetterSizeY != 0)
+			{
+				this.selections[i].letterSizeY = newHeight.getPercentOf(0, this.selections[i].oldHeight) / 100 * this.selections[i].oldLetterSizeY;
+			}
+			else
+			{
+				this.selections[i].letterSizeY = 0;
+			}
+		}
 	}
 };
 

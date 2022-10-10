@@ -155,11 +155,11 @@ TextDrawUI.prototype.paint = function(textDraw, faster, useBox)
 	}
 	
 	let letterSizeX = textDraw.letterSizeX * scaleX;
-    let letterSizeY = textDraw.letterSizeY * scaleY;
+	let letterSizeY = textDraw.letterSizeY * scaleY;
 	
-    let x = textDraw.getRectLeft() * scaleX;
+	let x = textDraw.getRectLeft() * scaleX;
 	let y = textDraw.getRectTop() * scaleY;
-    
+	
 	if((!faster || useBox) && ((textDraw.font != 4 && textDraw.font != 5 && textDraw.useBox) || (textDraw.font == 4 && !textureUI) || textDraw.font == 5))
 	{
 		let left = textDraw.getRectLeft() * scaleX - textDraw.getMargin();

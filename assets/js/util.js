@@ -51,10 +51,21 @@ Number.prototype.toPlainString = function()
 		if(str[1].length > 6)
 			str[1] = str[1].substring(0, 6);
 		
+		while(str[1].length != 0)
+		{
+			if(str[1].slice(-1) != "0")
+				break;
+			
+			str[1] = str[1].slice(0, -1);
+		}
+		
+		if(str[1].length == 0)
+			str.pop();
+		
 		str = str.join(".");
 	}
-
-    return str;
+	
+	return str;
 };
 
 Number.prototype.toRGBA = function()
@@ -98,6 +109,9 @@ Number.prototype.getPercentOf = function(min, max)
 	
 	let total = max - min;
 	let value = val - min;
+	
+	if(total == 0)
+		return 0;
 	
 	return value * 100 / total;
 };
