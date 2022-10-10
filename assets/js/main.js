@@ -208,8 +208,8 @@ function Main()
 	this.clickBottom = false;
 	this.clickOption = "resize";
 	
-	window.addEventListener("mousedown", (e) => { if(e.button != 0) return; this.checkMouse(e, true, false); });
-	window.addEventListener("mouseup", (e) => { if(e.button != 0) return; this.checkMouse(e, false, true); });
+	window.addEventListener("mousedown", (e) => { this.checkMouse(e, true, false); });
+	window.addEventListener("mouseup", (e) => { this.checkMouse(e, false, true); });
 	window.addEventListener("mousemove", (e) => { this.checkMouse(e, false, false); });
 	window.addEventListener("resize", (e) => { this.checkScrollBars(e); this.dialogsUI.forEach(dialogUI => dialogUI.move(dialogUI.element.offsetLeft, dialogUI.element.offsetTop)); });
 	
@@ -3008,7 +3008,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			return;
 		}
 		
-		if(buttonDown && this.controlListUI.isInBoundingClientRect(e.clientX, e.clientY))
+		if(buttonDown && e.button == 0 && this.controlListUI.isInBoundingClientRect(e.clientX, e.clientY))
 		{
 			for(let i = 0; i < this.currentProject.textDrawList.length; i++)
 			{
