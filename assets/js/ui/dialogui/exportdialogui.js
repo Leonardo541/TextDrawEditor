@@ -1,13 +1,25 @@
 
-function ExportDialogUI(parent, title, clickAccept, clickCancel)
+function ExportDialogUI(parent, title, exportType, clickAccept, clickCancel)
 {
 	DialogUI.call(this, parent, title);
 	
-	this.contentUI.appendStaticText("Callback");
-	this.contentUI.appendLineBreak();
-	this.callbackUI = new ListBoxUI(this.contentUI, {change: (e) => { this.changeOption(clickAccept); }});
-	this.callbackUI.appendOption("OnGameModeInit");
-	this.callbackUI.appendOption("OnFilterScriptInit");
+	if(exportType == "json")
+	{
+		this.contentUI.appendStaticText("JSON Formatter");
+		this.contentUI.appendLineBreak();
+		this.callbackUI = new ListBoxUI(this.contentUI, {change: (e) => { this.changeOption(clickAccept); }});
+		this.callbackUI.appendOption("Pretty JSON");
+		this.callbackUI.appendOption("Minify JSON");
+	}
+	else if(exportType == "pawn")
+	{
+		this.contentUI.appendStaticText("Callback");
+		this.contentUI.appendLineBreak();
+		this.callbackUI = new ListBoxUI(this.contentUI, {change: (e) => { this.changeOption(clickAccept); }});
+		this.callbackUI.appendOption("OnGameModeInit");
+		this.callbackUI.appendOption("OnFilterScriptInit");
+	}
+	
 	this.contentUI.appendLineBreak();
 	this.contentUI.appendStaticText("Output");
 	this.contentUI.appendLineBreak();

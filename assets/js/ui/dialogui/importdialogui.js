@@ -1,5 +1,5 @@
 
-function ImportDialogUI(parent, title, clickAccept, clickCancel)
+function ImportDialogUI(parent, title, importType, clickAccept, clickCancel)
 {
 	DialogUI.call(this, parent, title);
 	
@@ -17,6 +17,9 @@ function ImportDialogUI(parent, title, clickAccept, clickCancel)
 	
 	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
 	
+	this.importType = importType;
+	
+	this.savedData = "";
 	this.textDraws = [];
 }
 
@@ -38,7 +41,7 @@ ImportDialogUI.prototype.changeOption = function()
 	{
 		if(!this.fileInputUI)
 		{
-			this.fileInputUI = new FileBoxUI(this.contentUI, {accept: "*/*", onchange: (e) => { this.inputFromAFile(e);  }});
+			this.fileInputUI = new FileBoxUI(this.contentUI, {accept: "*/*", onchange: (e) => { this.inputFromAFile(e); }});
 			this.contentUI.appendStaticLine();
 		}
 		
@@ -54,6 +57,7 @@ ImportDialogUI.prototype.changeOption = function()
 			this.viewInputUI.remove();
 			this.viewInputUI = null;
 			
+			this.savedData = "";
 			this.textDraws = [];
 		}
 	}
@@ -67,6 +71,7 @@ ImportDialogUI.prototype.changeOption = function()
 			this.fileInputUI.remove();
 			this.fileInputUI = null;
 			
+			this.savedData = "";
 			this.textDraws = [];
 		}
 		
@@ -356,7 +361,16 @@ ImportDialogUI.prototype.inputFromAFile = function(e)
 		reader.onload = (e) =>
 		{
 			if(e.target.readyState == FileReader.DONE)
-				this.inputAsText(e.target.result);
+			{
+				if(this.importType == "json")
+				{
+					this.savedData = e.target.result;
+				}
+				else if(this.importType == "pawn")
+				{
+					this.inputAsText(e.target.result);
+				}
+			}
 		};
 		
 		reader.readAsText(file);

@@ -343,143 +343,7 @@ Main.prototype.loadProjects = function()
 		
 		for(let i = 0; i < savedProjects.length; i++)
 		{
-			let project = new Project(this);
-			
-			let savedTextDraws = savedProjects[i].textDraws;
-			let savedCurrentTextDrawIdx = savedProjects[i].currentTextDrawIdx;
-			
-			for(let j = 0; j < savedTextDraws.length; j++)
-			{
-				let textDraw = new TextDraw(this, savedTextDraws[j].name, savedTextDraws[j].text, savedTextDraws[j].x, savedTextDraws[j].y);
-				project.textDrawList.push(textDraw);
-				textDraw.fromTextDraw(savedTextDraws[j]);
-				
-				if(savedTextDraws[j].hidden)
-				{
-					textDraw.visibility = false;
-					textDraw.visibilityUI.element.style.backgroundPositionY = "-24px";
-				}
-				
-				if(j == savedCurrentTextDrawIdx)
-				{
-					project.multipleSelection = new MultipleSelection(this);
-					project.multipleSelection.addSelection(textDraw);
-					
-					textDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
-					
-					if(i == savedCurrentProjectIdx)
-					{
-						this.textDrawControlsUI.element.style.display = "";
-						this.guideGridControlsUI.element.style.display = "none";
-						this.guideLineControlsUI.element.style.display = "none";
-						this.multipleControlsUI.element.style.display = "none";
-					}
-				}
-				else if(savedTextDraws[j].selected)
-				{
-					project.multipleSelection.addSelection(textDraw);
-					
-					textDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
-					
-					if(i == savedCurrentProjectIdx)
-					{
-						this.textDrawControlsUI.element.style.display = "none";
-						this.guideGridControlsUI.element.style.display = "none";
-						this.guideLineControlsUI.element.style.display = "none";
-						this.multipleControlsUI.element.style.display = "";
-					}
-				}
-			}
-			
-			let savedGuideGrids = savedProjects[i].guideGrids ?? [];
-			let savedCurrentGuideGridIdx = savedProjects[i].currentGuideGridIdx ?? -1;
-			
-			for(let j = 0; j < savedGuideGrids.length; j++)
-			{
-				let guideGrid = new GuideGrid(this, savedGuideGrids[j].name, savedGuideGrids[j].x, savedGuideGrids[j].y, savedGuideGrids[j].width, savedGuideGrids[j].height, savedGuideGrids[j].margin, savedGuideGrids[j].padding, savedGuideGrids[j].rows, savedGuideGrids[j].columns);
-				project.guideGrids.push(guideGrid);
-				
-				if(savedGuideGrids[j].hidden)
-				{
-					guideGrid.visibility = false;
-					guideGrid.visibilityUI.element.style.backgroundPositionY = "-24px";
-				}
-				
-				if(j == savedCurrentGuideGridIdx)
-				{
-					project.multipleSelection = new MultipleSelection(this);
-					project.multipleSelection.addSelection(guideGrid);
-					
-					guideGrid.textDrawItemUI.element.classList.add("currentTextDrawItem");
-					
-					if(i == savedCurrentProjectIdx)
-					{
-						this.textDrawControlsUI.element.style.display = "none";
-						this.guideGridControlsUI.element.style.display = "";
-						this.guideLineControlsUI.element.style.display = "none";
-						this.multipleControlsUI.element.style.display = "none";
-					}
-				}
-				else if(savedGuideGrids[j].selected)
-				{
-					project.multipleSelection.addSelection(guideGrid);
-					
-					guideGrid.textDrawItemUI.element.classList.add("currentTextDrawItem");
-					
-					if(i == savedCurrentProjectIdx)
-					{
-						this.textDrawControlsUI.element.style.display = "none";
-						this.guideGridControlsUI.element.style.display = "none";
-						this.guideLineControlsUI.element.style.display = "none";
-						this.multipleControlsUI.element.style.display = "";
-					}
-				}
-			}
-			
-			let savedGuideLines = savedProjects[i].guideLines ?? [];
-			let savedCurrentGuideLineIdx = savedProjects[i].currentGuideLineIdx ?? -1;
-			
-			for(let j = 0; j < savedGuideLines.length; j++)
-			{
-				let guideLine = new GuideLine(this, savedGuideLines[j].name, savedGuideLines[j].x, savedGuideLines[j].y, savedGuideLines[j].size, savedGuideLines[j].padding, savedGuideLines[j].style);
-				project.guideLines.push(guideLine);
-				
-				if(savedGuideLines[j].hidden)
-				{
-					guideLine.visibility = false;
-					guideLine.visibilityUI.element.style.backgroundPositionY = "-24px";
-				}
-				
-				if(j == savedCurrentGuideLineIdx)
-				{
-					project.multipleSelection = new MultipleSelection(this);
-					project.multipleSelection.addSelection(guideLine);
-					
-					guideLine.textDrawItemUI.element.classList.add("currentTextDrawItem");
-					
-					if(i == savedCurrentProjectIdx)
-					{
-						this.textDrawControlsUI.element.style.display = "none";
-						this.guideGridControlsUI.element.style.display = "none";
-						this.guideLineControlsUI.element.style.display = "";
-						this.multipleControlsUI.element.style.display = "none";
-					}
-				}
-				else if(savedGuideLines[j].selected)
-				{
-					project.multipleSelection.addSelection(guideLine);
-					
-					guideLine.textDrawItemUI.element.classList.add("currentTextDrawItem");
-					
-					if(i == savedCurrentProjectIdx)
-					{
-						this.textDrawControlsUI.element.style.display = "none";
-						this.guideGridControlsUI.element.style.display = "none";
-						this.guideLineControlsUI.element.style.display = "none";
-						this.multipleControlsUI.element.style.display = "";
-					}
-				}
-			}
+			let project = this.loadProject(savedProjects[i]);
 			
 			this.projects.push(project);
 			
@@ -490,11 +354,50 @@ Main.prototype.loadProjects = function()
 			}
 		}
 		
-		this.updateControlList();
-		this.updateControls();
-		this.updateGuideGridControls();
-		this.updateGuideLineControls();
-		this.updateMultipleControls();
+		if(this.currentProject)
+		{
+			if(this.currentProject.getCurrentTextDraw())
+			{
+				this.textDrawControlsUI.element.style.display = "";
+				this.guideGridControlsUI.element.style.display = "none";
+				this.guideLineControlsUI.element.style.display = "none";
+				this.multipleControlsUI.element.style.display = "none";
+			}
+			else if(this.currentProject.getCurrentGuideGrid())
+			{
+				this.textDrawControlsUI.element.style.display = "none";
+				this.guideGridControlsUI.element.style.display = "";
+				this.guideLineControlsUI.element.style.display = "none";
+				this.multipleControlsUI.element.style.display = "none";
+			}
+			else if(this.currentProject.getCurrentGuideLine())
+			{
+				this.textDrawControlsUI.element.style.display = "none";
+				this.guideGridControlsUI.element.style.display = "none";
+				this.guideLineControlsUI.element.style.display = "";
+				this.multipleControlsUI.element.style.display = "none";
+			}
+			else if(this.currentProject.multipleSelection.selections.length > 1)
+			{
+				this.textDrawControlsUI.element.style.display = "none";
+				this.guideGridControlsUI.element.style.display = "none";
+				this.guideLineControlsUI.element.style.display = "none";
+				this.multipleControlsUI.element.style.display = "";
+			}
+			else
+			{
+				this.textDrawControlsUI.element.style.display = "";
+				this.guideGridControlsUI.element.style.display = "none";
+				this.guideLineControlsUI.element.style.display = "none";
+				this.multipleControlsUI.element.style.display = "none";
+			}
+			
+			this.updateControlList();
+			this.updateControls();
+			this.updateGuideGridControls();
+			this.updateGuideLineControls();
+			this.updateMultipleControls();
+		}
 		
 		this.repaintedThumbnailAll = false;
 		
@@ -513,70 +416,7 @@ Main.prototype.saveProjects = function()
 		
 		for(let i = 0; i < this.projects.length; i++)
 		{
-			let savedTextDraws = [];
-			let savedCurrentTextDrawIdx = -1;
-			
-			for(let j = 0; j < this.projects[i].textDrawList.length; j++)
-			{
-				let savedTextDraw = {};
-				
-				this.projects[i].textDrawList[j].copyTextDraw(savedTextDraw);
-				
-				if(!this.projects[i].textDrawList[j].visibility)
-					savedTextDraw.hidden = true;
-				
-				if(this.projects[i].multipleSelection.isSelected(this.projects[i].textDrawList[j]))
-					savedTextDraw.selected = true;
-				
-				savedTextDraws.push(savedTextDraw);
-				
-				if(this.projects[i].textDrawList[j] == this.projects[i].getCurrentTextDraw())
-					savedCurrentTextDrawIdx = j;
-			}
-			
-			let savedGuideGrids = [];
-			let savedCurrentGuideGridIdx = -1;
-			
-			for(let j = 0; j < this.projects[i].guideGrids.length; j++)
-			{
-				let savedGuideGrid = {};
-				
-				this.projects[i].guideGrids[j].copyGuideGrid(savedGuideGrid);
-				
-				if(!this.projects[i].guideGrids[j].visibility)
-					savedGuideGrid.hidden = true;
-				
-				if(this.projects[i].multipleSelection.isSelected(this.projects[i].guideGrids[j]))
-					savedGuideGrid.selected = true;
-				
-				savedGuideGrids.push(savedGuideGrid);
-				
-				if(this.projects[i].guideGrids[j] == this.projects[i].getCurrentGuideGrid())
-					savedCurrentGuideGridIdx = j;
-			}
-			
-			let savedGuideLines = [];
-			let savedCurrentGuideLineIdx = -1;
-			
-			for(let j = 0; j < this.projects[i].guideLines.length; j++)
-			{
-				let savedGuideLine = {};
-				
-				this.projects[i].guideLines[j].copyGuideLine(savedGuideLine);
-				
-				if(!this.projects[i].guideLines[j].visibility)
-					savedGuideLine.hidden = true;
-				
-				if(this.projects[i].multipleSelection.isSelected(this.projects[i].guideLines[j]))
-					savedGuideLine.selected = true;
-				
-				savedGuideLines.push(savedGuideLine);
-				
-				if(this.projects[i].guideLines[j] == this.projects[i].getCurrentGuideLine())
-					savedCurrentGuideLineIdx = j;
-			}
-			
-			savedProjects.push({textDraws: savedTextDraws, currentTextDrawIdx: savedCurrentTextDrawIdx, guideGrids: savedGuideGrids, currentGuideGridIdx: savedCurrentGuideGridIdx, guideLines: savedGuideLines, currentGuideLineIdx: savedCurrentGuideLineIdx});
+			savedProjects.push(this.saveProject(this.projects[i]));
 			
 			if(this.projects[i] == this.currentProject)
 				savedCurrentProjectIdx = i;
@@ -586,6 +426,134 @@ Main.prototype.saveProjects = function()
 		
 		this.saveProjectsEnabled = false;
 	}
+};
+
+Main.prototype.loadProject = function(savedProject, project = null)
+{
+	if(!project)
+		project = new Project(this);
+	
+	let savedTextDraws = savedProject.textDraws ?? [];
+	
+	for(let i = 0; i < savedTextDraws.length; i++)
+	{
+		let textDraw = new TextDraw(this, savedTextDraws[i].name, savedTextDraws[i].text, savedTextDraws[i].x, savedTextDraws[i].y);
+		project.textDrawList.push(textDraw);
+		textDraw.fromTextDraw(savedTextDraws[i]);
+		
+		if(savedTextDraws[i].hidden)
+		{
+			textDraw.visibility = false;
+			textDraw.visibilityUI.element.style.backgroundPositionY = "-24px";
+		}
+		
+		if(savedTextDraws[i].selected)
+		{
+			project.multipleSelection.addSelection(textDraw);
+			
+			textDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
+		}
+	}
+	
+	let savedGuideGrids = savedProject.guideGrids ?? [];
+	
+	for(let i = 0; i < savedGuideGrids.length; i++)
+	{
+		let guideGrid = new GuideGrid(this, savedGuideGrids[i].name, savedGuideGrids[i].x, savedGuideGrids[i].y, savedGuideGrids[i].width, savedGuideGrids[i].height, savedGuideGrids[i].margin, savedGuideGrids[i].padding, savedGuideGrids[i].rows, savedGuideGrids[i].columns);
+		project.guideGrids.push(guideGrid);
+		
+		if(savedGuideGrids[i].hidden)
+		{
+			guideGrid.visibility = false;
+			guideGrid.visibilityUI.element.style.backgroundPositionY = "-24px";
+		}
+		
+		if(savedGuideGrids[i].selected)
+		{
+			project.multipleSelection.addSelection(guideGrid);
+			
+			guideGrid.textDrawItemUI.element.classList.add("currentTextDrawItem");
+		}
+	}
+	
+	let savedGuideLines = savedProject.guideLines ?? [];
+	
+	for(let i = 0; i < savedGuideLines.length; i++)
+	{
+		let guideLine = new GuideLine(this, savedGuideLines[i].name, savedGuideLines[i].x, savedGuideLines[i].y, savedGuideLines[i].size, savedGuideLines[i].padding, savedGuideLines[i].style);
+		project.guideLines.push(guideLine);
+		
+		if(savedGuideLines[i].hidden)
+		{
+			guideLine.visibility = false;
+			guideLine.visibilityUI.element.style.backgroundPositionY = "-24px";
+		}
+		
+		if(savedGuideLines[i].selected)
+		{
+			project.multipleSelection.addSelection(guideLine);
+			
+			guideLine.textDrawItemUI.element.classList.add("currentTextDrawItem");
+		}
+	}
+	
+	return project;
+};
+
+Main.prototype.saveProject = function(project)
+{
+	let savedTextDraws = [];
+	
+	for(let i = 0; i < project.textDrawList.length; i++)
+	{
+		let savedTextDraw = {};
+		
+		project.textDrawList[i].copyTextDraw(savedTextDraw);
+		
+		if(!project.textDrawList[i].visibility)
+			savedTextDraw.hidden = true;
+		
+		if(project.multipleSelection.isSelected(project.textDrawList[i]))
+			savedTextDraw.selected = true;
+		
+		savedTextDraws.push(savedTextDraw);
+	}
+	
+	let savedGuideGrids = [];
+	
+	for(let i = 0; i < project.guideGrids.length; i++)
+	{
+		let savedGuideGrid = {};
+		
+		project.guideGrids[i].copyGuideGrid(savedGuideGrid);
+		
+		if(!project.guideGrids[i].visibility)
+			savedGuideGrid.hidden = true;
+		
+		if(project.multipleSelection.isSelected(project.guideGrids[i]))
+			savedGuideGrid.selected = true;
+		
+		savedGuideGrids.push(savedGuideGrid);
+	}
+	
+	let savedGuideLines = [];
+	
+	for(let i = 0; i < project.guideLines.length; i++)
+	{
+		let savedGuideLine = {};
+		
+		project.guideLines[i].copyGuideLine(savedGuideLine);
+		
+		if(!project.guideLines[i].visibility)
+			savedGuideLine.hidden = true;
+		
+		if(project.multipleSelection.isSelected(project.guideLines[i]))
+			savedGuideLine.selected = true;
+		
+		savedGuideLines.push(savedGuideLine);
+	}
+	
+	return {textDraws: savedTextDraws, guideGrids: savedGuideGrids, guideLines: savedGuideLines};
 };
 
 Main.prototype.createTextDraw = function(text, x, y, fromTextDraw)
@@ -1204,6 +1172,9 @@ Main.prototype.contextMenuProject = function(project, x, y)
 		this.contextMenuUI.remove();
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
+	this.contextMenuUI.appendItem("Open Project", () => { this.showOpenDialog("Open Project", x, y, project); });
+	this.contextMenuUI.appendItem("Save Project", () => { this.showSaveDialog("Save Project", x, y, project); });
+	this.contextMenuUI.appendStaticLine();
 	this.contextMenuUI.appendItem("Import Project", () => { this.showImportDialog("Import Project", x, y, project); });
 	this.contextMenuUI.appendItem("Export Project", () => { this.showExportDialog("Export Project", x, y, project); });
 	this.contextMenuUI.appendStaticLine();
@@ -1529,7 +1500,7 @@ Main.prototype.showExportDialog = function(title, x, y, fromTextDrawOrProject)
 		}
 	}
 	
-	let dialogUI = new ExportDialogUI("body", title, (callback, output, clicked) => { this.acceptExportDialog(dialogUI, callback, output, copiedTextDraws); if(output == 0 || clicked) this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	let dialogUI = new ExportDialogUI("body", title + " (.pwn)", "pawn", (callback, output, clicked) => { this.acceptExportDialog(dialogUI, callback, output, copiedTextDraws); if(output == 0 || clicked) this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
@@ -1613,7 +1584,7 @@ Main.prototype.acceptExportDialog = function(dialogUI, callback, output, textDra
 
 Main.prototype.showImportDialog = function(title, x, y, toProject)
 {
-	let dialogUI = new ImportDialogUI("body", title, (input) => { this.acceptImportDialog(dialogUI, input, toProject); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	let dialogUI = new ImportDialogUI("body", title + " (.pwn)", "pawn", (input) => { this.acceptImportDialog(dialogUI, input, toProject); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
@@ -1635,6 +1606,130 @@ Main.prototype.acceptImportDialog = function(dialogUI, input, toProject)
 	
 	if(this.currentProject == toProject)
 	{
+		this.updateControlList();
+		this.updateControls();
+		this.updateGuideGridControls();
+		this.updateGuideLineControls();
+		this.updateMultipleControls();
+	}
+	
+	this.repaintedThumbnailAll = false;
+	
+	this.repaint();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+}
+
+Main.prototype.showSaveDialog = function(title, x, y, fromProject)
+{
+	let scaleX = this.screenshotUI.width / 640.0;
+	let scaleY = this.screenshotUI.height / 448.0;
+	
+	let savedProject = "";
+	
+	if(fromProject instanceof Project)
+	{
+		savedProject = this.saveProject(fromProject);
+	}
+	
+	let dialogUI = new ExportDialogUI("body", title + " (.json)", "json", (formatter, output, clicked) => { this.acceptSaveDialog(dialogUI, formatter, output, savedProject); if(output == 0 || clicked) this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	
+	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
+	
+	this.dialogsUI.push(dialogUI);
+};
+
+Main.prototype.acceptSaveDialog = function(dialogUI, formatter, output, savedProject)
+{
+	let savedData;
+	
+	if(formatter == 0)
+	{
+		savedData = JSON.stringify(savedProject, null, '\t');
+	}
+	else
+	{
+		savedData = JSON.stringify(savedProject);
+	}
+	
+	if(output == 0)
+	{
+		let downloadUI = new EntityUI(null, "a", {href: "data:text/plain;charset=utf-8," + encodeURIComponent(savedData), download: "saved.json"});
+		downloadUI.element.click();
+	}
+	else
+	{
+		dialogUI.viewOutputUI.element.value = savedData;
+	}
+};
+
+Main.prototype.showOpenDialog = function(title, x, y, toProject)
+{
+	let dialogUI = new ImportDialogUI("body", title + " (.json)", "json", (input) => { this.acceptOpenDialog(dialogUI, input, toProject); this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
+	
+	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
+	
+	this.dialogsUI.push(dialogUI);
+};
+
+Main.prototype.acceptOpenDialog = function(dialogUI, input, toProject)
+{
+	if(input == 1)
+		dialogUI.savedData = dialogUI.viewInputUI.element.value;
+	
+	let savedProject;
+	
+	try
+	{
+		savedProject = JSON.parse(dialogUI.savedData);
+	}
+	catch(e)
+	{
+		alert(e);
+		return;
+	}
+	
+	this.loadProject(savedProject, toProject);
+	
+	if(this.currentProject == toProject)
+	{
+		if(this.currentProject.getCurrentTextDraw())
+		{
+			this.textDrawControlsUI.element.style.display = "";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "none";
+			this.multipleControlsUI.element.style.display = "none";
+		}
+		else if(this.currentProject.getCurrentGuideGrid())
+		{
+			this.textDrawControlsUI.element.style.display = "none";
+			this.guideGridControlsUI.element.style.display = "";
+			this.guideLineControlsUI.element.style.display = "none";
+			this.multipleControlsUI.element.style.display = "none";
+		}
+		else if(this.currentProject.getCurrentGuideLine())
+		{
+			this.textDrawControlsUI.element.style.display = "none";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "";
+			this.multipleControlsUI.element.style.display = "none";
+		}
+		else if(this.currentProject.multipleSelection.selections.length > 1)
+		{
+			this.textDrawControlsUI.element.style.display = "none";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "none";
+			this.multipleControlsUI.element.style.display = "";
+		}
+		else
+		{
+			this.textDrawControlsUI.element.style.display = "";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "none";
+			this.multipleControlsUI.element.style.display = "none";
+		}
+		
 		this.updateControlList();
 		this.updateControls();
 		this.updateGuideGridControls();
