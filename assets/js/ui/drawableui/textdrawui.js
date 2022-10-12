@@ -162,10 +162,19 @@ TextDrawUI.prototype.paint = function(textDraw, faster, useBox)
 	
 	if((!faster || useBox) && ((textDraw.font != 4 && textDraw.font != 5 && textDraw.useBox) || (textDraw.font == 4 && !textureUI) || textDraw.font == 5))
 	{
-		let left = textDraw.getRectLeft() * scaleX - textDraw.getMargin();
-		let top = textDraw.getRectTop() * scaleY - textDraw.getMargin();
-		let right = textDraw.getRectRight() * scaleX + textDraw.getMargin();
-		let bottom = textDraw.getStringRectBottom() * scaleY + textDraw.getMargin();
+		let marginX = textDraw.getMargin();
+		let marginY = textDraw.getMargin();
+		
+		if(faster)
+		{
+			marginX *= 640.0 / textDraw.main.screenshotUI.width;
+			marginY *= 448.0 / textDraw.main.screenshotUI.height;
+		}
+		
+		let left = textDraw.getRectLeft() * scaleX - marginX;
+		let top = textDraw.getRectTop() * scaleY - marginY;
+		let right = textDraw.getRectRight() * scaleX + marginX;
+		let bottom = textDraw.getStringRectBottom() * scaleY + marginY;
 		
 		this.context.fillStyle = textDraw.getBoxColor().toRGBA();
 		this.context.fillRect(left, top, right - left, bottom - top);
