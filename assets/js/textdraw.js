@@ -349,7 +349,7 @@ TextDraw.prototype.getBoxColor = function()
 		return this.color & this.backgroundColor;
 	
 	return this.boxColor;
-}
+};
 
 TextDraw.prototype.changeAlignment = function(alignment)
 {

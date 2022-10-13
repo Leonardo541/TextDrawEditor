@@ -29,7 +29,7 @@ ScreenshotUI.prototype.resize = function()
 ScreenshotUI.prototype.clear = function()
 {
 	this.context.clearRect(0, 0, this.width, this.height);
-}
+};
 
 ScreenshotUI.prototype.paint = function()
 {

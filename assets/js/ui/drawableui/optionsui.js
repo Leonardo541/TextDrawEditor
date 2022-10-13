@@ -54,7 +54,7 @@ OptionsUI.prototype.resize = function(width, height)
 OptionsUI.prototype.clear = function()
 {
 	this.context.clearRect(0, 0, this.width, this.height);
-}
+};
 
 OptionsUI.prototype.paintGuideGrids = function(currentGuideGrid, guideGrids, option)
 {

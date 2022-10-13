@@ -9,7 +9,7 @@ function ContextMenuUI(parent, x, y)
 
 ContextMenuUI.prototype = Object.create(EntityUI.prototype);
 
-ContextMenuUI.prototype.appendItem = function(text, click)
+ContextMenuUI.prototype.appendItem = function(text, click, icon)
 {
 	let setting;
 	
@@ -24,6 +24,11 @@ ContextMenuUI.prototype.appendItem = function(text, click)
 	else
 	{
 		setting = {innerText: text, class: ["contextItem", "contextItemDisabled"]};
+	}
+	
+	if(icon)
+	{
+		setting.style = {backgroundImage: "url(./assets/images/icon-" + icon + ".png)"};
 	}
 	
 	return new EntityUI(this, "div", setting);

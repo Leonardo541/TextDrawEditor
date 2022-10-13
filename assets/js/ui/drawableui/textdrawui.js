@@ -24,7 +24,7 @@ TextDrawUI.prototype.resize = function(width, height)
 TextDrawUI.prototype.clear = function()
 {
 	this.context.clearRect(0, 0, this.width, this.height);
-}
+};
 
 TextDrawUI.prototype.paintBox = function(textDraw, detectLines)
 {

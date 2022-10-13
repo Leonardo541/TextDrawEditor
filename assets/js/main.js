@@ -267,56 +267,11 @@ Main.prototype.changeProject = function(project)
 	if(this.currentProject)
 		this.currentProject.projectTabUI.element.classList.add("currentProjectTab");
 	
-	if(project)
-	{
-		if(project.getCurrentTextDraw())
-		{
-			this.textDrawControlsUI.element.style.display = "";
-			this.guideGridControlsUI.element.style.display = "none";
-			this.guideLineControlsUI.element.style.display = "none";
-			this.multipleControlsUI.element.style.display = "none";
-		}
-		else if(project.getCurrentGuideGrid())
-		{
-			this.textDrawControlsUI.element.style.display = "none";
-			this.guideGridControlsUI.element.style.display = "";
-			this.guideLineControlsUI.element.style.display = "none";
-			this.multipleControlsUI.element.style.display = "none";
-		}
-		else if(project.getCurrentGuideLine())
-		{
-			this.textDrawControlsUI.element.style.display = "none";
-			this.guideGridControlsUI.element.style.display = "none";
-			this.guideLineControlsUI.element.style.display = "";
-			this.multipleControlsUI.element.style.display = "none";
-		}
-		else if(project.multipleSelection.selections.length > 1)
-		{
-			this.textDrawControlsUI.element.style.display = "none";
-			this.guideGridControlsUI.element.style.display = "none";
-			this.guideLineControlsUI.element.style.display = "none";
-			this.multipleControlsUI.element.style.display = "";
-		}
-		else
-		{
-			this.textDrawControlsUI.element.style.display = "";
-			this.guideGridControlsUI.element.style.display = "none";
-			this.guideLineControlsUI.element.style.display = "none";
-			this.multipleControlsUI.element.style.display = "none";
-		}
-	}
-	else
-	{
-		this.textDrawControlsUI.element.style.display = "";
-		this.guideGridControlsUI.element.style.display = "none";
-		this.guideLineControlsUI.element.style.display = "none";
-		this.multipleControlsUI.element.style.display = "none";
-	}
-	
 	this.saveProjectsEnabled = true;
 	this.saveProjects();
 	
 	this.updateControlList();
+	this.updateControlType();
 	this.updateControls();
 	this.updateGuideGridControls();
 	this.updateGuideLineControls();
@@ -343,7 +298,7 @@ Main.prototype.loadProjects = function()
 		
 		for(let i = 0; i < savedProjects.length; i++)
 		{
-			let project = this.loadProject(savedProjects[i]);
+			let project = new Project(this).loadProject(savedProjects[i]);
 			
 			this.projects.push(project);
 			
@@ -356,43 +311,8 @@ Main.prototype.loadProjects = function()
 		
 		if(this.currentProject)
 		{
-			if(this.currentProject.getCurrentTextDraw())
-			{
-				this.textDrawControlsUI.element.style.display = "";
-				this.guideGridControlsUI.element.style.display = "none";
-				this.guideLineControlsUI.element.style.display = "none";
-				this.multipleControlsUI.element.style.display = "none";
-			}
-			else if(this.currentProject.getCurrentGuideGrid())
-			{
-				this.textDrawControlsUI.element.style.display = "none";
-				this.guideGridControlsUI.element.style.display = "";
-				this.guideLineControlsUI.element.style.display = "none";
-				this.multipleControlsUI.element.style.display = "none";
-			}
-			else if(this.currentProject.getCurrentGuideLine())
-			{
-				this.textDrawControlsUI.element.style.display = "none";
-				this.guideGridControlsUI.element.style.display = "none";
-				this.guideLineControlsUI.element.style.display = "";
-				this.multipleControlsUI.element.style.display = "none";
-			}
-			else if(this.currentProject.multipleSelection.selections.length > 1)
-			{
-				this.textDrawControlsUI.element.style.display = "none";
-				this.guideGridControlsUI.element.style.display = "none";
-				this.guideLineControlsUI.element.style.display = "none";
-				this.multipleControlsUI.element.style.display = "";
-			}
-			else
-			{
-				this.textDrawControlsUI.element.style.display = "";
-				this.guideGridControlsUI.element.style.display = "none";
-				this.guideLineControlsUI.element.style.display = "none";
-				this.multipleControlsUI.element.style.display = "none";
-			}
-			
 			this.updateControlList();
+			this.updateControlType();
 			this.updateControls();
 			this.updateGuideGridControls();
 			this.updateGuideLineControls();
@@ -416,7 +336,7 @@ Main.prototype.saveProjects = function()
 		
 		for(let i = 0; i < this.projects.length; i++)
 		{
-			savedProjects.push(this.saveProject(this.projects[i]));
+			savedProjects.push(this.projects[i].saveProject());
 			
 			if(this.projects[i] == this.currentProject)
 				savedCurrentProjectIdx = i;
@@ -426,134 +346,6 @@ Main.prototype.saveProjects = function()
 		
 		this.saveProjectsEnabled = false;
 	}
-};
-
-Main.prototype.loadProject = function(savedProject, project = null)
-{
-	if(!project)
-		project = new Project(this);
-	
-	let savedTextDraws = savedProject.textDraws ?? [];
-	
-	for(let i = 0; i < savedTextDraws.length; i++)
-	{
-		let textDraw = new TextDraw(this, savedTextDraws[i].name, savedTextDraws[i].text, savedTextDraws[i].x, savedTextDraws[i].y);
-		project.textDrawList.push(textDraw);
-		textDraw.fromTextDraw(savedTextDraws[i]);
-		
-		if(savedTextDraws[i].hidden)
-		{
-			textDraw.visibility = false;
-			textDraw.visibilityUI.element.style.backgroundPositionY = "-24px";
-		}
-		
-		if(savedTextDraws[i].selected)
-		{
-			project.multipleSelection.addSelection(textDraw);
-			
-			textDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
-		}
-	}
-	
-	let savedGuideGrids = savedProject.guideGrids ?? [];
-	
-	for(let i = 0; i < savedGuideGrids.length; i++)
-	{
-		let guideGrid = new GuideGrid(this, savedGuideGrids[i].name, savedGuideGrids[i].x, savedGuideGrids[i].y, savedGuideGrids[i].width, savedGuideGrids[i].height, savedGuideGrids[i].margin, savedGuideGrids[i].padding, savedGuideGrids[i].rows, savedGuideGrids[i].columns);
-		project.guideGrids.push(guideGrid);
-		
-		if(savedGuideGrids[i].hidden)
-		{
-			guideGrid.visibility = false;
-			guideGrid.visibilityUI.element.style.backgroundPositionY = "-24px";
-		}
-		
-		if(savedGuideGrids[i].selected)
-		{
-			project.multipleSelection.addSelection(guideGrid);
-			
-			guideGrid.textDrawItemUI.element.classList.add("currentTextDrawItem");
-		}
-	}
-	
-	let savedGuideLines = savedProject.guideLines ?? [];
-	
-	for(let i = 0; i < savedGuideLines.length; i++)
-	{
-		let guideLine = new GuideLine(this, savedGuideLines[i].name, savedGuideLines[i].x, savedGuideLines[i].y, savedGuideLines[i].size, savedGuideLines[i].padding, savedGuideLines[i].style);
-		project.guideLines.push(guideLine);
-		
-		if(savedGuideLines[i].hidden)
-		{
-			guideLine.visibility = false;
-			guideLine.visibilityUI.element.style.backgroundPositionY = "-24px";
-		}
-		
-		if(savedGuideLines[i].selected)
-		{
-			project.multipleSelection.addSelection(guideLine);
-			
-			guideLine.textDrawItemUI.element.classList.add("currentTextDrawItem");
-		}
-	}
-	
-	return project;
-};
-
-Main.prototype.saveProject = function(project)
-{
-	let savedTextDraws = [];
-	
-	for(let i = 0; i < project.textDrawList.length; i++)
-	{
-		let savedTextDraw = {};
-		
-		project.textDrawList[i].copyTextDraw(savedTextDraw);
-		
-		if(!project.textDrawList[i].visibility)
-			savedTextDraw.hidden = true;
-		
-		if(project.multipleSelection.isSelected(project.textDrawList[i]))
-			savedTextDraw.selected = true;
-		
-		savedTextDraws.push(savedTextDraw);
-	}
-	
-	let savedGuideGrids = [];
-	
-	for(let i = 0; i < project.guideGrids.length; i++)
-	{
-		let savedGuideGrid = {};
-		
-		project.guideGrids[i].copyGuideGrid(savedGuideGrid);
-		
-		if(!project.guideGrids[i].visibility)
-			savedGuideGrid.hidden = true;
-		
-		if(project.multipleSelection.isSelected(project.guideGrids[i]))
-			savedGuideGrid.selected = true;
-		
-		savedGuideGrids.push(savedGuideGrid);
-	}
-	
-	let savedGuideLines = [];
-	
-	for(let i = 0; i < project.guideLines.length; i++)
-	{
-		let savedGuideLine = {};
-		
-		project.guideLines[i].copyGuideLine(savedGuideLine);
-		
-		if(!project.guideLines[i].visibility)
-			savedGuideLine.hidden = true;
-		
-		if(project.multipleSelection.isSelected(project.guideLines[i]))
-			savedGuideLine.selected = true;
-		
-		savedGuideLines.push(savedGuideLine);
-	}
-	
-	return {textDraws: savedTextDraws, guideGrids: savedGuideGrids, guideLines: savedGuideLines};
 };
 
 Main.prototype.createTextDraw = function(text, x, y, fromTextDraw)
@@ -604,7 +396,7 @@ Main.prototype.changeTextDraw = function(textDraw, notCheckOtherCurrent)
 			this.changeGuideLine(null, true);
 	}
 	
-	if(this.currentProject.getCurrentTextDraw() == textDraw && textDraw.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
+	if(textDraw && this.currentProject.getCurrentTextDraw() == textDraw && textDraw.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
 		return;
 	
 	for(let i = 0; i < this.currentProject.multipleSelection.selections.length; i++)
@@ -680,7 +472,7 @@ Main.prototype.changeGuideGrid = function(guideGrid, notCheckOtherCurrent)
 			this.changeGuideLine(null, true);
 	}
 	
-	if(this.currentProject.getCurrentGuideGrid() == guideGrid && guideGrid.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
+	if(guideGrid && this.currentProject.getCurrentGuideGrid() == guideGrid && guideGrid.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
 		return;
 	
 	for(let i = 0; i < this.currentProject.multipleSelection.selections.length; i++)
@@ -759,7 +551,7 @@ Main.prototype.changeGuideLine = function(guideLine, notCheckOtherCurrent)
 			this.changeGuideGrid(null, true);
 	}
 	
-	if(this.currentProject.getCurrentGuideLine() == guideLine && guideLine.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
+	if(guideLine && this.currentProject.getCurrentGuideLine() == guideLine && guideLine.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
 		return;
 	
 	for(let i = 0; i < this.currentProject.multipleSelection.selections.length; i++)
@@ -840,8 +632,6 @@ Main.prototype.duplicateMultipleSelection = function(x, y, width, height, fromTe
 	this.updateControlList();
 	this.updateMultipleControls();
 	
-	this.saveProjectsEnabled = true;
-	this.saveProjects();
 	this.textDrawControlsUI.element.style.display = "none";
 	this.guideGridControlsUI.element.style.display = "none";
 	this.guideLineControlsUI.element.style.display = "none";
@@ -1043,8 +833,6 @@ Main.prototype.adjacentAnyObject = function(anyObject, ctrlKey)
 		{
 			this.updateMultipleControls();
 			
-			this.saveProjectsEnabled = true;
-			this.saveProjects();
 			this.textDrawControlsUI.element.style.display = "none";
 			this.guideGridControlsUI.element.style.display = "none";
 			this.guideLineControlsUI.element.style.display = "none";
@@ -1119,8 +907,6 @@ Main.prototype.toggleAnyObject = function(anyObject)
 		{
 			this.updateMultipleControls();
 			
-			this.saveProjectsEnabled = true;
-			this.saveProjects();
 			this.textDrawControlsUI.element.style.display = "none";
 			this.guideGridControlsUI.element.style.display = "none";
 			this.guideLineControlsUI.element.style.display = "none";
@@ -1260,10 +1046,10 @@ Main.prototype.contextMenuScreen = function(x, y)
 	let scaleY = this.screenshotUI.height / 448.0;
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Create TextDraw", () => { this.showCreateDialog("Example", x, y); }).element.style.backgroundImage = "url(./assets/images/icon-create.png)";
+	this.contextMenuUI.appendItem("Create TextDraw", () => { this.showCreateDialog("Example", x, y); }, "create")
 	this.contextMenuUI.appendStaticLine();
-	this.contextMenuUI.appendItem("Create Guide Grid", () => { this.showGuideGridDialog(x, y); }).element.style.backgroundImage = "url(./assets/images/icon-guide-grid.png)";
-	this.contextMenuUI.appendItem("Create Guide Line", () => { this.showGuideLineDialog(x, y); }).element.style.backgroundImage = "url(./assets/images/icon-guide-line.png)";
+	this.contextMenuUI.appendItem("Create Guide Grid", () => { this.showGuideGridDialog(x, y); }, "guide-grid");
+	this.contextMenuUI.appendItem("Create Guide Line", () => { this.showGuideLineDialog(x, y); }, "guide-line");
 	
 	let firstItem = true;
 	
@@ -1619,7 +1405,7 @@ Main.prototype.acceptImportDialog = function(dialogUI, input, toProject)
 	
 	this.saveProjectsEnabled = true;
 	this.saveProjects();
-}
+};
 
 Main.prototype.showSaveDialog = function(title, x, y, fromProject)
 {
@@ -1630,7 +1416,7 @@ Main.prototype.showSaveDialog = function(title, x, y, fromProject)
 	
 	if(fromProject instanceof Project)
 	{
-		savedProject = this.saveProject(fromProject);
+		savedProject = fromProject.saveProject();
 	}
 	
 	let dialogUI = new ExportDialogUI("body", title + " (.json)", "json", (formatter, output, clicked) => { this.acceptSaveDialog(dialogUI, formatter, output, savedProject); if(output == 0 || clicked) this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
@@ -1690,47 +1476,12 @@ Main.prototype.acceptOpenDialog = function(dialogUI, input, toProject)
 		return;
 	}
 	
-	this.loadProject(savedProject, toProject);
+	toProject.loadProject(savedProject);
 	
 	if(this.currentProject == toProject)
 	{
-		if(this.currentProject.getCurrentTextDraw())
-		{
-			this.textDrawControlsUI.element.style.display = "";
-			this.guideGridControlsUI.element.style.display = "none";
-			this.guideLineControlsUI.element.style.display = "none";
-			this.multipleControlsUI.element.style.display = "none";
-		}
-		else if(this.currentProject.getCurrentGuideGrid())
-		{
-			this.textDrawControlsUI.element.style.display = "none";
-			this.guideGridControlsUI.element.style.display = "";
-			this.guideLineControlsUI.element.style.display = "none";
-			this.multipleControlsUI.element.style.display = "none";
-		}
-		else if(this.currentProject.getCurrentGuideLine())
-		{
-			this.textDrawControlsUI.element.style.display = "none";
-			this.guideGridControlsUI.element.style.display = "none";
-			this.guideLineControlsUI.element.style.display = "";
-			this.multipleControlsUI.element.style.display = "none";
-		}
-		else if(this.currentProject.multipleSelection.selections.length > 1)
-		{
-			this.textDrawControlsUI.element.style.display = "none";
-			this.guideGridControlsUI.element.style.display = "none";
-			this.guideLineControlsUI.element.style.display = "none";
-			this.multipleControlsUI.element.style.display = "";
-		}
-		else
-		{
-			this.textDrawControlsUI.element.style.display = "";
-			this.guideGridControlsUI.element.style.display = "none";
-			this.guideLineControlsUI.element.style.display = "none";
-			this.multipleControlsUI.element.style.display = "none";
-		}
-		
 		this.updateControlList();
+		this.updateControlType();
 		this.updateControls();
 		this.updateGuideGridControls();
 		this.updateGuideLineControls();
@@ -1743,7 +1494,7 @@ Main.prototype.acceptOpenDialog = function(dialogUI, input, toProject)
 	
 	this.saveProjectsEnabled = true;
 	this.saveProjects();
-}
+};
 
 Main.prototype.showGuideGridDialog = function(x, y, fromGuideGrid, title = "Create Guide Grid")
 {
@@ -2005,7 +1756,56 @@ Main.prototype.updateControlList = function()
 		if(lastTextDrawItemUI && this.controlListUI.hasScrollBar())
 			lastTextDrawItemUI.element.classList.add("lastTextDrawItem");
 	}
-}
+};
+
+Main.prototype.updateControlType = function()
+{
+	if(this.currentProject)
+	{
+		if(this.currentProject.getCurrentTextDraw())
+		{
+			this.textDrawControlsUI.element.style.display = "";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "none";
+			this.multipleControlsUI.element.style.display = "none";
+		}
+		else if(this.currentProject.getCurrentGuideGrid())
+		{
+			this.textDrawControlsUI.element.style.display = "none";
+			this.guideGridControlsUI.element.style.display = "";
+			this.guideLineControlsUI.element.style.display = "none";
+			this.multipleControlsUI.element.style.display = "none";
+		}
+		else if(this.currentProject.getCurrentGuideLine())
+		{
+			this.textDrawControlsUI.element.style.display = "none";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "";
+			this.multipleControlsUI.element.style.display = "none";
+		}
+		else if(this.currentProject.multipleSelection.selections.length > 1)
+		{
+			this.textDrawControlsUI.element.style.display = "none";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "none";
+			this.multipleControlsUI.element.style.display = "";
+		}
+		else
+		{
+			this.textDrawControlsUI.element.style.display = "";
+			this.guideGridControlsUI.element.style.display = "none";
+			this.guideLineControlsUI.element.style.display = "none";
+			this.multipleControlsUI.element.style.display = "none";
+		}
+	}
+	else
+	{
+		this.textDrawControlsUI.element.style.display = "";
+		this.guideGridControlsUI.element.style.display = "none";
+		this.guideLineControlsUI.element.style.display = "none";
+		this.multipleControlsUI.element.style.display = "none";
+	}
+};
 
 Main.prototype.updateControls = function()
 {
@@ -2537,7 +2337,7 @@ Main.prototype.updateGuideLineControls = function()
 		this.controlGuideLinePaddingUI.element.value = "";
 		this.controlGuideLineStyleUI.element.selectedIndex = "";
 	}
-}
+};
 
 Main.prototype.guideLineNameChange = function(e)
 {
@@ -2734,7 +2534,7 @@ Main.prototype.updateMultipleControls = function()
 		this.controlMultipleWidthUI.element.value = "";
 		this.controlMultipleHeightUI.element.value = "";
 	}
-}
+};
 
 Main.prototype.screenshotChange = function(src)
 {
