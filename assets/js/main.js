@@ -1078,7 +1078,19 @@ Main.prototype.contextMenuScreen = function(x, y)
 	let scaleY = this.screenshotUI.height / 448.0;
 	
 	this.contextMenuUI = new ContextMenuUI("body", x, y);
-	this.contextMenuUI.appendItem("Create TextDraw", () => { this.showCreateDialog("Example", x, y); }, "create")
+	
+	if(!this.currentProject)
+	{
+		this.contextMenuUI.appendItem("Create TextDraw", null, "create");
+		this.contextMenuUI.appendStaticLine();
+		this.contextMenuUI.appendItem("Create Guide Grid", null, "guide-grid");
+		this.contextMenuUI.appendItem("Create Guide Line", null, "guide-line");
+		
+		this.contextMenuUI.updateSubMenuPosition();
+		return;
+	}
+	
+	this.contextMenuUI.appendItem("Create TextDraw", () => { this.showCreateDialog("Example", x, y); }, "create");
 	this.contextMenuUI.appendStaticLine();
 	this.contextMenuUI.appendItem("Create Guide Grid", () => { this.showGuideGridDialog(x, y); }, "guide-grid");
 	this.contextMenuUI.appendItem("Create Guide Line", () => { this.showGuideLineDialog(x, y); }, "guide-line");
