@@ -321,6 +321,7 @@ canvas
 	font-family: arial;
 	font-size: 10px;
 	color: #000000;
+	white-space: nowrap;
 	cursor: pointer;
 }
 

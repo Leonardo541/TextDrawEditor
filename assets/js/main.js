@@ -21,7 +21,7 @@ function Main()
 	this.scrollableControlsUI = new EntityUI(this.controlsUI, "div", {class: ["scrollable", "scrollbarThin"]});
 	this.scrollableScreenUI = new EntityUI(this.screenUI, "div", {class: "scrollable"});
 	
-	this.addProjectTabUI = new EntityUI(this.scrollableTabsUI, "div", {class: "addProjectTab", onclick: (e) => { this.addProject(); }});
+	this.addProjectTabUI = new EntityUI(this.scrollableTabsUI, "div", {class: "addProjectTab", onclick: (e) => { this.addProject(); }, contextmenu: (e) => { this.contextMenuAddProject(e.clientX, e.clientY); e.preventDefault(); }});
 	
 	this.scrollableControlsUI.appendSpacing();
 	this.controlListUI = new EntityUI(this.scrollableControlsUI, "div", {class: "textDrawList"});
@@ -231,6 +231,18 @@ Main.prototype.addProject = function()
 	
 	this.changeProject(project);
 	this.changeTextDraw(textDraw);
+	
+	this.checkScrollBars();
+};
+
+Main.prototype.addEmptyProject = function()
+{
+	let project = new Project(this);
+	
+	this.projects.push(project);
+	
+	this.changeProject(project);
+	this.changeTextDraw(null);
 	
 	this.checkScrollBars();
 };
@@ -952,6 +964,26 @@ Main.prototype.visibilityAnyObject = function(anyObject)
 	this.saveProjects();
 };
 
+Main.prototype.contextMenuAddProject = function(x, y)
+{
+	if(this.contextMenuUI)
+		this.contextMenuUI.remove();
+	
+	this.contextMenuUI = new ContextMenuUI("body", x, y);
+	
+	let contextItemUI = this.contextMenuUI.appendItem("Add Project", false);
+	let contextSubMenuUI = new ContextMenuUI(contextItemUI, 0, 0);
+	
+	contextSubMenuUI.appendItem("Add Project", () => { this.addProject(); });;
+	contextSubMenuUI.appendItem("Add Empty Project", () => { this.addEmptyProject(); });
+	
+	this.contextMenuUI.appendItem("Open Project", () => { this.showOpenDialog("Open Project", x, y, null); });
+	this.contextMenuUI.appendStaticLine();
+	this.contextMenuUI.appendItem("Import Project", () => { this.showImportDialog("Import Project", x, y, null); });
+	
+	this.contextMenuUI.updateSubMenuPosition();
+};
+
 Main.prototype.contextMenuProject = function(project, x, y)
 {
 	if(this.contextMenuUI)
@@ -1384,6 +1416,12 @@ Main.prototype.acceptImportDialog = function(dialogUI, input, toProject)
 	
 	let textDraws = dialogUI.textDraws;
 	
+	if(!toProject)
+	{
+		this.addEmptyProject();
+		toProject = this.currentProject;
+	}
+	
 	for(let i = 0; i < textDraws.length; i++)
 	{
 		let textDraw = toProject.createTextDraw(textDraws[i].text, textDraws[i].x, textDraws[i].y);
@@ -1474,6 +1512,12 @@ Main.prototype.acceptOpenDialog = function(dialogUI, input, toProject)
 	{
 		alert(e);
 		return;
+	}
+	
+	if(!toProject)
+	{
+		this.addEmptyProject();
+		toProject = this.currentProject;
 	}
 	
 	toProject.loadProject(savedProject);
