@@ -2571,6 +2571,7 @@ Main.prototype.multipleLetterSizeOnResizeChange = function(e)
 	if(this.currentProject && this.currentProject.multipleSelection.selections.length > 1)
 	{
 		this.letterSizeOnResize = e.target.checked;
+		this.currentProject.multipleSelection.recalculateSize();
 	}
 };
 
@@ -3025,6 +3026,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			
 			if(this.clickTop)
 			{
+				let rectTop = 0;
+				let rectBottom = 0;
+				
 				if(this.clickOption == "resize")
 				{
 					let nearestLine = this.getHorizontalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleY);
@@ -3037,6 +3041,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					{
 						this.currentProject.getCurrentAnyObject().setRectTop(mouseY / scaleY);
 					}
+					
+					rectTop = this.currentProject.getCurrentAnyObject().getRectTop();
+					rectBottom = this.currentProject.getCurrentAnyObject().getRectBottom();
 				}
 				else if(this.clickOption == "move")
 				{
@@ -3070,9 +3077,19 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					
 					this.currentProject.getCurrentTextDraw().offsetRect(0, y - this.currentProject.getCurrentTextDraw().getRectTop());
 					this.currentProject.getCurrentTextDraw().letterSizeY -= (y - top) / 9.0 / this.currentProject.getCurrentTextDraw().linesCount;
+					
+					rectTop = this.currentProject.getCurrentAnyObject().getStringRectTop();
+					rectBottom = this.currentProject.getCurrentAnyObject().getStringRectBottom();
 				}
 				
-				cursor += "n";
+				if(rectTop <= rectBottom)
+				{
+					cursor += "n";
+				}
+				else
+				{
+					cursor += "s";
+				}
 				
 				if(buttonUp && e.button == 0)
 				{
@@ -3082,6 +3099,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			}
 			else if(this.clickBottom)
 			{
+				let rectTop = 0;
+				let rectBottom = 0;
+				
 				if(this.clickOption == "resize")
 				{
 					let nearestLine = this.getHorizontalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleY);
@@ -3094,6 +3114,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					{
 						this.currentProject.getCurrentAnyObject().setRectBottom(mouseY / scaleY);
 					}
+					
+					rectTop = this.currentProject.getCurrentAnyObject().getRectTop();
+					rectBottom = this.currentProject.getCurrentAnyObject().getRectBottom();
 				}
 				else if(this.clickOption == "move")
 				{
@@ -3124,9 +3147,19 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					}
 					
 					this.currentProject.getCurrentTextDraw().letterSizeY = (y - this.currentProject.getCurrentTextDraw().getStringRectTop()) / 9.0 / this.currentProject.getCurrentTextDraw().linesCount;
+					
+					rectTop = this.currentProject.getCurrentAnyObject().getStringRectTop();
+					rectBottom = this.currentProject.getCurrentAnyObject().getStringRectBottom();
 				}
 				
-				cursor += "s";
+				if(rectTop <= rectBottom)
+				{
+					cursor += "s";
+				}
+				else
+				{
+					cursor += "n";
+				}
 				
 				if(buttonUp && e.button == 0)
 				{
@@ -3137,6 +3170,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			
 			if(this.clickLeft)
 			{
+				let rectLeft = 0;
+				let rectRight = 0;
+				
 				if(this.clickOption == "resize")
 				{
 					let nearestLine = this.getVerticalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleX);
@@ -3149,6 +3185,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					{
 						this.currentProject.getCurrentAnyObject().setRectLeft(mouseX / scaleX);
 					}
+					
+					rectLeft = this.currentProject.getCurrentAnyObject().getRectLeft();
+					rectRight = this.currentProject.getCurrentAnyObject().getRectRight();
 				}
 				else if(this.clickOption == "move")
 				{
@@ -3184,9 +3223,19 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 						this.currentProject.getCurrentTextDraw().offsetRect(x - this.currentProject.getCurrentTextDraw().getRectLeft(), 0);
 					
 					this.currentProject.getCurrentTextDraw().letterSizeX -= (x - left) / this.currentProject.getCurrentTextDraw().stringWidth;
+					
+					rectLeft = this.currentProject.getCurrentAnyObject().getStringRectLeft();
+					rectRight = this.currentProject.getCurrentAnyObject().getStringRectRight();
 				}
 				
-				cursor += "w";
+				if(rectLeft <= rectRight)
+				{
+					cursor += "w";
+				}
+				else
+				{
+					cursor += "e";
+				}
 				
 				if(buttonUp && e.button == 0)
 				{
@@ -3196,6 +3245,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			}
 			else if(this.clickRight)
 			{
+				let rectLeft = 0;
+				let rectRight = 0;
+				
 				if(this.clickOption == "resize")
 				{
 					let nearestLine = this.getVerticalNearestLine(mouseX / scaleX, mouseY / scaleY, 4.0 / scaleX);
@@ -3208,6 +3260,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					{
 						this.currentProject.getCurrentAnyObject().setRectRight(mouseX / scaleX);
 					}
+					
+					rectLeft = this.currentProject.getCurrentAnyObject().getRectLeft();
+					rectRight = this.currentProject.getCurrentAnyObject().getRectRight();
 				}
 				else if(this.clickOption == "move")
 				{
@@ -3243,9 +3298,19 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 						this.currentProject.getCurrentTextDraw().offsetRect(x - this.currentProject.getCurrentTextDraw().getRectRight(), 0);
 					
 					this.currentProject.getCurrentTextDraw().letterSizeX = (x - left) / this.currentProject.getCurrentTextDraw().stringWidth;
+					
+					rectLeft = this.currentProject.getCurrentAnyObject().getStringRectLeft();
+					rectRight = this.currentProject.getCurrentAnyObject().getStringRectRight();
 				}
 				
-				cursor += "e";
+				if(rectLeft <= rectRight)
+				{
+					cursor += "e";
+				}
+				else
+				{
+					cursor += "w";
+				}
 				
 				if(buttonUp && e.button == 0)
 				{
@@ -3373,7 +3438,14 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			{
 				if(Math.abs(mouseY - this.optionsUI.rectTop) < 4 && (!this.currentProject.getCurrentGuideLine() || this.currentProject.getCurrentGuideLine().style == 1 || this.clickOption == "move"))
 				{
-					cursor += "n";
+					if(this.optionsUI.rectTop <= this.optionsUI.rectBottom)
+					{
+						cursor += "n";
+					}
+					else
+					{
+						cursor += "s";
+					}
 					
 					if(buttonDown && e.button == 0)
 					{
@@ -3383,7 +3455,14 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				}
 				else if(Math.abs(mouseY - this.optionsUI.rectBottom) < 4 && (!this.currentProject.getCurrentGuideLine() || this.currentProject.getCurrentGuideLine().style == 1))
 				{
-					cursor += "s";
+					if(this.optionsUI.rectTop <= this.optionsUI.rectBottom)
+					{
+						cursor += "s";
+					}
+					else
+					{
+						cursor += "n";
+					}
 					
 					if(buttonDown && e.button == 0)
 					{
@@ -3394,7 +3473,14 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				
 				if(Math.abs(mouseX - this.optionsUI.rectLeft) < 4 && (!this.currentProject.getCurrentGuideLine() || this.currentProject.getCurrentGuideLine().style == 0 || this.clickOption == "move"))
 				{
-					cursor += "w";
+					if(this.optionsUI.rectLeft <= this.optionsUI.rectRight)
+					{
+						cursor += "w";
+					}
+					else
+					{
+						cursor += "e";
+					}
 					
 					if(buttonDown && e.button == 0)
 					{
@@ -3404,7 +3490,14 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				}
 				else if(Math.abs(mouseX - this.optionsUI.rectRight) < 4 && (!this.currentProject.getCurrentGuideLine() || this.currentProject.getCurrentGuideLine().style == 0))
 				{
-					cursor += "e";
+					if(this.optionsUI.rectLeft <= this.optionsUI.rectRight)
+					{
+						cursor += "e";
+					}
+					else
+					{
+						cursor += "w";
+					}
 					
 					if(buttonDown && e.button == 0)
 					{
