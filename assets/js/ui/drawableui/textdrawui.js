@@ -361,6 +361,11 @@ TextDrawUI.prototype.drawString = function(textDraw, fontUI, x, y, str, draw, bg
 				if(!bg)
 					fontUI.setColor(0xA86EFCFF);
 			}
+			else if(str[i] == 'h')
+			{
+				if(!bg)
+					fontUI.setColorLighter();
+			}
 			else if(str[i] == '~')
 			{
 				sign = false;

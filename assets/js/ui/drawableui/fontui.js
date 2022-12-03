@@ -5,6 +5,7 @@ function FontUI(parent, fontFile, setting)
 	
 	this.width = 0;
 	this.height = 0;
+	this.color = 0x00000000;
 	
 	this.imageUI = new EntityUI(null, "img", {"src": "./assets/images/font" + fontFile + ".png", onload: () => { this.resize(); }});
 	this.colorUI = new DrawableUI(null, {});
@@ -43,10 +44,34 @@ FontUI.prototype.resize = function()
 
 FontUI.prototype.setColor = function(color)
 {
+	this.color = color;
+	
 	this.colorUI.context.clearRect(0, 0, this.width, this.height);
 	this.colorUI.context.fillStyle = color.toRGBA();
 	this.colorUI.context.fillRect(0, 0, this.width, this.height);
 	this.colorUI.context.globalCompositeOperation = "destination-in";
 	this.colorUI.context.drawImage(this.imageUI.element, 0, 0, this.width, this.height, 0, 0, this.width, this.height);
 	this.colorUI.context.globalCompositeOperation = "source-over";
+};
+
+FontUI.prototype.setColorLighter = function()
+{
+	let color = this.color;
+	
+	let red = (color >> 24) & 0xFF;
+	let green = (color >> 16) & 0xFF;
+	let blue = (color >> 8) & 0xFF;
+	let alpha = color & 0xFF;
+	
+	red = (red * 1.5) >>> 0;
+	green = (green * 1.5) >>> 0;
+	blue = (blue * 1.5) >>> 0;
+	
+	red = Math.min(red, 255);
+	green = Math.min(green, 255);
+	blue = Math.min(blue, 255);
+	
+	color = ((red << 24) + (green << 16) + (blue << 8) + (alpha)) >>> 0;
+	
+	this.setColor(color);
 };
