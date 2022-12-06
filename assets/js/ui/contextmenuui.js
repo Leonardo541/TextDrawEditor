@@ -34,7 +34,7 @@ ContextMenuUI.prototype.appendItem = function(text, click, icon)
 	return new EntityUI(this, "div", setting);
 };
 
-ContextMenuUI.prototype.getSubMenuList = function(text, subMenuUI)
+ContextMenuUI.prototype.getSubMenuList = function()
 {
 	let subMenuList = [];
 	

@@ -60,12 +60,12 @@ function EntityUI(parent, tagName, setting)
 	Object.defineProperty(this.element, "entityUI", {value: this, writable: false});
 }
 
-EntityUI.prototype.appendSpacing = function(text)
+EntityUI.prototype.appendSpacing = function()
 {
 	return new EntityUI(this, "div", {class: "spacing"});
 };
 
-EntityUI.prototype.appendLineBreak = function(text)
+EntityUI.prototype.appendLineBreak = function()
 {
 	return new EntityUI(this, "br", {});
 };
