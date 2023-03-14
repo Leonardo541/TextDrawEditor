@@ -1,6 +1,11 @@
 
 function ContextMenuUI(parent, x, y)
 {
+	if(parent instanceof EntityUI && parent.element.classList.contains("contextItem"))
+	{
+		parent.rightPointingUI = new EntityUI(parent, "div", {class: "rightPointing"});
+	}
+	
 	EntityUI.call(this, parent, "div", {class: "contextMenu", contextmenu: (e) => { e.preventDefault(); }});
 	
 	this.element.style.left = x + "px";

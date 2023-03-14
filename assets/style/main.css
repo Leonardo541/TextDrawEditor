@@ -431,6 +431,19 @@ canvas
 	height: 4px;
 }
 
+.rightPointing
+{
+	position: absolute;
+	right: 3px;
+	top: 50%;
+	transform: translate(0px,-50%);
+}
+
+.rightPointing:after
+{
+	content: "\25BA";
+}
+
 .scrollable.scrollbarThin::-webkit-scrollbar
 {
 	width: 8px;
