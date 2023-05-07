@@ -18,12 +18,26 @@ DialogUI.prototype = Object.create(EntityUI.prototype);
 
 DialogUI.prototype.startMoving = function(e)
 {
+	main.overrideCursor(true);
+	
 	document.body.style.cursor = "move";
 	document.body.style.userSelect = "none";
 	
 	this.moving = true;
 	this.movingX = e.clientX - this.element.getBoundingClientRect().left;
 	this.movingY = e.clientY - this.element.getBoundingClientRect().top;
+};
+
+DialogUI.prototype.stopMoving = function(e)
+{
+	main.overrideCursor(false);
+	
+	document.body.style.cursor = "";
+	document.body.style.userSelect = "";
+	
+	this.moving = false;
+	this.movingX = 0;
+	this.movingY = 0;
 };
 
 DialogUI.prototype.move = function(x, y)

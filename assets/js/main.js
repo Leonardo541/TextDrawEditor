@@ -10,6 +10,7 @@ function Main()
 {
 	this.contextMenuUI = null;
 	this.dialogsUI = [];
+	this.overrideCursorUI = null;
 	
 	this.mainUI = new EntityUI("body", "div", {id: "main"});
 	
@@ -25,7 +26,9 @@ function Main()
 	
 	this.scrollableControlsUI.appendSpacing();
 	this.controlListUI = new EntityUI(this.scrollableControlsUI, "div", {class: "textDrawList"});
-	this.scrollableControlsUI.appendStaticLine();
+	this.controlResizerUI = new ResizerUI(this.scrollableControlsUI, 126);
+	
+	this.lastTextDrawItemUI = null;
 	
 	this.textDrawControlsUI = new EntityUI(this.scrollableControlsUI, "div", {style: {display: "none"}});
 	this.guideGridControlsUI = new EntityUI(this.scrollableControlsUI, "div", {style: {display: "none"}});
@@ -321,6 +324,11 @@ Main.prototype.loadProjects = function()
 			}
 		}
 		
+		if(saved.controlListHeight)
+		{
+			this.controlListUI.element.style.height = saved.controlListHeight + "px";
+		}
+		
 		if(this.currentProject)
 		{
 			this.updateControlList();
@@ -354,7 +362,9 @@ Main.prototype.saveProjects = function()
 				savedCurrentProjectIdx = i;
 		}
 		
-		window.localStorage.setItem("save", JSON.stringify({projects: savedProjects, currentProjectIdx: savedCurrentProjectIdx}));
+		let controlListHeight = this.controlListUI.element.offsetHeight;
+		
+		window.localStorage.setItem("save", JSON.stringify({projects: savedProjects, currentProjectIdx: savedCurrentProjectIdx, controlListHeight: controlListHeight}));
 		
 		this.saveProjectsEnabled = false;
 	}
@@ -1771,14 +1781,33 @@ Main.prototype.hideDialog = function(dialogUI)
 	dialogUI.remove();
 };
 
+Main.prototype.overrideCursor = function(override)
+{
+	if(override)
+	{
+		if(!this.overrideCursorUI)
+		{
+			this.overrideCursorUI = new EntityUI("body", "div", {class: "overrideCursor"});
+		}
+	}
+	else
+	{
+		if(this.overrideCursorUI)
+		{
+			this.overrideCursorUI.remove();
+			this.overrideCursorUI = null;
+		}
+	}
+};
+
 Main.prototype.updateControlList = function()
 {
 	this.controlListUI.element.innerHTML = "";
 	
+	this.lastTextDrawItemUI = null;
+	
 	if(this.currentProject)
 	{
-		let lastTextDrawItemUI = null;
-		
 		for(let i = 0; i < this.currentProject.textDrawList.length; i++)
 		{
 			if(this.currentProject.textDrawList[i].textDrawItemUI.element.classList.contains("lastTextDrawItem"))
@@ -1786,7 +1815,7 @@ Main.prototype.updateControlList = function()
 			
 			this.controlListUI.element.appendChild(this.currentProject.textDrawList[i].textDrawItemUI.element);
 			
-			lastTextDrawItemUI = this.currentProject.textDrawList[i].textDrawItemUI;
+			this.lastTextDrawItemUI = this.currentProject.textDrawList[i].textDrawItemUI;
 		}
 		
 		for(let i = 0; i < this.currentProject.guideGrids.length; i++)
@@ -1796,7 +1825,7 @@ Main.prototype.updateControlList = function()
 			
 			this.controlListUI.element.appendChild(this.currentProject.guideGrids[i].textDrawItemUI.element);
 			
-			lastTextDrawItemUI = this.currentProject.guideGrids[i].textDrawItemUI;
+			this.lastTextDrawItemUI = this.currentProject.guideGrids[i].textDrawItemUI;
 		}
 		
 		for(let i = 0; i < this.currentProject.guideLines.length; i++)
@@ -1806,11 +1835,11 @@ Main.prototype.updateControlList = function()
 			
 			this.controlListUI.element.appendChild(this.currentProject.guideLines[i].textDrawItemUI.element);
 			
-			lastTextDrawItemUI = this.currentProject.guideLines[i].textDrawItemUI;
+			this.lastTextDrawItemUI = this.currentProject.guideLines[i].textDrawItemUI;
 		}
 		
-		if(lastTextDrawItemUI && this.controlListUI.hasScrollBar())
-			lastTextDrawItemUI.element.classList.add("lastTextDrawItem");
+		if(this.lastTextDrawItemUI && this.controlListUI.hasScrollBar())
+			this.lastTextDrawItemUI.element.classList.add("lastTextDrawItem");
 	}
 };
 
@@ -2888,16 +2917,42 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			
 			if(buttonUp)
 			{
-				document.body.style.cursor = "";
-				document.body.style.userSelect = "";
-				
-				dialogUI.moving = false;
-				dialogUI.movingX = 0;
-				dialogUI.movingY = 0;
+				dialogUI.stopMoving();
 			}
 			
 			return;
 		}
+	}
+	
+	if(this.controlResizerUI.resizing)
+	{
+		this.controlResizerUI.resize(e.clientY - this.controlResizerUI.resizingY);
+		
+		if(this.lastTextDrawItemUI)
+		{
+			if(this.controlListUI.hasScrollBar())
+			{
+				if(!this.lastTextDrawItemUI.element.classList.contains("lastTextDrawItem"))
+					this.lastTextDrawItemUI.element.classList.add("lastTextDrawItem");
+			}
+			else
+			{
+				if(this.lastTextDrawItemUI.element.classList.contains("lastTextDrawItem"))
+					this.lastTextDrawItemUI.element.classList.remove("lastTextDrawItem");
+			}
+		}
+		
+		this.checkScrollBars(e);
+		
+		if(buttonUp)
+		{
+			this.controlResizerUI.stopResizing();
+			
+			this.saveProjectsEnabled = true;
+			this.saveProjects();
+		}
+		
+		return;
 	}
 	
 	if(this.currentProject && this.currentProject.getCurrentAnyObject())
@@ -2947,6 +3002,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			
 			if(buttonUp)
 			{
+				this.overrideCursor(false);
+				
 				document.body.style.cursor = "";
 				document.body.style.userSelect = "";
 				
@@ -2966,6 +3023,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			{
 				if(this.currentProject.textDrawList[i].thumbnailUI.isInBoundingClientRect(e.clientX, e.clientY))
 				{
+					this.overrideCursor(true);
+					
 					document.body.style.cursor = "move";
 					document.body.style.userSelect = "none";
 					
@@ -2982,6 +3041,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			{
 				if(this.currentProject.guideGrids[i].thumbnailUI.isInBoundingClientRect(e.clientX, e.clientY))
 				{
+					this.overrideCursor(true);
+					
 					document.body.style.cursor = "move";
 					document.body.style.userSelect = "none";
 					
@@ -2998,6 +3059,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			{
 				if(this.currentProject.guideLines[i].thumbnailUI.isInBoundingClientRect(e.clientX, e.clientY))
 				{
+					this.overrideCursor(true);
+					
 					document.body.style.cursor = "move";
 					document.body.style.userSelect = "none";
 					
@@ -3093,6 +3156,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				
 				if(buttonUp && e.button == 0)
 				{
+					this.overrideCursor(false);
+					
 					this.clicked = false;
 					this.clickTop = false;
 				}
@@ -3163,6 +3228,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				
 				if(buttonUp && e.button == 0)
 				{
+					this.overrideCursor(false);
+					
 					this.clicked = false;
 					this.clickBottom = false;
 				}
@@ -3239,6 +3306,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				
 				if(buttonUp && e.button == 0)
 				{
+					this.overrideCursor(false);
+					
 					this.clicked = false;
 					this.clickLeft = false;
 				}
@@ -3314,6 +3383,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				
 				if(buttonUp && e.button == 0)
 				{
+					this.overrideCursor(false);
+					
 					this.clicked = false;
 					this.clickRight = false;
 				}
@@ -3449,6 +3520,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					
 					if(buttonDown && e.button == 0)
 					{
+						this.overrideCursor(true);
+						
 						this.clicked = true;
 						this.clickTop = true;
 					}
@@ -3466,6 +3539,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					
 					if(buttonDown && e.button == 0)
 					{
+						this.overrideCursor(true);
+						
 						this.clicked = true;
 						this.clickBottom = true;
 					}
@@ -3484,6 +3559,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					
 					if(buttonDown && e.button == 0)
 					{
+						this.overrideCursor(true);
+						
 						this.clicked = true;
 						this.clickLeft = true;
 					}
@@ -3501,6 +3578,8 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 					
 					if(buttonDown && e.button == 0)
 					{
+						this.overrideCursor(true);
+						
 						this.clicked = true;
 						this.clickRight = true;
 					}

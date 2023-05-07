@@ -300,6 +300,27 @@ canvas
 	background-color: #6d6d6d;
 }
 
+.resizer
+{
+	padding: 6px 0px;
+	cursor: row-resize;
+}
+
+.resizer hr
+{
+	margin: 0px;
+}
+
+.overrideCursor
+{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100vw;
+	height: 100vh;
+	z-index: 99999;
+}
+
 .contextMenu
 { 
 	position: absolute;
