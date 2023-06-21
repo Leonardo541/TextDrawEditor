@@ -37,124 +37,124 @@ function Main()
 	
 	this.textDrawControlsUI.appendStaticText("Name");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlNameUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.nameChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlNameUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.nameChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.TextDrawName); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Text");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlTextUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.textChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlTextUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.textChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawText); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Position");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlXUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxLeft", keyup: (e) => { this.xChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
-	this.controlYUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxRight", keyup: (e) => { this.yChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlXUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxLeft", keyup: (e) => { this.xChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawPosition); this.saveProjects(); }});
+	this.controlYUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxRight", keyup: (e) => { this.yChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawPosition); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Letter Size");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlLetterSizeXUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxLeft", keyup: (e) => { this.letterSizeXChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
-	this.controlLetterSizeYUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxRight", keyup: (e) => { this.letterSizeYChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlLetterSizeXUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxLeft", keyup: (e) => { this.letterSizeXChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawLetterSize); this.saveProjects(); }});
+	this.controlLetterSizeYUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxRight", keyup: (e) => { this.letterSizeYChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawLetterSize); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Text Size");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlTextSizeXUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxLeft", keyup: (e) => { this.textSizeXChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
-	this.controlTextSizeYUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxRight", keyup: (e) => { this.textSizeYChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlTextSizeXUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxLeft", keyup: (e) => { this.textSizeXChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawTextSize); this.saveProjects(); }});
+	this.controlTextSizeYUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxRight", keyup: (e) => { this.textSizeYChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawTextSize); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Alignment");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlAlignmentUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.alignmentChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlAlignmentUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.alignmentChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawAlignment); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Color");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.colorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.colorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawColor); this.saveProjects(); }});
 	this.controlColorPickerUI = new TextBoxUI(this.textDrawControlsUI, {type: "color", change: (e) => { this.colorPickerChange(e); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Use Box");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlUseBoxUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.useBoxChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlUseBoxUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.useBoxChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawUseBox); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Box Color");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlBoxColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.boxColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlBoxColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.boxColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawBoxColor); this.saveProjects(); }});
 	this.controlBoxColorPickerUI = new TextBoxUI(this.textDrawControlsUI, {type: "color", change: (e) => { this.boxColorPickerChange(e); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Set Shadow");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlSetShadowUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.setShadowChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlSetShadowUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.setShadowChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawSetShadow); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Set Outline");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlSetOutlineUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.setOutlineChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlSetOutlineUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.setOutlineChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawSetOutline); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Background Color");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlBackgroundColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.backgroundColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlBackgroundColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.backgroundColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawBackgroundColor); this.saveProjects(); }});
 	this.controlBackgroundColorPickerUI = new TextBoxUI(this.textDrawControlsUI, {type: "color", change: (e) => { this.backgroundColorPickerChange(e); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Font");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlFontUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.fontChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlFontUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.fontChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawFont); this.saveProjects(); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Set Proportional");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlSetProportionalUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.setProportionalChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.saveProjects(); }});
+	this.controlSetProportionalUI = new TextBoxUI(this.textDrawControlsUI, {keyup: (e) => { this.setProportionalChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawSetProportional); this.saveProjects(); }});
 	this.textDrawControlsUI.appendStaticLine();
 	this.controlTxdUI = new ButtonUI(this.textDrawControlsUI, {innerText: "Texture Dictionary", onclick: (e) => { this.showTextureDictionaryDialog(); }});
 	
 	this.guideGridControlsUI.appendStaticText("Name");
 	this.guideGridControlsUI.appendLineBreak();
-	this.controlGuideGridNameUI = new TextBoxUI(this.guideGridControlsUI, {keyup: (e) => { this.guideGridNameChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideGridNameUI = new TextBoxUI(this.guideGridControlsUI, {keyup: (e) => { this.guideGridNameChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideGridName); this.saveProjects(); }});
 	this.guideGridControlsUI.appendLineBreak();
 	this.guideGridControlsUI.appendStaticText("Position");
 	this.guideGridControlsUI.appendLineBreak();
-	this.controlGuideGridXUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideGridXChange(e); }, focusout: (e) => { this.saveProjects(); }});
-	this.controlGuideGridYUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideGridYChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideGridXUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideGridXChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideGridPosition); this.saveProjects(); }});
+	this.controlGuideGridYUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideGridYChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideGridPosition); this.saveProjects(); }});
 	this.guideGridControlsUI.appendLineBreak();
 	this.guideGridControlsUI.appendStaticText("Size");
 	this.guideGridControlsUI.appendLineBreak();
-	this.controlGuideGridWidthUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideGridWidthChange(e); }, focusout: (e) => { this.saveProjects(); }});
-	this.controlGuideGridHeightUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideGridHeightChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideGridWidthUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideGridWidthChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideGridSize); this.saveProjects(); }});
+	this.controlGuideGridHeightUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideGridHeightChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideGridSize); this.saveProjects(); }});
 	this.guideGridControlsUI.appendLineBreak();
 	this.guideGridControlsUI.appendStaticText("Margin / Padding");
 	this.guideGridControlsUI.appendLineBreak();
-	this.controlGuideGridMarginUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideGridMarginChange(e); }, focusout: (e) => { this.saveProjects(); }});
-	this.controlGuideGridPaddingUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideGridPaddingChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideGridMarginUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideGridMarginChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideGridMargin); this.saveProjects(); }});
+	this.controlGuideGridPaddingUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideGridPaddingChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideGridPadding); this.saveProjects(); }});
 	this.guideGridControlsUI.appendLineBreak();
 	this.guideGridControlsUI.appendStaticText("Rows / Columns");
 	this.guideGridControlsUI.appendLineBreak();
-	this.controlGuideGridRowsUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideGridRowsChange(e); }, focusout: (e) => { this.saveProjects(); }});
-	this.controlGuideGridColumnsUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideGridColumnsChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideGridRowsUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideGridRowsChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideGridRows); this.saveProjects(); }});
+	this.controlGuideGridColumnsUI = new TextBoxUI(this.guideGridControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideGridColumnsChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideGridColumns); this.saveProjects(); }});
 	
 	this.guideLineControlsUI.appendStaticText("Name");
 	this.guideLineControlsUI.appendLineBreak();
-	this.controlGuideLineNameUI = new TextBoxUI(this.guideLineControlsUI, {keyup: (e) => { this.guideLineNameChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideLineNameUI = new TextBoxUI(this.guideLineControlsUI, {keyup: (e) => { this.guideLineNameChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideLineName); this.saveProjects(); }});
 	this.guideLineControlsUI.appendLineBreak();
 	this.guideLineControlsUI.appendStaticText("Position");
 	this.guideLineControlsUI.appendLineBreak();
-	this.controlGuideLineXUI = new TextBoxUI(this.guideLineControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideLineXChange(e); }, focusout: (e) => { this.saveProjects(); }});
-	this.controlGuideLineYUI = new TextBoxUI(this.guideLineControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideLineYChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideLineXUI = new TextBoxUI(this.guideLineControlsUI, {class: "textBoxLeft", keyup: (e) => { this.guideLineXChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideLinePosition); this.saveProjects(); }});
+	this.controlGuideLineYUI = new TextBoxUI(this.guideLineControlsUI, {class: "textBoxRight", keyup: (e) => { this.guideLineYChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideLinePosition); this.saveProjects(); }});
 	this.guideLineControlsUI.appendLineBreak();
 	this.guideLineControlsUI.appendStaticText("Size");
 	this.guideLineControlsUI.appendLineBreak();
-	this.controlGuideLineSizeUI = new TextBoxUI(this.guideLineControlsUI, {keyup: (e) => { this.guideLineSizeChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideLineSizeUI = new TextBoxUI(this.guideLineControlsUI, {keyup: (e) => { this.guideLineSizeChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideLineSize); this.saveProjects(); }});
 	this.guideLineControlsUI.appendLineBreak();
 	this.guideLineControlsUI.appendStaticText("Padding");
 	this.guideLineControlsUI.appendLineBreak();
-	this.controlGuideLinePaddingUI = new TextBoxUI(this.guideLineControlsUI, {keyup: (e) => { this.guideLinePaddingChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideLinePaddingUI = new TextBoxUI(this.guideLineControlsUI, {keyup: (e) => { this.guideLinePaddingChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideLinePadding); this.saveProjects(); }});
 	this.guideLineControlsUI.appendLineBreak();
 	this.guideLineControlsUI.appendStaticText("Style");
 	this.guideLineControlsUI.appendLineBreak();
-	this.controlGuideLineStyleUI = new ListBoxUI(this.guideLineControlsUI, {change: (e) => { this.guideLineStyleChange(e); }, focusout: (e) => { this.saveProjects(); }});
+	this.controlGuideLineStyleUI = new ListBoxUI(this.guideLineControlsUI, {change: (e) => { this.guideLineStyleChange(e); }, focusout: (e) => { this.checkAndPushHistoryData(HistoryType.GuideLineStyle); this.saveProjects(); }});
 	this.controlGuideLineStyleUI.appendOption("Horizontal");
 	this.controlGuideLineStyleUI.appendOption("Vertical");
 	
 	this.multipleControlsUI.appendStaticText("Position");
 	this.multipleControlsUI.appendLineBreak();
-	this.controlMultipleXUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxLeft", keyup: (e) => { this.multipleXChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.saveProjects(); }});
-	this.controlMultipleYUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxRight", keyup: (e) => { this.multipleYChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.saveProjects(); }});
+	this.controlMultipleXUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxLeft", keyup: (e) => { this.multipleXChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.checkAndPushHistoryData(HistoryType.MultiplePosition); this.saveProjects(); }});
+	this.controlMultipleYUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxRight", keyup: (e) => { this.multipleYChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.checkAndPushHistoryData(HistoryType.MultiplePosition); this.saveProjects(); }});
 	this.multipleControlsUI.appendLineBreak();
 	this.multipleControlsUI.appendStaticText("Size");
 	this.multipleControlsUI.appendLineBreak();
-	this.controlMultipleWidthUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxLeft", keyup: (e) => { this.multipleWidthChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.saveProjects(); }});
-	this.controlMultipleHeightUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxRight", keyup: (e) => { this.multipleHeightChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.saveProjects(); }});
+	this.controlMultipleWidthUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxLeft", keyup: (e) => { this.multipleWidthChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.checkAndPushHistoryData(HistoryType.MultipleSize); this.saveProjects(); }});
+	this.controlMultipleHeightUI = new TextBoxUI(this.multipleControlsUI, {class: "textBoxRight", keyup: (e) => { this.multipleHeightChange(e); }, focusout: (e) => { this.repaintedThumbnailAll = false; this.repaint(); this.checkAndPushHistoryData(HistoryType.MultipleSize); this.saveProjects(); }});
 	this.multipleControlsUI.appendLineBreak();
 	this.controlMultipleLetterSizeOnResizeLabelUI = new EntityUI(this.multipleControlsUI, "label", {});
 	this.controlMultipleLetterSizeOnResizeCheckboxUI = new TextBoxUI(this.controlMultipleLetterSizeOnResizeLabelUI, {type: "checkbox", checked: "checked", change: (e) => { this.multipleLetterSizeOnResizeChange(e); }});
@@ -194,6 +194,7 @@ function Main()
 	this.repaintedThumbnailAll = true;
 	
 	this.letterSizeOnResize = true;
+	this.keepHistory = false;
 	
 	this.loadProjects();
 	
@@ -219,6 +220,8 @@ function Main()
 	this.checkScrollBars();
 	
 	TextureDictionary.updateEventListeners.push(this.repaint.bind(this));
+	
+	this.showHistoryDialog();
 }
 
 Main.prototype.addProject = function()
@@ -285,6 +288,7 @@ Main.prototype.changeProject = function(project)
 	this.saveProjectsEnabled = true;
 	this.saveProjects();
 	
+	this.updateHistoryDialog();
 	this.updateControlList();
 	this.updateControlType();
 	this.updateControls();
@@ -329,6 +333,11 @@ Main.prototype.loadProjects = function()
 			this.controlListUI.element.style.height = saved.controlListHeight + "px";
 		}
 		
+		if(saved.keepHistory)
+		{
+			this.keepHistory = saved.keepHistory;
+		}
+		
 		if(this.currentProject)
 		{
 			this.updateControlList();
@@ -356,50 +365,149 @@ Main.prototype.saveProjects = function()
 		
 		for(let i = 0; i < this.projects.length; i++)
 		{
-			savedProjects.push(this.projects[i].saveProject());
+			let savedProject = this.projects[i].saveProject(!this.keepHistory);
+			
+			if(!this.keepHistory)
+			{
+				savedProject.internalIdCounter = undefined;
+				savedProject.history = undefined;
+				savedProject.historyIdx = undefined;
+			}
+			
+			savedProjects.push(savedProject);
 			
 			if(this.projects[i] == this.currentProject)
 				savedCurrentProjectIdx = i;
 		}
 		
 		let controlListHeight = this.controlListUI.element.offsetHeight;
+		let keepHistory = this.keepHistory;
 		
-		window.localStorage.setItem("save", JSON.stringify({projects: savedProjects, currentProjectIdx: savedCurrentProjectIdx, controlListHeight: controlListHeight}));
+		window.localStorage.setItem("save", JSON.stringify({projects: savedProjects, currentProjectIdx: savedCurrentProjectIdx, controlListHeight: controlListHeight, keepHistory: keepHistory}));
 		
 		this.saveProjectsEnabled = false;
 	}
 };
 
-Main.prototype.createTextDraw = function(text, x, y, fromTextDraw)
+Main.prototype.updateHistoryDialog = function()
 {
-	let textDraw = this.currentProject.createTextDraw(text, x, y);
+	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof HistoryDialogUI);
 	
-	if(fromTextDraw)
-		textDraw.fromTextDraw(fromTextDraw);
-	
-	this.updateControlList();
-	this.changeTextDraw(textDraw);
+	if(dialogUI)
+	{
+		let history = [];
+		let historyIdx = 0;
+		
+		if(this.currentProject)
+		{
+			history = this.currentProject.history;
+			historyIdx = this.currentProject.historyIdx;
+		}
+		
+		dialogUI.updateHistoryList(history, historyIdx, (historyData) => { this.applyHistoryData(historyData); });
+	}
 };
 
-Main.prototype.removeTextDraw = function (textDraw)
+Main.prototype.updateHistoryDataFromCursor = function()
 {
-	for(let i = 0; i < this.currentProject.textDrawList.length; i++)
+	if(this.currentProject)
 	{
-		if(this.currentProject.textDrawList[i] == textDraw)
+		let anyObject = this.currentProject.getCurrentAnyObject();
+		
+		if(anyObject)
 		{
-			this.currentProject.textDrawList.splice(i, 1);
-			break;
+			if(this.clickOption == "resize")
+			{
+				if(anyObject instanceof TextDraw)
+				{
+					this.updateHistoryData(HistoryType.TextDrawResize, anyObject);
+				}
+				else if(anyObject instanceof GuideGrid)
+				{
+					this.updateHistoryData(HistoryType.GuideGridResize, anyObject);
+				}
+				else if(anyObject instanceof GuideLine)
+				{
+					this.updateHistoryData(HistoryType.GuideLineResize, anyObject);
+				}
+				else if(anyObject instanceof MultipleSelection)
+				{
+					this.updateHistoryData(HistoryType.MultipleResize, anyObject);
+				}
+			}
+			else if(this.clickOption == "move")
+			{
+				if(anyObject instanceof TextDraw)
+				{
+					this.updateHistoryData(HistoryType.TextDrawMove, anyObject);
+				}
+				else if(anyObject instanceof GuideGrid)
+				{
+					this.updateHistoryData(HistoryType.GuideGridMove, anyObject);
+				}
+				else if(anyObject instanceof GuideLine)
+				{
+					this.updateHistoryData(HistoryType.GuideLineMove, anyObject);
+				}
+				else if(anyObject instanceof MultipleSelection)
+				{
+					this.updateHistoryData(HistoryType.MultipleMove, anyObject);
+				}
+			}
+			else if(this.clickOption == "resize-letter")
+			{
+				if(anyObject instanceof TextDraw)
+				{
+					this.updateHistoryData(HistoryType.TextDrawResizeLetter, anyObject);
+				}
+			}
 		}
 	}
-	
-	textDraw.textDrawItemUI.remove();
-	
-	if(this.currentProject.getCurrentTextDraw() == textDraw)
+};
+
+Main.prototype.updateHistoryData = function(type, anyObject)
+{
+	if(this.currentProject)
+		this.currentProject.updateHistoryData(type, anyObject);
+};
+
+Main.prototype.checkAndPushHistoryData = function(type, anyObject)
+{
+	if(this.currentProject)
 	{
-		this.changeTextDraw(null);
+		if(this.currentProject.checkAndPushHistoryData(type, anyObject))
+			this.updateHistoryDialog();
 	}
-	else
+};
+
+Main.prototype.pushHistoryData = function(type, anyObject)
+{
+	if(this.currentProject)
 	{
+		if(this.currentProject.pushHistoryData(type, anyObject))
+			this.updateHistoryDialog();
+	}
+};
+
+Main.prototype.applyHistoryData = function(historyData)
+{
+	if(this.currentProject)
+	{
+		for(let i = 0; i < this.currentProject.multipleSelection.selections.length; i++)
+			this.currentProject.multipleSelection.selections[i].textDrawItemUI.element.classList.remove("currentTextDrawItem");
+		
+		this.currentProject.applyHistoryData(historyData);
+		
+		for(let i = 0; i < this.currentProject.multipleSelection.selections.length; i++)
+			this.currentProject.multipleSelection.selections[i].textDrawItemUI.element.classList.add("currentTextDrawItem");
+		
+		this.updateControlList();
+		this.updateControlType();
+		this.updateControls();
+		this.updateGuideGridControls();
+		this.updateGuideLineControls();
+		this.updateMultipleControls();
+		
 		this.repaint();
 		
 		this.saveProjectsEnabled = true;
@@ -407,15 +515,92 @@ Main.prototype.removeTextDraw = function (textDraw)
 	}
 };
 
-Main.prototype.changeTextDraw = function(textDraw, notCheckOtherCurrent)
+Main.prototype.clearHistoryData = function()
 {
-	if(!notCheckOtherCurrent)
+	if(this.currentProject)
+	{
+		this.currentProject.clearHistoryData();
+		
+		this.updateHistoryDialog();
+		
+		this.saveProjectsEnabled = true;
+		this.saveProjects();
+	}
+};
+
+Main.prototype.getHistoryType = function(fromProject, historyType)
+{
+	if(this.currentProject != fromProject)
+	{
+		if(historyType == HistoryType.TextDrawDuplicate)
+			return HistoryType.TextDrawFromAnotherPoject;
+		
+		if(historyType == HistoryType.GuideGridDuplicate)
+			return HistoryType.GuideGridFromAnotherPoject;
+		
+		if(historyType == HistoryType.GuideLineDuplicate)
+			return HistoryType.GuideLineFromAnotherPoject;
+		
+		if(historyType == HistoryType.MultipleDuplicate)
+			return HistoryType.MultipleFromAnotherPoject;
+	}
+	
+	return historyType;
+};
+	
+Main.prototype.createTextDraw = function(text, x, y, fromTextDraw, historyType = HistoryType.TextDrawCreate)
+{
+	let textDraw = this.currentProject.createTextDraw(text, x, y);
+	
+	if(fromTextDraw)
+	{
+		textDraw.fromTextDraw(fromTextDraw);
+		textDraw.duplicateFromInternalId = fromTextDraw.internalId;
+	}
+	
+	this.updateHistoryData(historyType, textDraw);
+	
+	this.updateControlList();
+	this.changeTextDraw(textDraw);
+	
+	this.updateHistoryData(historyType, textDraw);
+	this.pushHistoryData();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+};
+
+Main.prototype.removeTextDraw = function(textDraw)
+{
+	this.updateHistoryData(HistoryType.TextDrawRemove, textDraw);
+	
+	this.currentProject.removeTextDraw(textDraw);
+	
+	if(this.currentProject.getCurrentTextDraw() == textDraw)
+	{
+		this.changeTextDraw(null, false, true);
+	}
+	else
+	{
+		this.repaint();
+	}
+	
+	this.updateHistoryData(HistoryType.TextDrawRemove, textDraw);
+	this.pushHistoryData();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+};
+
+Main.prototype.changeTextDraw = function(textDraw, noCheckOtherCurrent, noSaveProject)
+{
+	if(!noCheckOtherCurrent)
 	{
 		if(this.currentProject.getCurrentGuideGrid())
-			this.changeGuideGrid(null, true);
+			this.changeGuideGrid(null, true, true);
 		
 		if(this.currentProject.getCurrentGuideLine())
-			this.changeGuideLine(null, true);
+			this.changeGuideLine(null, true, true);
 	}
 	
 	if(textDraw && this.currentProject.getCurrentTextDraw() == textDraw && textDraw.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
@@ -445,53 +630,60 @@ Main.prototype.changeTextDraw = function(textDraw, notCheckOtherCurrent)
 	
 	this.repaint();
 	
-	this.saveProjectsEnabled = true;
-	this.saveProjects();
-};
-
-Main.prototype.createGuideGrid = function(x, y, width, height, margin, padding, rows, columns)
-{
-	let guideGrid = this.currentProject.createGuideGrid(x, y, width, height, margin, padding, rows, columns);
-	
-	this.updateControlList();
-	this.changeGuideGrid(guideGrid);
-};
-
-Main.prototype.removeGuideGrid = function(guideGrid)
-{
-	for(let i = 0; i < this.currentProject.guideGrids.length; i++)
+	if(!noSaveProject)
 	{
-		if(this.currentProject.guideGrids[i] == guideGrid)
-		{
-			this.currentProject.guideGrids.splice(i, 1);
-			break;
-		}
-	}
-	
-	guideGrid.textDrawItemUI.remove();
-	
-	if(this.currentProject.getCurrentGuideGrid() == guideGrid)
-	{
-		this.changeGuideGrid(null);
-	}
-	else
-	{
-		this.repaint();
-		
 		this.saveProjectsEnabled = true;
 		this.saveProjects();
 	}
 };
 
-Main.prototype.changeGuideGrid = function(guideGrid, notCheckOtherCurrent)
+Main.prototype.createGuideGrid = function(x, y, width, height, margin, padding, rows, columns, historyType = HistoryType.GuideGridCreate)
 {
-	if(!notCheckOtherCurrent)
+	let guideGrid = this.currentProject.createGuideGrid(x, y, width, height, margin, padding, rows, columns);
+	
+	this.updateHistoryData(historyType, guideGrid);
+	
+	this.updateControlList();
+	this.changeGuideGrid(guideGrid, false, true);
+	
+	this.updateHistoryData(historyType, guideGrid);
+	this.pushHistoryData();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+};
+
+Main.prototype.removeGuideGrid = function(guideGrid)
+{
+	this.updateHistoryData(HistoryType.GuideGridRemove, guideGrid);
+	
+	this.currentProject.removeGuideGrid(guideGrid);
+	
+	if(this.currentProject.getCurrentGuideGrid() == guideGrid)
+	{
+		this.changeGuideGrid(null, false, true);
+	}
+	else
+	{
+		this.repaint();
+	}
+	
+	this.updateHistoryData(HistoryType.GuideGridRemove, guideGrid);
+	this.pushHistoryData();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+};
+
+Main.prototype.changeGuideGrid = function(guideGrid, noCheckOtherCurrent, noSaveProject)
+{
+	if(!noCheckOtherCurrent)
 	{
 		if(this.currentProject.getCurrentTextDraw())
-			this.changeTextDraw(null, true);
+			this.changeTextDraw(null, true, true);
 		
 		if(this.currentProject.getCurrentGuideLine())
-			this.changeGuideLine(null, true);
+			this.changeGuideLine(null, true, true);
 	}
 	
 	if(guideGrid && this.currentProject.getCurrentGuideGrid() == guideGrid && guideGrid.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
@@ -524,53 +716,60 @@ Main.prototype.changeGuideGrid = function(guideGrid, notCheckOtherCurrent)
 	
 	this.repaint();
 	
-	this.saveProjectsEnabled = true;
-	this.saveProjects();
-};
-
-Main.prototype.createGuideLine = function(x, y, size, padding, style)
-{
-	let guideLine = this.currentProject.createGuideLine(x, y, size, padding, style);
-	
-	this.updateControlList();
-	this.changeGuideLine(guideLine);
-};
-
-Main.prototype.removeGuideLine = function(guideLine)
-{
-	for(let i = 0; i < this.currentProject.guideLines.length; i++)
+	if(!noSaveProject)
 	{
-		if(this.currentProject.guideLines[i] == guideLine)
-		{
-			this.currentProject.guideLines.splice(i, 1);
-			break;
-		}
-	}
-	
-	guideLine.textDrawItemUI.remove();
-	
-	if(this.currentProject.getCurrentGuideLine() == guideLine)
-	{
-		this.changeGuideLine(null);
-	}
-	else
-	{
-		this.repaint();
-		
 		this.saveProjectsEnabled = true;
 		this.saveProjects();
 	}
 };
 
-Main.prototype.changeGuideLine = function(guideLine, notCheckOtherCurrent)
+Main.prototype.createGuideLine = function(x, y, size, padding, style, historyType = HistoryType.GuideGridLine)
 {
-	if(!notCheckOtherCurrent)
+	let guideLine = this.currentProject.createGuideLine(x, y, size, padding, style);
+	
+	this.updateHistoryData(historyType, guideLine);
+	
+	this.updateControlList();
+	this.changeGuideLine(guideLine, false, true);
+	
+	this.updateHistoryData(historyType, guideLine);
+	this.pushHistoryData();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+};
+
+Main.prototype.removeGuideLine = function(guideLine)
+{
+	this.updateHistoryData(HistoryType.GuideLineRemove, guideLine);
+	
+	this.currentProject.removeGuideLine(guideLine);
+	
+	if(this.currentProject.getCurrentGuideLine() == guideLine)
+	{
+		this.changeGuideLine(null, false, true);
+	}
+	else
+	{
+		this.repaint();
+	}
+	
+	this.updateHistoryData(HistoryType.GuideLineRemove, guideLine);
+	this.pushHistoryData();
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
+};
+
+Main.prototype.changeGuideLine = function(guideLine, noCheckOtherCurrent, noSaveProject)
+{
+	if(!noCheckOtherCurrent)
 	{
 		if(this.currentProject.getCurrentTextDraw())
-			this.changeTextDraw(null, true);
+			this.changeTextDraw(null, true, true);
 		
 		if(this.currentProject.getCurrentGuideGrid())
-			this.changeGuideGrid(null, true);
+			this.changeGuideGrid(null, true, true);
 	}
 	
 	if(guideLine && this.currentProject.getCurrentGuideLine() == guideLine && guideLine.textDrawItemUI.element.classList.contains("currentTextDrawItem"))
@@ -603,11 +802,14 @@ Main.prototype.changeGuideLine = function(guideLine, notCheckOtherCurrent)
 	
 	this.repaint();
 	
-	this.saveProjectsEnabled = true;
-	this.saveProjects();
+	if(!noSaveProject)
+	{
+		this.saveProjectsEnabled = true;
+		this.saveProjects();
+	}
 };
 
-Main.prototype.duplicateMultipleSelection = function(x, y, width, height, fromTextDraws, fromGuideGrids, fromGuideLines)
+Main.prototype.duplicateMultipleSelection = function(x, y, width, height, fromTextDraws, fromGuideGrids, fromGuideLines, historyType = HistoryType.MultipleDuplicate)
 {
 	for(let i = 0; i < this.currentProject.multipleSelection.selections.length; i++)
 		this.currentProject.multipleSelection.selections[i].textDrawItemUI.element.classList.remove("currentTextDrawItem");
@@ -619,6 +821,7 @@ Main.prototype.duplicateMultipleSelection = function(x, y, width, height, fromTe
 		let textDraw = this.currentProject.createTextDraw(fromTextDraws[i].text, fromTextDraws[i].x, fromTextDraws[i].y);
 		
 		textDraw.fromTextDraw(fromTextDraws[i]);
+		textDraw.duplicateFromInternalId = fromTextDraws[i].internalId;
 		
 		this.currentProject.multipleSelection.addSelection(textDraw);
 		this.currentProject.multipleSelection.selectionLast = textDraw;
@@ -630,6 +833,8 @@ Main.prototype.duplicateMultipleSelection = function(x, y, width, height, fromTe
 	{
 		let guideGrid = this.currentProject.createGuideGrid(fromGuideGrids[i].x, fromGuideGrids[i].y, fromGuideGrids[i].width, fromGuideGrids[i].height, fromGuideGrids[i].margin, fromGuideGrids[i].padding, fromGuideGrids[i].rows, fromGuideGrids[i].columns);
 		
+		guideGrid.duplicateFromInternalId = fromGuideGrids[i].internalId;
+		
 		this.currentProject.multipleSelection.addSelection(guideGrid);
 		this.currentProject.multipleSelection.selectionLast = guideGrid;
 		
@@ -640,16 +845,23 @@ Main.prototype.duplicateMultipleSelection = function(x, y, width, height, fromTe
 	{
 		let guideLine = this.currentProject.createGuideLine(fromGuideLines[i].x, fromGuideLines[i].y, fromGuideLines[i].size, fromGuideLines[i].padding, fromGuideLines[i].style);
 		
+		guideLine.duplicateFromInternalId = fromGuideLines[i].internalId;
+		
 		this.currentProject.multipleSelection.addSelection(guideLine);
 		this.currentProject.multipleSelection.selectionLast = guideLine;
 		
 		guideLine.textDrawItemUI.element.classList.add("currentTextDrawItem");
 	}
 	
+	this.updateHistoryData(historyType, this.currentProject.multipleSelection);
+	
 	this.currentProject.multipleSelection.setX(x);
 	this.currentProject.multipleSelection.setY(y);
 	this.currentProject.multipleSelection.setWidth(width);
 	this.currentProject.multipleSelection.setHeight(height);
+	
+	this.updateHistoryData(historyType, this.currentProject.multipleSelection);
+	this.pushHistoryData();
 	
 	this.updateControlList();
 	this.updateMultipleControls();
@@ -674,6 +886,8 @@ Main.prototype.duplicateMultipleSelection = function(x, y, width, height, fromTe
 
 Main.prototype.removeMultipleSelection = function()
 {
+	this.updateHistoryData(HistoryType.MultipleRemove, this.currentProject.multipleSelection);
+	
 	for(let i = 0; i < this.currentProject.multipleSelection.selections.length; i++)
 	{
 		let anyObject = this.currentProject.multipleSelection.selections[i];
@@ -720,6 +934,9 @@ Main.prototype.removeMultipleSelection = function()
 	}
 	
 	this.currentProject.multipleSelection = new MultipleSelection(this);
+	
+	this.updateHistoryData(HistoryType.MultipleRemove, this.currentProject.multipleSelection);
+	this.pushHistoryData();
 	
 	this.updateControls();
 	
@@ -965,8 +1182,35 @@ Main.prototype.toggleAnyObject = function(anyObject)
 
 Main.prototype.visibilityAnyObject = function(anyObject)
 {
-	anyObject.visibility = !anyObject.visibility;
-	anyObject.visibilityUI.element.style.backgroundPositionY = anyObject.visibility ? "0px" : "-24px";
+	if(anyObject instanceof TextDraw)
+	{
+		this.updateHistoryData(HistoryType.TextDrawVisibility, anyObject);
+	}
+	else if(anyObject instanceof GuideGrid)
+	{
+		this.updateHistoryData(HistoryType.GuideGridVisibility, anyObject);
+	}
+	else if(anyObject instanceof GuideLine)
+	{
+		this.updateHistoryData(HistoryType.GuideLineVisibility, anyObject);
+	}
+	
+	anyObject.setVisibility(!anyObject.visibility);
+	
+	if(anyObject instanceof TextDraw)
+	{
+		this.updateHistoryData(HistoryType.TextDrawVisibility, anyObject);
+	}
+	else if(anyObject instanceof GuideGrid)
+	{
+		this.updateHistoryData(HistoryType.GuideGridVisibility, anyObject);
+	}
+	else if(anyObject instanceof GuideLine)
+	{
+		this.updateHistoryData(HistoryType.GuideLineVisibility, anyObject);
+	}
+	
+	this.pushHistoryData();
 	
 	this.repaint();
 	
@@ -1027,7 +1271,7 @@ Main.prototype.contextMenuTextDraw = function(textDraw, x, y)
 	{
 		this.contextMenuUI.appendItem("Export TextDraw", () => { this.showExportDialog("Export TextDraw", x, y, textDraw); });
 		this.contextMenuUI.appendStaticLine();
-		this.contextMenuUI.appendItem("Duplicate TextDraw", () => { this.showCreateDialog(textDraw.text, x, y, textDraw, "Duplicate TextDraw"); });
+		this.contextMenuUI.appendItem("Duplicate TextDraw", () => { this.showCreateDialog(textDraw.text, x, y, textDraw, HistoryType.TextDrawDuplicate, "Duplicate TextDraw"); });
 		this.contextMenuUI.appendItem("Remove TextDraw", () => { this.removeTextDraw(textDraw) });
 		
 		this.changeTextDraw(textDraw);
@@ -1048,7 +1292,7 @@ Main.prototype.contextMenuGuideGrid = function(guideGrid, x, y)
 	}
 	else
 	{
-		this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid, "Duplicate Guide Grid"); });
+		this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid, HistoryType.GuideGridDuplicate, "Duplicate Guide Grid"); });
 		this.contextMenuUI.appendItem("Remove", () => { this.removeGuideGrid(guideGrid); });
 		
 		this.changeGuideGrid(guideGrid);
@@ -1069,7 +1313,7 @@ Main.prototype.contextMenuGuideLine = function(guideLine, x, y)
 	}
 	else
 	{
-		this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine, "Duplicate Guide Line"); });
+		this.contextMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine, HistoryType.GuideLineDuplicate, "Duplicate Guide Line"); });
 		this.contextMenuUI.appendItem("Remove", () => { this.removeGuideLine(guideLine); });
 		
 		this.changeGuideLine(guideLine);
@@ -1137,7 +1381,7 @@ Main.prototype.contextMenuScreen = function(x, y)
 			contextSubMenuUI.appendStaticLine();
 			contextSubMenuUI.appendItem("Export", () => { this.changeTextDraw(textDraw); this.showExportDialog("Export TextDraw", x, y, textDraw); });
 			contextSubMenuUI.appendStaticLine();
-			contextSubMenuUI.appendItem("Duplicate", () => { this.changeTextDraw(textDraw); this.showCreateDialog(textDraw.text, x, y, textDraw, "Duplicate TextDraw"); });
+			contextSubMenuUI.appendItem("Duplicate", () => { this.changeTextDraw(textDraw); this.showCreateDialog(textDraw.text, x, y, textDraw, HistoryType.TextDrawDuplicate, "Duplicate TextDraw"); });
 			contextSubMenuUI.appendItem("Remove", () => { this.removeTextDraw(textDraw); });
 		}
 	}
@@ -1172,7 +1416,7 @@ Main.prototype.contextMenuScreen = function(x, y)
 			
 			contextSubMenuUI.appendItem("Select", () => { this.changeGuideGrid(guideGrid); });
 			contextSubMenuUI.appendStaticLine();
-			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid, "Duplicate Guide Grid"); });
+			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideGrid(guideGrid); this.showGuideGridDialog(x, y, guideGrid, HistoryType.GuideGridDuplicate, "Duplicate Guide Grid"); });
 			contextSubMenuUI.appendItem("Remove", () => { this.removeGuideGrid(guideGrid); });
 		}
 	}
@@ -1218,7 +1462,7 @@ Main.prototype.contextMenuScreen = function(x, y)
 			
 			contextSubMenuUI.appendItem("Select", () => { this.changeGuideLine(guideLine); });
 			contextSubMenuUI.appendStaticLine();
-			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine, "Duplicate Guide Line"); });
+			contextSubMenuUI.appendItem("Duplicate", () => { this.changeGuideLine(guideLine); this.showGuideLineDialog(x, y, guideLine, HistoryType.GuideLineDuplicate, "Duplicate Guide Line"); });
 			contextSubMenuUI.appendItem("Remove", () => { this.removeGuideLine(guideLine); });
 		}
 	}
@@ -1245,7 +1489,24 @@ Main.prototype.contextMenuScreen = function(x, y)
 		}
 	}
 	
+	this.contextMenuUI.appendStaticLine();
+	
+	let contextItemUI = this.contextMenuUI.appendItem("View", false, "view");
+	let contextSubMenuUI = new ContextMenuUI(contextItemUI, 0, 0);
+	
+	contextSubMenuUI.appendItem("History", () => { this.showHistoryDialog(); }, "history");
+	contextSubMenuUI.appendItem("Texture Dictionary", () => { this.showTextureDictionaryDialog(); }, "texture");
+	
 	this.contextMenuUI.updateSubMenuPosition();
+};
+
+Main.prototype.contextMenuHistory = function(x, y)
+{
+	if(this.contextMenuUI)
+		this.contextMenuUI.remove();
+	
+	this.contextMenuUI = new ContextMenuUI("body", x, y);
+	this.contextMenuUI.appendItem("Clear history", () => { this.clearHistoryData(); });
 };
 
 Main.prototype.contextMenuTexture = function(text, x, y)
@@ -1257,7 +1518,7 @@ Main.prototype.contextMenuTexture = function(text, x, y)
 	this.contextMenuUI.appendItem("Copy", () => {  navigator.clipboard.writeText(text); });
 };
 
-Main.prototype.showCreateDialog = function(text, x, y, fromTextDraw, title = "Create TextDraw")
+Main.prototype.showCreateDialog = function(text, x, y, fromTextDraw, historyType = HistoryType.TextDrawCreate, title = "Create TextDraw")
 {
 	let mouseX;
 	let mouseY;
@@ -1295,7 +1556,9 @@ Main.prototype.showCreateDialog = function(text, x, y, fromTextDraw, title = "Cr
 		mouseY = y - this.screenshotUI.element.getBoundingClientRect().top;
 	}
 	
-	let dialogUI = new CreateDialogUI("body", title, text, mouseX / scaleX, mouseY / scaleY, (text, x, y) => { if(this.currentProject) { this.createTextDraw(text, x, y, copiedTextDraw); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
+	let fromProject = this.currentProject;
+	
+	let dialogUI = new CreateDialogUI("body", title, text, mouseX / scaleX, mouseY / scaleY, (text, x, y) => { if(this.currentProject) { this.createTextDraw(text, x, y, copiedTextDraw, this.getHistoryType(fromProject, historyType)); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
@@ -1444,14 +1707,30 @@ Main.prototype.acceptImportDialog = function(dialogUI, input, toProject)
 		toProject = this.currentProject;
 	}
 	
+	toProject.updateHistoryData(HistoryType.ProjectImport, toProject.multipleSelection);
+	
+	for(let i = 0; i < toProject.multipleSelection.selections.length; i++)
+		toProject.multipleSelection.selections[i].textDrawItemUI.element.classList.remove("currentTextDrawItem");
+	
+	toProject.multipleSelection = new MultipleSelection(this);
+	
 	for(let i = 0; i < textDraws.length; i++)
 	{
 		let textDraw = toProject.createTextDraw(textDraws[i].text, textDraws[i].x, textDraws[i].y);
 		textDraw.fromTextDraw(textDraws[i]);
+		
+		toProject.multipleSelection.addSelection(textDraw);
+		toProject.multipleSelection.selectionLast = textDraw;
+		
+		textDraw.textDrawItemUI.element.classList.add("currentTextDrawItem");
 	}
+	
+	toProject.updateHistoryData(HistoryType.ProjectImport, toProject.multipleSelection);
+	toProject.checkAndPushHistoryData(HistoryType.ProjectImport, toProject.multipleSelection);
 	
 	if(this.currentProject == toProject)
 	{
+		this.updateHistoryDialog();
 		this.updateControlList();
 		this.updateControls();
 		this.updateGuideGridControls();
@@ -1476,7 +1755,10 @@ Main.prototype.showSaveDialog = function(title, x, y, fromProject)
 	
 	if(fromProject instanceof Project)
 	{
-		savedProject = fromProject.saveProject();
+		savedProject = fromProject.saveProject(true);
+		savedProject.internalIdCounter = undefined;
+		savedProject.history = undefined;
+		savedProject.historyIdx = undefined;
 	}
 	
 	let dialogUI = new ExportDialogUI("body", title + " (.json)", "json", (formatter, output, clicked) => { this.acceptSaveDialog(dialogUI, formatter, output, savedProject); if(output == 0 || clicked) this.hideDialog(dialogUI); }, () => { this.hideDialog(dialogUI); });
@@ -1542,10 +1824,23 @@ Main.prototype.acceptOpenDialog = function(dialogUI, input, toProject)
 		toProject = this.currentProject;
 	}
 	
-	toProject.loadProject(savedProject);
+	toProject.lastLoad = [];
+	toProject.updateHistoryData(HistoryType.ProjectOpen, toProject.multipleSelection);
+	
+	for(let i = 0; i < toProject.multipleSelection.selections.length; i++)
+		toProject.multipleSelection.selections[i].textDrawItemUI.element.classList.remove("currentTextDrawItem");
+	
+	toProject.multipleSelection = new MultipleSelection(this);
+	
+	toProject.loadProject(savedProject, true);
+	
+	toProject.updateHistoryData(HistoryType.ProjectOpen, toProject.multipleSelection);
+	toProject.checkAndPushHistoryData(HistoryType.ProjectOpen, toProject.multipleSelection);
+	toProject.lastLoad = null;
 	
 	if(this.currentProject == toProject)
 	{
+		this.updateHistoryDialog();
 		this.updateControlList();
 		this.updateControlType();
 		this.updateControls();
@@ -1562,7 +1857,7 @@ Main.prototype.acceptOpenDialog = function(dialogUI, input, toProject)
 	this.saveProjects();
 };
 
-Main.prototype.showGuideGridDialog = function(x, y, fromGuideGrid, title = "Create Guide Grid")
+Main.prototype.showGuideGridDialog = function(x, y, fromGuideGrid, historyType = HistoryType.GuideGridCreate, title = "Create Guide Grid")
 {
 	let mouseX;
 	let mouseY;
@@ -1614,14 +1909,16 @@ Main.prototype.showGuideGridDialog = function(x, y, fromGuideGrid, title = "Crea
 		columns = 3;
 	}
 	
-	let dialogUI = new GuideGridDialogUI("body", title, mouseX / scaleX, mouseY / scaleY, width, height, margin, padding, rows, columns, (x, y, width, height, margin, padding, rows, columns) => { if(this.currentProject) { this.createGuideGrid(x, y, width, height, margin, padding, rows, columns); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
+	let fromProject = this.currentProject;
+	
+	let dialogUI = new GuideGridDialogUI("body", title, mouseX / scaleX, mouseY / scaleY, width, height, margin, padding, rows, columns, (x, y, width, height, margin, padding, rows, columns) => { if(this.currentProject) { this.createGuideGrid(x, y, width, height, margin, padding, rows, columns, this.getHistoryType(fromProject, historyType)); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
 	this.dialogsUI.push(dialogUI);
 };
 
-Main.prototype.showGuideLineDialog = function(x, y, fromGuideLine, title = "Create Guide Line")
+Main.prototype.showGuideLineDialog = function(x, y, fromGuideLine, historyType = HistoryType.GuideLineCreate, title = "Create Guide Line")
 {
 	let mouseX;
 	let mouseY;
@@ -1664,7 +1961,9 @@ Main.prototype.showGuideLineDialog = function(x, y, fromGuideLine, title = "Crea
 		style = 0;
 	}
 	
-	let dialogUI = new GuideLineDialogUI("body", title, mouseX / scaleX, mouseY / scaleY, size, padding, style, (x, y, size, padding, style) => { if(this.currentProject) { this.createGuideLine(x, y, size, padding, style); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
+	let fromProject = this.currentProject;
+	
+	let dialogUI = new GuideLineDialogUI("body", title, mouseX / scaleX, mouseY / scaleY, size, padding, style, (x, y, size, padding, style) => { if(this.currentProject) { this.createGuideLine(x, y, size, padding, style, this.getHistoryType(fromProject, historyType)); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
 	
@@ -1738,9 +2037,40 @@ Main.prototype.showMultipleSelectionDialog = function(x, y, fromMultipleSelectio
 		height = 100;
 	}
 	
-	let dialogUI = new MultipleSelectionDialogUI("body", "Duplicate " + fromMultipleSelection.selections.length + " selected", mouseX / scaleX, mouseY / scaleY, width, height, (x, y, width, height) => { if(this.currentProject) { this.duplicateMultipleSelection(x, y, width, height, copiedTextDraws, copiedGuideGrids, copiedGuideLines); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
+	let fromProject = this.currentProject;
+	
+	let dialogUI = new MultipleSelectionDialogUI("body", "Duplicate " + fromMultipleSelection.selections.length + " selected", mouseX / scaleX, mouseY / scaleY, width, height, (x, y, width, height) => { if(this.currentProject) { this.duplicateMultipleSelection(x, y, width, height, copiedTextDraws, copiedGuideGrids, copiedGuideLines, this.getHistoryType(fromProject, HistoryType.MultipleDuplicate)); this.hideDialog(dialogUI); } }, () => { this.hideDialog(dialogUI); });
 	
 	dialogUI.move(x - dialogUI.element.clientWidth / 2, y - dialogUI.element.clientHeight / 2);
+	
+	this.dialogsUI.push(dialogUI);
+};
+
+Main.prototype.showHistoryDialog = function()
+{
+	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof HistoryDialogUI);
+	
+	if(dialogUI)
+	{
+		dialogUI.focus();
+		return;
+	}
+	
+	let history;
+	let historyIdx;
+	
+	if(this.currentProject)
+	{
+		history = this.currentProject.history;
+		historyIdx = this.currentProject.historyIdx;
+	}
+	else
+	{
+		history = [];
+		historyIdx = -1;
+	}
+	
+	dialogUI = new HistoryDialogUI("body", "History", history, historyIdx, this.keepHistory, () => { this.hideDialog(dialogUI); }, (historyData) => { this.applyHistoryData(historyData); }, (x, y) => { this.contextMenuHistory(x, y); }, (e) => { this.keepHistoryChange(e); });
 	
 	this.dialogsUI.push(dialogUI);
 };
@@ -1944,10 +2274,13 @@ Main.prototype.nameChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawName);
+		
 		this.currentProject.getCurrentTextDraw().nameUI.element.innerHTML = e.target.value;
 		this.currentProject.getCurrentTextDraw().name = e.target.value;
 		this.saveProjectsEnabled = true;
 		
+		this.updateHistoryData(HistoryType.TextDrawName);
 		this.updateControlList();
 	}
 };
@@ -1956,8 +2289,12 @@ Main.prototype.textChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawText);
+		
 		this.currentProject.getCurrentTextDraw().text = e.target.value;
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawText);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -1968,8 +2305,12 @@ Main.prototype.xChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawPosition);
+		
 		this.currentProject.getCurrentTextDraw().x = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawPosition);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -1985,8 +2326,12 @@ Main.prototype.yChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawPosition);
+		
 		this.currentProject.getCurrentTextDraw().y = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawPosition);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -2002,8 +2347,12 @@ Main.prototype.letterSizeXChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawLetterSize);
+		
 		this.currentProject.getCurrentTextDraw().letterSizeX = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawLetterSize);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -2019,8 +2368,12 @@ Main.prototype.letterSizeYChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawLetterSize);
+		
 		this.currentProject.getCurrentTextDraw().letterSizeY = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawLetterSize);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -2036,8 +2389,12 @@ Main.prototype.textSizeXChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawTextSize);
+		
 		this.currentProject.getCurrentTextDraw().textSizeX = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawTextSize);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -2053,8 +2410,12 @@ Main.prototype.textSizeYChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawTextSize);
+		
 		this.currentProject.getCurrentTextDraw().textSizeY = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawTextSize);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -2070,9 +2431,12 @@ Main.prototype.alignmentChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawAlignment);
+		
 		this.currentProject.getCurrentTextDraw().changeAlignment(parseInt(e.target.value));
 		this.saveProjectsEnabled = true;
 		
+		this.updateHistoryData(HistoryType.TextDrawAlignment);
 		this.updateControls();
 		
 		this.currentTextDrawUI.clear();
@@ -2089,8 +2453,12 @@ Main.prototype.colorChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawColor);
+		
 		this.currentProject.getCurrentTextDraw().color = parseInt(e.target.value, 16);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawColor);
 		
 		this.controlColorPickerUI.element.value = "#" + this.currentProject.getCurrentTextDraw().color.getRGB().toString(16).toUpperCase().padZero(6);
 		
@@ -2110,7 +2478,13 @@ Main.prototype.colorPickerChange = function(e)
 		let blue = rgb & 0xFF;
 		let alpha = this.currentProject.getCurrentTextDraw().color & 0xFF;
 		
+		this.updateHistoryData(HistoryType.TextDrawColor);
+		
 		this.currentProject.getCurrentTextDraw().color = ((red << 24) + (green << 16) + (blue << 8) + (alpha)) >>> 0;
+		
+		this.updateHistoryData(HistoryType.TextDrawColor);
+		this.pushHistoryData();
+		
 		this.saveProjectsEnabled = true;
 		this.saveProjects();
 		
@@ -2125,8 +2499,12 @@ Main.prototype.useBoxChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawUseBox);
+		
 		this.currentProject.getCurrentTextDraw().useBox = parseInt(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawUseBox);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -2137,8 +2515,12 @@ Main.prototype.boxColorChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawBoxColor);
+		
 		this.currentProject.getCurrentTextDraw().boxColor = parseInt(e.target.value, 16);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawBoxColor);
 		
 		this.controlBoxColorPickerUI.element.value = "#" + this.currentProject.getCurrentTextDraw().boxColor.getRGB().toString(16).toUpperCase().padZero(6);
 		
@@ -2158,7 +2540,13 @@ Main.prototype.boxColorPickerChange = function(e)
 		let blue = rgb & 0xFF;
 		let alpha = this.currentProject.getCurrentTextDraw().boxColor & 0xFF;
 		
+		this.updateHistoryData(HistoryType.TextDrawBoxColor);
+		
 		this.currentProject.getCurrentTextDraw().boxColor = ((red << 24) + (green << 16) + (blue << 8) + (alpha)) >>> 0;
+		
+		this.updateHistoryData(HistoryType.TextDrawBoxColor);
+		this.pushHistoryData();
+		
 		this.saveProjectsEnabled = true;
 		this.saveProjects();
 		
@@ -2173,8 +2561,12 @@ Main.prototype.setShadowChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawSetShadow);
+		
 		this.currentProject.getCurrentTextDraw().setShadow = parseInt(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawSetShadow);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -2185,8 +2577,12 @@ Main.prototype.setOutlineChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawSetOutline);
+		
 		this.currentProject.getCurrentTextDraw().setOutline = parseInt(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawSetOutline);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -2197,8 +2593,12 @@ Main.prototype.backgroundColorChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawBackgroundColor);
+		
 		this.currentProject.getCurrentTextDraw().backgroundColor = parseInt(e.target.value, 16);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawBackgroundColor);
 		
 		this.controlBackgroundColorPickerUI.element.value = "#" + this.currentProject.getCurrentTextDraw().backgroundColor.getRGB().toString(16).toUpperCase().padZero(6);
 		
@@ -2218,7 +2618,13 @@ Main.prototype.backgroundColorPickerChange = function(e)
 		let blue = rgb & 0xFF;
 		let alpha = this.currentProject.getCurrentTextDraw().backgroundColor & 0xFF;
 		
+		this.updateHistoryData(HistoryType.TextDrawBackgroundColor);
+		
 		this.currentProject.getCurrentTextDraw().backgroundColor = ((red << 24) + (green << 16) + (blue << 8) + (alpha)) >>> 0;
+		
+		this.updateHistoryData(HistoryType.TextDrawBackgroundColor);
+		this.pushHistoryData();
+		
 		this.saveProjectsEnabled = true;
 		this.saveProjects();
 		
@@ -2233,9 +2639,12 @@ Main.prototype.fontChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawFont);
+		
 		this.currentProject.getCurrentTextDraw().changeFont(parseInt(e.target.value));
 		this.saveProjectsEnabled = true;
 		
+		this.updateHistoryData(HistoryType.TextDrawFont);
 		this.updateControls();
 		
 		this.currentTextDrawUI.clear();
@@ -2252,8 +2661,12 @@ Main.prototype.setProportionalChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentTextDraw())
 	{
+		this.updateHistoryData(HistoryType.TextDrawSetProportional);
+		
 		this.currentProject.getCurrentTextDraw().setProportional = parseInt(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.TextDrawSetProportional);
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
@@ -2292,9 +2705,13 @@ Main.prototype.guideGridNameChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideGrid())
 	{
+		this.updateHistoryData(HistoryType.GuideGridName);
+		
 		this.currentProject.getCurrentGuideGrid().nameUI.element.innerHTML = e.target.value;
 		this.currentProject.getCurrentGuideGrid().name = e.target.value;
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideGridName);
 	}
 };
 
@@ -2302,8 +2719,12 @@ Main.prototype.guideGridXChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideGrid())
 	{
+		this.updateHistoryData(HistoryType.GuideGridPosition);
+		
 		this.currentProject.getCurrentGuideGrid().x = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideGridPosition);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2315,8 +2736,12 @@ Main.prototype.guideGridYChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideGrid())
 	{
+		this.updateHistoryData(HistoryType.GuideGridPosition);
+		
 		this.currentProject.getCurrentGuideGrid().y = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideGridPosition);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2328,8 +2753,12 @@ Main.prototype.guideGridWidthChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideGrid())
 	{
+		this.updateHistoryData(HistoryType.GuideGridSize);
+		
 		this.currentProject.getCurrentGuideGrid().width = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideGridSize);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2341,8 +2770,12 @@ Main.prototype.guideGridHeightChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideGrid())
 	{
+		this.updateHistoryData(HistoryType.GuideGridSize);
+		
 		this.currentProject.getCurrentGuideGrid().height = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideGridSize);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2354,8 +2787,12 @@ Main.prototype.guideGridMarginChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideGrid())
 	{
+		this.updateHistoryData(HistoryType.GuideGridMargin);
+		
 		this.currentProject.getCurrentGuideGrid().margin = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideGridMargin);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2367,8 +2804,12 @@ Main.prototype.guideGridPaddingChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideGrid())
 	{
+		this.updateHistoryData(HistoryType.GuideGridPadding);
+		
 		this.currentProject.getCurrentGuideGrid().padding = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideGridPadding);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2380,8 +2821,12 @@ Main.prototype.guideGridRowsChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideGrid())
 	{
+		this.updateHistoryData(HistoryType.GuideGridRows);
+		
 		this.currentProject.getCurrentGuideGrid().rows = parseInt(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideGridRows);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2393,8 +2838,12 @@ Main.prototype.guideGridColumnsChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideGrid())
 	{
+		this.updateHistoryData(HistoryType.GuideGridColumns);
+		
 		this.currentProject.getCurrentGuideGrid().columns = parseInt(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideGridColumns);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2428,9 +2877,13 @@ Main.prototype.guideLineNameChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideLine())
 	{
+		this.updateHistoryData(HistoryType.GuideLineName);
+		
 		this.currentProject.getCurrentGuideLine().nameUI.element.innerHTML = e.target.value;
 		this.currentProject.getCurrentGuideLine().name = e.target.value;
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideLineName);
 	}
 };
 
@@ -2438,8 +2891,12 @@ Main.prototype.guideLineXChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideLine())
 	{
+		this.updateHistoryData(HistoryType.GuideLinePosition);
+		
 		this.currentProject.getCurrentGuideLine().x = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideLinePosition);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2451,8 +2908,12 @@ Main.prototype.guideLineYChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideLine())
 	{
+		this.updateHistoryData(HistoryType.GuideLinePosition);
+		
 		this.currentProject.getCurrentGuideLine().y = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideLinePosition);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2464,8 +2925,12 @@ Main.prototype.guideLineSizeChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideLine())
 	{
+		this.updateHistoryData(HistoryType.GuideLineSize);
+		
 		this.currentProject.getCurrentGuideLine().size = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideLineSize);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2477,8 +2942,12 @@ Main.prototype.guideLinePaddingChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideLine())
 	{
+		this.updateHistoryData(HistoryType.GuideLinePadding);
+		
 		this.currentProject.getCurrentGuideLine().padding = parseFloat(e.target.value);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideLinePadding);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2490,8 +2959,12 @@ Main.prototype.guideLineStyleChange = function(e)
 {
 	if(this.currentProject && this.currentProject.getCurrentGuideLine())
 	{
+		this.updateHistoryData(HistoryType.GuideLineStyle);
+		
 		this.currentProject.getCurrentGuideLine().style = e.target.selectedIndex;
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.GuideLineStyle);
 		
 		this.optionsUI.clear();
 		this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
@@ -2505,8 +2978,12 @@ Main.prototype.multipleXChange = function(e)
 	{
 		let x = parseFloat(e.target.value);
 		
+		this.updateHistoryData(HistoryType.MultiplePosition);
+		
 		this.currentProject.multipleSelection.setX(x);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.MultiplePosition);
 		
 		this.belowTextDrawUI.clear();
 		this.boxTextDrawUI.clear();
@@ -2529,8 +3006,12 @@ Main.prototype.multipleYChange = function(e)
 	{
 		let y = parseFloat(e.target.value);
 		
+		this.updateHistoryData(HistoryType.MultiplePosition);
+		
 		this.currentProject.multipleSelection.setY(y);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.MultiplePosition);
 		
 		this.belowTextDrawUI.clear();
 		this.boxTextDrawUI.clear();
@@ -2553,8 +3034,12 @@ Main.prototype.multipleWidthChange = function(e)
 	{
 		let width = parseFloat(e.target.value);
 		
+		this.updateHistoryData(HistoryType.MultipleSize);
+		
 		this.currentProject.multipleSelection.setWidth(width);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.MultipleSize);
 		
 		this.belowTextDrawUI.clear();
 		this.boxTextDrawUI.clear();
@@ -2577,8 +3062,12 @@ Main.prototype.multipleHeightChange = function(e)
 	{
 		let height = parseFloat(e.target.value);
 		
+		this.updateHistoryData(HistoryType.MultipleSize);
+		
 		this.currentProject.multipleSelection.setHeight(height);
 		this.saveProjectsEnabled = true;
+		
+		this.updateHistoryData(HistoryType.MultipleSize);
 		
 		this.belowTextDrawUI.clear();
 		this.boxTextDrawUI.clear();
@@ -2652,6 +3141,14 @@ Main.prototype.screenshotCustom = function(e)
 			alert("not an image");
 		}
 	}
+};
+
+Main.prototype.keepHistoryChange = function(e)
+{
+	this.keepHistory = e.target.checked;
+	
+	this.saveProjectsEnabled = true;
+	this.saveProjects();
 };
 
 Main.prototype.repaint = function()
@@ -3390,6 +3887,12 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 				}
 			}
 			
+			if(!this.clicked)
+			{
+				this.updateHistoryDataFromCursor();
+				this.pushHistoryData();
+			}
+			
 			if(this.currentProject.getCurrentTextDraw())
 			{
 				this.updateControls();
@@ -3584,6 +4087,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 						this.clickRight = true;
 					}
 				}
+				
+				if(this.clicked)
+					this.updateHistoryDataFromCursor();
 			}
 		}
 		else

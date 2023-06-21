@@ -1,7 +1,8 @@
 
-function GuideGrid(main, name, x, y, width, height, margin, padding, rows, columns)
+function GuideGrid(main, internalId, name, x, y, width, height, margin, padding, rows, columns)
 {
 	this.main = main;
+	this.internalId = internalId;
 	
 	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: (e) => { if(e.shiftKey) { main.adjacentAnyObject(this, e.ctrlKey); } else if(e.ctrlKey) { main.toggleAnyObject(this); } else { main.changeGuideGrid(this); } }, contextmenu: (e) => { main.contextMenuGuideGrid(this, e.clientX, e.clientY); e.preventDefault(); }});
 	this.thumbnailUI = new EntityUI(this.textDrawItemUI, "img", { src: "./assets/images/icon-guide-grid.png", width: "24", height: "24", draggable: false });
@@ -23,6 +24,7 @@ function GuideGrid(main, name, x, y, width, height, margin, padding, rows, colum
 
 GuideGrid.prototype.copyGuideGrid = function(guideGrid)
 {
+	guideGrid.internalId = this.internalId;
 	guideGrid.name = this.name;
 	guideGrid.x = this.x;
 	guideGrid.y = this.y;
@@ -106,4 +108,59 @@ GuideGrid.prototype.getRectRight = function()
 GuideGrid.prototype.getRectBottom = function()
 {
 	return this.y + this.height;
+};
+
+GuideGrid.prototype.setVisibility = function(visibility)
+{
+	this.visibility = visibility;
+	this.visibilityUI.element.style.backgroundPositionY = visibility ? "0px" : "-24px";
+};
+
+GuideGrid.prototype.getMyIndex = function(project)
+{
+	return project.guideGrids.indexOf(this);
+};
+
+GuideGrid.prototype.historyGuideGridCreate = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue")
+	{
+		project.removeGuideGrid(this);
+	}
+	else if(funcname == "updateOldValue")
+	{
+		return [];
+	}
+	else if(funcname == "updateNewValue")
+	{
+		return [this.x, this.y, this.width, this.height, this.margin, this.padding, this.rows, this.columns];
+	}
+};
+
+GuideGrid.prototype.historyGuideGridRemove = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyNewValue")
+	{
+		project.removeGuideGrid(this);
+	}
+	else if(funcname == "updateOldValue")
+	{
+		return [this.name, this.x, this.y, this.width, this.height, this.margin, this.padding, this.rows, this.columns, this.visibility, this.getMyIndex(project)];
+	}
+	else if(funcname == "updateNewValue")
+	{
+		return [];
+	}
+};
+
+GuideGrid.prototype.historyVisibility = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue" || funcname == "applyNewValue")
+	{
+		this.setVisibility(newValue);
+	}
+	else if(funcname == "updateOldValue" || funcname == "updateNewValue")
+	{
+		return this.visibility;
+	}
 };

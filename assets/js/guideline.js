@@ -1,7 +1,8 @@
 
-function GuideLine(main, name, x, y, size, padding, style)
+function GuideLine(main, internalId, name, x, y, size, padding, style)
 {
 	this.main = main;
+	this.internalId = internalId;
 	
 	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: (e) => { if(e.shiftKey) { main.adjacentAnyObject(this, e.ctrlKey); } else if(e.ctrlKey) { main.toggleAnyObject(this); } else { main.changeGuideLine(this); } }, contextmenu: (e) => { main.contextMenuGuideLine(this, e.clientX, e.clientY); e.preventDefault(); }});
 	this.thumbnailUI = new EntityUI(this.textDrawItemUI, "img", { src: "./assets/images/icon-guide-line.png", width: "24", height: "24", draggable: false });
@@ -20,6 +21,7 @@ function GuideLine(main, name, x, y, size, padding, style)
 
 GuideLine.prototype.copyGuideLine = function(guideLine)
 {
+	guideLine.internalId = this.internalId;
 	guideLine.name = this.name;
 	guideLine.x = this.x;
 	guideLine.y = this.y;
@@ -86,4 +88,59 @@ GuideLine.prototype.getRectBottom = function()
 		return this.y + this.size;
 	
 	return this.y;
+};
+
+GuideLine.prototype.setVisibility = function(visibility)
+{
+	this.visibility = visibility;
+	this.visibilityUI.element.style.backgroundPositionY = visibility ? "0px" : "-24px";
+};
+
+GuideLine.prototype.getMyIndex = function(project)
+{
+	return project.guideLines.indexOf(this);
+};
+
+GuideLine.prototype.historyGuideLineCreate = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue")
+	{
+		project.removeGuideLine(this);
+	}
+	else if(funcname == "updateOldValue")
+	{
+		return [];
+	}
+	else if(funcname == "updateNewValue")
+	{
+		return [this.x, this.y, this.size, this.padding, this.style];
+	}
+};
+
+GuideLine.prototype.historyGuideLineRemove = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyNewValue")
+	{
+		project.removeGuideLine(this);
+	}
+	else if(funcname == "updateOldValue")
+	{
+		return [this.name, this.x, this.y, this.size, this.padding, this.style, this.visibility, this.getMyIndex(project)];
+	}
+	else if(funcname == "updateNewValue")
+	{
+		return [];
+	}
+};
+
+GuideLine.prototype.historyVisibility = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue" || funcname == "applyNewValue")
+	{
+		this.setVisibility(newValue);
+	}
+	else if(funcname == "updateOldValue" || funcname == "updateNewValue")
+	{
+		return this.visibility;
+	}
 };

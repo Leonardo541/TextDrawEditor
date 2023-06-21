@@ -1,7 +1,8 @@
 
-function TextDraw(main, name, text, x, y)
+function TextDraw(main, internalId, name, text, x, y)
 {
 	this.main = main;
+	this.internalId = internalId;
 	
 	this.textDrawItemUI = new EntityUI(null, "div", {class: "textDrawItem", onclick: (e) => { if(e.shiftKey) { main.adjacentAnyObject(this, e.ctrlKey); } else if(e.ctrlKey) { main.toggleAnyObject(this); } else { main.changeTextDraw(this); } }, contextmenu: (e) => { main.contextMenuTextDraw(this, e.clientX, e.clientY); e.preventDefault(); }});
 	this.thumbnailUI = new DrawableUI(this.textDrawItemUI, { width: "24", height: "24" });
@@ -37,6 +38,7 @@ function TextDraw(main, name, text, x, y)
 
 TextDraw.prototype.copyTextDraw = function(textDraw)
 {
+	textDraw.internalId = this.internalId;
 	textDraw.name = this.name;
 	textDraw.text = this.text;
 	textDraw.x = this.x;
@@ -396,4 +398,115 @@ TextDraw.prototype.changeFont = function(font)
 	this.setRectTop(rectTop);
 	this.setRectRight(rectRight);
 	this.setRectBottom(rectBottom);
+};
+
+TextDraw.prototype.setVisibility = function(visibility)
+{
+	this.visibility = visibility;
+	this.visibilityUI.element.style.backgroundPositionY = visibility ? "0px" : "-24px";
+};
+
+TextDraw.prototype.getMyIndex = function(project)
+{
+	return project.textDrawList.indexOf(this);
+};
+
+TextDraw.prototype.historyTextDrawCreate = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue")
+	{
+		project.removeTextDraw(this);
+	}
+	else if(funcname == "updateOldValue")
+	{
+		return [];
+	}
+	else if(funcname == "updateNewValue")
+	{
+		return [this.text, this.x, this.y];
+	}
+};
+
+TextDraw.prototype.historyTextDrawDuplicate = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue")
+	{
+		project.removeTextDraw(this);
+	}
+	else if(funcname == "updateOldValue")
+	{
+		return [];
+	}
+	else if(funcname == "updateNewValue")
+	{
+		return [this.text, this.x, this.y, this.duplicateFromInternalId];
+	}
+};
+
+TextDraw.prototype.historyTextDrawFromAnotherPoject = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue")
+	{
+		project.removeTextDraw(this);
+	}
+	else if(funcname == "updateOldValue")
+	{
+		return [];
+	}
+	else if(funcname == "updateNewValue")
+	{
+		return [this.text, this.x, this.y, this.letterSizeX, this.letterSizeY, this.textSizeX, this.textSizeY, this.alignment, this.color, this.useBox, this.boxColor, this.setShadow, this.setOutline, this.backgroundColor, this.font, this.setProportional];
+	}
+};
+
+TextDraw.prototype.historyTextDrawRemove = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyNewValue")
+	{
+		project.removeTextDraw(this);
+	}
+	else if(funcname == "updateOldValue")
+	{
+		return [this.name, this.text, this.x, this.y, this.letterSizeX, this.letterSizeY, this.textSizeX, this.textSizeY, this.alignment, this.color, this.useBox, this.boxColor, this.setShadow, this.setOutline, this.backgroundColor, this.font, this.setProportional, this.visibility, this.getMyIndex(project)];
+	}
+	else if(funcname == "updateNewValue")
+	{
+		return [];
+	}
+};
+
+TextDraw.prototype.historyAlignment = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue" || funcname == "applyNewValue")
+	{
+		this.changeAlignment(newValue);
+	}
+	else if(funcname == "updateOldValue" || funcname == "updateNewValue")
+	{
+		return this.alignment;
+	}
+};
+
+TextDraw.prototype.historyFont = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue" || funcname == "applyNewValue")
+	{
+		this.changeFont(newValue);
+	}
+	else if(funcname == "updateOldValue" || funcname == "updateNewValue")
+	{
+		return this.font;
+	}
+};
+
+TextDraw.prototype.historyVisibility = function(project, funcname, oldValue, newValue)
+{
+	if(funcname == "applyOldValue" || funcname == "applyNewValue")
+	{
+		this.setVisibility(newValue);
+	}
+	else if(funcname == "updateOldValue" || funcname == "updateNewValue")
+	{
+		return this.visibility;
+	}
 };
