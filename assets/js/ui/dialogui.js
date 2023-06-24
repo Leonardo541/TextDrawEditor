@@ -7,6 +7,8 @@ function DialogUI(parent, title)
 	this.movingX = 0;
 	this.movingY = 0;
 	
+	this.position = {};
+	
 	this.titleBarUI = new EntityUI(this, "div", {innerText: title, class: "dialogTitleBar", mousedown: (e) => { this.startMoving(e); }});
 	this.contentUI = new EntityUI(this, "div", {class: "dialogContent"});
 	this.buttonsUI = new EntityUI(this, "div", {class: "dialogButtons"});
@@ -42,7 +44,7 @@ DialogUI.prototype.stopMoving = function(e)
 
 DialogUI.prototype.move = function(x, y)
 {
-	if(x < 0)
+	if(x < 0 || this.element.offsetWidth >= window.innerWidth)
 	{
 		x = 0;
 	}
@@ -51,7 +53,7 @@ DialogUI.prototype.move = function(x, y)
 		x = window.innerWidth - this.element.offsetWidth - 1;
 	}
 	
-	if(y < 0)
+	if(y < 0 || this.element.offsetHeight >= window.innerHeight)
 	{
 		y = 0;
 	}
@@ -63,6 +65,9 @@ DialogUI.prototype.move = function(x, y)
 	this.element.style.left = x + "px";
 	this.element.style.top = y + "px";
 	this.element.style.transform = "translate(0px)";
+	
+	this.position.x = x;
+	this.position.y = y;
 };
 
 DialogUI.prototype.focus = function()
@@ -82,4 +87,18 @@ DialogUI.prototype.focus = function()
 	
 	if(!this.element.style.zIndex || parseInt(this.element.style.zIndex) < zIndex)
 		this.element.style.zIndex = zIndex.toString();
+};
+
+DialogUI.prototype.checkPosition = function()
+{
+	if(this.position.x !== undefined && this.position.y !== undefined)
+	{
+		let x = this.position.x;
+		let y = this.position.y;
+		
+		this.move(x, y);
+		
+		this.position.x = x;
+		this.position.y = y;
+	}
 };

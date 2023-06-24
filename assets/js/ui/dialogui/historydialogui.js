@@ -10,7 +10,7 @@ function HistoryDialogUI(parent, title, history, historyIdx, keepHistory, clickA
 	this.keepHistoryLabelUI.appendStaticText("Keep history");
 	
 	this.contentUI.appendStaticLine();
-	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(); }});
+	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Close", click: () => { clickAccept(); }});
 	
 	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
 	this.resizeObserver.observe(this.historyListUI.element);

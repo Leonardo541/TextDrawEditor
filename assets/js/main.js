@@ -196,7 +196,11 @@ function Main()
 	this.letterSizeOnResize = true;
 	this.keepHistory = false;
 	
+	this.defaultHistoryDialog = {};
+	this.defaultTextureDictionaryDialog = null;
+	
 	this.loadProjects();
+	this.loadSettings();
 	
 	if(this.projects.length == 0)
 		this.addProject();
@@ -215,13 +219,23 @@ function Main()
 	window.addEventListener("mousedown", (e) => { this.checkMouse(e, true, false); });
 	window.addEventListener("mouseup", (e) => { this.checkMouse(e, false, true); });
 	window.addEventListener("mousemove", (e) => { this.checkMouse(e, false, false); });
-	window.addEventListener("resize", (e) => { this.checkScrollBars(e); this.dialogsUI.forEach(dialogUI => dialogUI.move(dialogUI.element.offsetLeft, dialogUI.element.offsetTop)); });
+	window.addEventListener("resize", (e) => { this.checkScrollBars(e); this.dialogsUI.forEach(dialogUI => dialogUI.checkPosition()); });
 	
 	this.checkScrollBars();
 	
 	TextureDictionary.updateEventListeners.push(this.repaint.bind(this));
 	
-	this.showHistoryDialog();
+	if(this.defaultHistoryDialog)
+	{
+		this.showHistoryDialog(true);
+		this.loadDialogPosition(HistoryDialogUI, this.defaultHistoryDialog);
+	}
+	
+	if(this.defaultTextureDictionaryDialog)
+	{
+		this.showTextureDictionaryDialog(true);
+		this.loadDialogPosition(TextureDictionaryDialogUI, this.defaultTextureDictionaryDialog);
+	}
 }
 
 Main.prototype.addProject = function()
@@ -328,12 +342,12 @@ Main.prototype.loadProjects = function()
 			}
 		}
 		
-		if(saved.controlListHeight)
+		if(saved.controlListHeight) // moved to loadSettings
 		{
 			this.controlListUI.element.style.height = saved.controlListHeight + "px";
 		}
 		
-		if(saved.keepHistory)
+		if(saved.keepHistory) // moved to loadSettings
 		{
 			this.keepHistory = saved.keepHistory;
 		}
@@ -380,13 +394,60 @@ Main.prototype.saveProjects = function()
 				savedCurrentProjectIdx = i;
 		}
 		
-		let controlListHeight = this.controlListUI.element.offsetHeight;
-		let keepHistory = this.keepHistory;
-		
-		window.localStorage.setItem("save", JSON.stringify({projects: savedProjects, currentProjectIdx: savedCurrentProjectIdx, controlListHeight: controlListHeight, keepHistory: keepHistory}));
+		window.localStorage.setItem("save", JSON.stringify({projects: savedProjects, currentProjectIdx: savedCurrentProjectIdx}));
 		
 		this.saveProjectsEnabled = false;
 	}
+};
+
+Main.prototype.loadSettings = function()
+{
+	let json = window.localStorage.getItem("settings");
+	
+	if(json)
+	{
+		let saved = JSON.parse(json);
+		
+		if(saved.controlListHeight)
+		{
+			this.controlListUI.element.style.height = saved.controlListHeight + "px";
+			this.checkScrollBars();
+		}
+		
+		if(saved.keepHistory)
+		{
+			this.keepHistory = saved.keepHistory;
+		}
+		
+		if(saved.historyDlg)
+		{
+			this.defaultHistoryDialog = saved.historyDlg;
+		}
+		else
+		{
+			this.defaultHistoryDialog = null;
+		}
+		
+		if(saved.textureDictionaryDlg)
+		{
+			this.defaultTextureDictionaryDialog = saved.textureDictionaryDlg;
+		}
+		else
+		{
+			this.defaultTextureDictionaryDialog = null;
+		}
+	}
+};
+
+Main.prototype.saveSettings = function()
+{
+	let controlListHeight = this.controlListUI.element.offsetHeight;
+	let keepHistory = this.keepHistory;
+	
+	let historyDlg = this.saveDialogPosition(HistoryDialogUI);
+	let textureDictionaryDlg = this.saveDialogPosition(TextureDictionaryDialogUI);
+	
+	window.localStorage.setItem("settings", JSON.stringify({controlListHeight: controlListHeight, keepHistory: keepHistory, historyDlg: historyDlg, textureDictionaryDlg: textureDictionaryDlg}));
 };
 
 Main.prototype.updateHistoryDialog = function()
@@ -2046,7 +2107,7 @@ Main.prototype.showMultipleSelectionDialog = function(x, y, fromMultipleSelectio
 	this.dialogsUI.push(dialogUI);
 };
 
-Main.prototype.showHistoryDialog = function()
+Main.prototype.showHistoryDialog = function(noSaveSettings)
 {
 	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof HistoryDialogUI);
 	
@@ -2073,9 +2134,12 @@ Main.prototype.showHistoryDialog = function()
 	dialogUI = new HistoryDialogUI("body", "History", history, historyIdx, this.keepHistory, () => { this.hideDialog(dialogUI); }, (historyData) => { this.applyHistoryData(historyData); }, (x, y) => { this.contextMenuHistory(x, y); }, (e) => { this.keepHistoryChange(e); });
 	
 	this.dialogsUI.push(dialogUI);
+	
+	if(!noSaveSettings)
+		this.saveSettings();
 };
 
-Main.prototype.showTextureDictionaryDialog = function()
+Main.prototype.showTextureDictionaryDialog = function(noSaveSettings)
 {
 	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof TextureDictionaryDialogUI);
 	
@@ -2088,6 +2152,9 @@ Main.prototype.showTextureDictionaryDialog = function()
 	dialogUI = new TextureDictionaryDialogUI("body", "Texture Dictionary", () => { this.hideDialog(dialogUI); }, (textureDictionary) => { this.showTextureExplorerDialog(textureDictionary); });
 	
 	this.dialogsUI.push(dialogUI);
+	
+	if(!noSaveSettings)
+		this.saveSettings();
 };
 
 Main.prototype.showTextureExplorerDialog = function(textureDictionary)
@@ -2105,10 +2172,37 @@ Main.prototype.showTextureExplorerDialog = function(textureDictionary)
 	this.dialogsUI.push(dialogUI);
 };
 
+Main.prototype.saveDialogPosition = function(type)
+{
+	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof type);
+	
+	if(dialogUI)
+		return dialogUI.position;
+	
+	return null;
+};
+
+Main.prototype.loadDialogPosition = function(type, position)
+{
+	if(position.x === undefined || position.y === undefined)
+		return;
+	
+	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof type);
+	
+	if(dialogUI)
+	{
+		dialogUI.move(position.x, position.y);
+		dialogUI.position = position;
+	}
+};
+
 Main.prototype.hideDialog = function(dialogUI)
 {
 	this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1);
 	dialogUI.remove();
+	
+	if(dialogUI instanceof HistoryDialogUI || dialogUI instanceof TextureDictionaryDialogUI)
+		this.saveSettings();
 };
 
 Main.prototype.overrideCursor = function(override)
@@ -3147,8 +3241,7 @@ Main.prototype.keepHistoryChange = function(e)
 {
 	this.keepHistory = e.target.checked;
 	
-	this.saveProjectsEnabled = true;
-	this.saveProjects();
+	this.saveSettings();
 };
 
 Main.prototype.repaint = function()
@@ -3415,6 +3508,9 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			if(buttonUp)
 			{
 				dialogUI.stopMoving();
+				
+				if(dialogUI instanceof HistoryDialogUI || dialogUI instanceof TextureDictionaryDialogUI)
+					this.saveSettings();
 			}
 			
 			return;
@@ -3445,8 +3541,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 		{
 			this.controlResizerUI.stopResizing();
 			
-			this.saveProjectsEnabled = true;
-			this.saveProjects();
+			this.saveSettings();
 		}
 		
 		return;

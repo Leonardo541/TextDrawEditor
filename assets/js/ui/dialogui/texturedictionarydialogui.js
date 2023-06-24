@@ -6,7 +6,7 @@ function TextureDictionaryDialogUI(parent, title, clickAccept, clickExplorer)
 	this.txdListUI = new EntityUI(this.contentUI, "div", {class: ["textDrawList", "resizable"]});
 	this.fileInputUI = new FileBoxUI(this.contentUI, {accept: ".txd", multiple: "multiple", onchange: (e) => { this.loadTxd(e);  }});
 	this.contentUI.appendStaticLine();
-	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(); }});
+	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Close", click: () => { clickAccept(); }});
 	
 	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
 	this.resizeObserver.observe(this.txdListUI.element);
