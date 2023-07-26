@@ -382,6 +382,8 @@ canvas
 
 .dialog
 {
+	display: flex;
+	flex-direction: column;
 	position: absolute;
 	left: 50%;
 	top: 50%;
@@ -389,6 +391,8 @@ canvas
 	background-color: #535353;
 	border: 1px solid #282828;
 	border-radius: 5px;
+	resize: both;
+	overflow: hidden;
 }
 
 .dialog .dialogTitleBar
@@ -409,6 +413,8 @@ canvas
 
 .dialog .dialogContent
 {
+	flex-direction: column;
+	flex: 1 1 auto;
 	padding: 5px;
 	padding-bottom: 0px;
 	border-top: #6a6a6a solid 1px;
@@ -424,6 +430,33 @@ canvas
 .dialog .dialogButtons button
 {
 	width: 100px;
+}
+
+.dialog .dialogContent input, .dialog .dialogContent select, .dialog .dialogContent hr
+{
+	width: calc(100% - 10px);
+}
+
+.dialog .dialogContent input[type=checkbox]
+{
+	width: 14px;
+}
+
+.dialog .dialogContent input.textBoxLeft
+{
+	width: calc(50% - 7px);
+}
+
+.dialog .dialogContent input.textBoxRight
+{
+	width: calc(50% - 7px);
+}
+
+.dialog .dialogContent textarea, .dialog .dialogContent .textDrawList, .dialog .dialogContent .textureList
+{
+	flex: 1 1 auto;
+	width: calc(100% - 10px);
+	resize: none;
 }
 
 .scrollable

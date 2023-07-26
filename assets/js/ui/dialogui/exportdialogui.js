@@ -31,16 +31,13 @@ function ExportDialogUI(parent, title, exportType, clickAccept, clickCancel)
 	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(this.callbackUI.element.selectedIndex, this.outputUI.element.selectedIndex, true); }});
 	this.buttonCancelUI = new ButtonUI(this.buttonsUI, {innerText: "Cancel", click: () => { clickCancel(); }});
 	
-	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
+	this.element.style.width = "260px";
+	this.element.style.minWidth = this.element.style.width;
+	this.element.style.minHeight = this.element.clientHeight + "px";
+	this.element.style.maxHeight = this.element.style.minHeight;
 }
 
 ExportDialogUI.prototype = Object.create(DialogUI.prototype);
-
-ExportDialogUI.prototype.sizeChanged = function()
-{
-	this.callbackUI.element.style.width = this.viewOutputUI.element.offsetWidth + "px";
-	this.outputUI.element.style.width = this.viewOutputUI.element.offsetWidth + "px";
-};
 
 ExportDialogUI.prototype.changeOption = function(clickAccept)
 {
@@ -52,10 +49,16 @@ ExportDialogUI.prototype.changeOption = function(clickAccept)
 	
 	if(output == 0)
 	{
+		this.contentUI.element.style.display = "";
+		
+		this.element.style.width = "260px";
+		this.element.style.height = "";
+		this.element.style.minWidth = this.element.style.width;
+		this.element.style.minHeight = "";
+		this.element.style.maxHeight = "";
+		
 		if(this.viewOutputUI)
 		{
-			this.resizeObserver.unobserve(this.viewOutputUI.element);
-			
 			this.callbackUI.element.style.width = "";
 			this.outputUI.element.style.width = "";
 			
@@ -65,16 +68,28 @@ ExportDialogUI.prototype.changeOption = function(clickAccept)
 			this.viewOutputUI.remove();
 			this.viewOutputUI = null;
 		}
+		
+		this.element.style.minHeight = this.element.clientHeight + "px";
+		this.element.style.maxHeight = this.element.style.minHeight;
 	}
 	else
 	{
+		this.contentUI.element.style.display = "flex";
+		
+		this.element.style.width = "460px";
+		this.element.style.height = "";
+		this.element.style.minWidth = this.element.style.width;
+		this.element.style.minHeight = "";
+		this.element.style.maxHeight = "";
+		
 		if(!this.viewOutputUI)
 		{
 			this.viewOutputUI = new EntityUI(this.contentUI, "textarea", {});
 			this.contentUI.appendStaticLine();
-			
-			this.resizeObserver.observe(this.viewOutputUI.element);
 		}
+		
+		this.element.style.minHeight = this.element.clientHeight + "px";
+		this.element.style.maxHeight = "";
 		
 		clickAccept(callback, output, false);
 	}
@@ -84,10 +99,4 @@ ExportDialogUI.prototype.changeOption = function(clickAccept)
 	
 	if(oldWidth != newWidth || oldHeight != newHeight)
 		this.move(this.element.offsetLeft + (oldWidth - newWidth) / 2, this.element.offsetTop + (oldHeight - newHeight) / 2);
-};
-
-ExportDialogUI.prototype.remove = function()
-{
-	this.resizeObserver.disconnect();
-	DialogUI.prototype.remove.call(this);
 };

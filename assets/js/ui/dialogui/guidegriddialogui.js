@@ -25,6 +25,11 @@ function GuideGridDialogUI(parent, title, x, y, width, height, margin, padding, 
 	this.contentUI.appendStaticLine();
 	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(parseFloat(this.xUI.element.value), parseFloat(this.yUI.element.value), parseFloat(this.widthUI.element.value), parseFloat(this.heightUI.element.value), parseFloat(this.marginUI.element.value), parseFloat(this.paddingUI.element.value), parseInt(this.rowsUI.element.value), parseInt(this.columnsUI.element.value)); }});
 	this.buttonCancelUI = new ButtonUI(this.buttonsUI, {innerText: "Cancel", click: () => { clickCancel(); }});
+	
+	this.element.style.width = "260px";
+	this.element.style.minWidth = this.element.style.width;
+	this.element.style.minHeight = this.element.clientHeight + "px";
+	this.element.style.maxHeight = this.element.style.minHeight;
 }
 
 GuideGridDialogUI.prototype = Object.create(DialogUI.prototype);

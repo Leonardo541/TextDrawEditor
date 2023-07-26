@@ -15,20 +15,18 @@ function ImportDialogUI(parent, title, importType, clickAccept, clickCancel)
 	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(this.inputUI.element.selectedIndex); }});
 	this.buttonCancelUI = new ButtonUI(this.buttonsUI, {innerText: "Cancel", click: () => { clickCancel(); }});
 	
-	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
-	
 	this.importType = importType;
 	
 	this.savedData = "";
 	this.textDraws = [];
+	
+	this.element.style.width = "260px";
+	this.element.style.minWidth = this.element.style.width;
+	this.element.style.minHeight = this.element.clientHeight + "px";
+	this.element.style.maxHeight = this.element.style.minHeight;
 }
 
 ImportDialogUI.prototype = Object.create(DialogUI.prototype);
-
-ImportDialogUI.prototype.sizeChanged = function()
-{
-	this.inputUI.element.style.width = this.viewInputUI.element.offsetWidth + "px";
-};
 
 ImportDialogUI.prototype.changeOption = function()
 {
@@ -39,6 +37,14 @@ ImportDialogUI.prototype.changeOption = function()
 	
 	if(input == 0)
 	{
+		this.contentUI.element.style.display = "";
+		
+		this.element.style.width = "260px";
+		this.element.style.height = "";
+		this.element.style.minWidth = this.element.style.width;
+		this.element.style.minHeight = "";
+		this.element.style.maxHeight = "";
+		
 		if(!this.fileInputUI)
 		{
 			this.fileInputUI = new FileBoxUI(this.contentUI, {accept: "*/*", onchange: (e) => { this.inputFromAFile(e); }});
@@ -47,8 +53,6 @@ ImportDialogUI.prototype.changeOption = function()
 		
 		if(this.viewInputUI)
 		{
-			this.resizeObserver.unobserve(this.viewInputUI.element);
-			
 			this.inputUI.element.style.width = "";
 			
 			if(this.viewInputUI.element.nextSibling && this.viewInputUI.element.nextSibling.entityUI)
@@ -60,9 +64,20 @@ ImportDialogUI.prototype.changeOption = function()
 			this.savedData = "";
 			this.textDraws = [];
 		}
+		
+		this.element.style.minHeight = this.element.clientHeight + "px";
+		this.element.style.maxHeight = this.element.style.minHeight;
 	}
 	else
 	{
+		this.contentUI.element.style.display = "flex";
+		
+		this.element.style.width = "460px";
+		this.element.style.height = "";
+		this.element.style.minWidth = this.element.style.width;
+		this.element.style.minHeight = "";
+		this.element.style.maxHeight = "";
+		
 		if(this.fileInputUI)
 		{
 			if(this.fileInputUI.element.nextSibling && this.fileInputUI.element.nextSibling.entityUI)
@@ -79,9 +94,10 @@ ImportDialogUI.prototype.changeOption = function()
 		{
 			this.viewInputUI = new EntityUI(this.contentUI, "textarea", {});
 			this.contentUI.appendStaticLine();
-			
-			this.resizeObserver.observe(this.viewInputUI.element);
 		}
+		
+		this.element.style.minHeight = this.element.clientHeight + "px";
+		this.element.style.maxHeight = "";
 	}
 	
 	let newWidth = this.element.offsetWidth;
@@ -465,10 +481,4 @@ ImportDialogUI.prototype.getTextDrawAt = function(name)
 	}
 	
 	return null;
-};
-
-ImportDialogUI.prototype.remove = function()
-{
-	this.resizeObserver.disconnect();
-	DialogUI.prototype.remove.call(this);
 };

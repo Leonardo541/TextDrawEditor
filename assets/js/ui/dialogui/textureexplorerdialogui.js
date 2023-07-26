@@ -3,7 +3,9 @@ function TextureExplorerDialogUI(parent, title, textureDictionary, clickAccept, 
 {
 	DialogUI.call(this, parent, title);
 	
-	this.texListUI = new EntityUI(this.contentUI, "div", {class: ["textureList", "resizable"]});
+	this.contentUI.element.style.display = "flex";
+	
+	this.texListUI = new EntityUI(this.contentUI, "div", {class: "textureList"});
 	this.infoUI = new EntityUI(this.contentUI, "span", {innerHTML: "&#9432; Press the right button on the mouse to copy."});
 	
 	for(let i = 0; i < textureDictionary.textures.length; i++)
@@ -21,20 +23,9 @@ function TextureExplorerDialogUI(parent, title, textureDictionary, clickAccept, 
 	
 	this.textureDictionary = textureDictionary;
 	
-	this.resizeObserver = new ResizeObserver(() => { this.sizeChanged(); });
-	this.resizeObserver.observe(this.texListUI.element);
+	this.element.style.width = "460px";
+	this.element.style.minWidth = this.element.style.width;
+	this.element.style.minHeight = this.element.clientHeight + "px";
 }
 
 TextureExplorerDialogUI.prototype = Object.create(DialogUI.prototype);
-
-TextureExplorerDialogUI.prototype.sizeChanged = function()
-{
-	this.infoUI.element.style.display = "inline-block";
-	this.infoUI.element.style.width = this.texListUI.element.offsetWidth + "px";
-};
-
-TextureExplorerDialogUI.prototype.remove = function()
-{
-	this.resizeObserver.disconnect();
-	DialogUI.prototype.remove.call(this);
-};

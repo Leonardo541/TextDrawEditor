@@ -3,6 +3,8 @@ function HistoryDialogUI(parent, title, history, historyIdx, keepHistory, clickA
 {
 	DialogUI.call(this, parent, title);
 	
+	this.contentUI.element.style.display = "flex";
+	
 	this.historyListUI = new EntityUI(this.contentUI, "div", {class: ["textDrawList", "resizable"], contextmenu: (e) => { contextMenu(e.clientX, e.clientY); e.preventDefault(); }});
 	
 	this.keepHistoryLabelUI = new EntityUI(this.contentUI, "label", {});
@@ -19,6 +21,10 @@ function HistoryDialogUI(parent, title, history, historyIdx, keepHistory, clickA
 	this.lastHistoryItemUI = null;
 	
 	this.updateHistoryList(history, historyIdx, clickHistory);
+	
+	this.element.style.width = "260px";
+	this.element.style.minWidth = this.element.style.width;
+	this.element.style.minHeight = this.element.clientHeight + "px";
 }
 
 HistoryDialogUI.prototype = Object.create(DialogUI.prototype);
@@ -37,6 +43,15 @@ HistoryDialogUI.prototype.sizeChanged = function()
 			if(this.lastHistoryItemUI.element.classList.contains("lastTextDrawItem"))
 				this.lastHistoryItemUI.element.classList.remove("lastTextDrawItem");
 		}
+	}
+	
+	if(this.position.width != this.element.clientWidth || this.position.height != this.element.clientHeight)
+	{
+		this.position.width = this.element.clientWidth;
+		this.position.height = this.element.clientHeight;
+		
+		clearTimeout(this.saveSettingsTimeoutId);
+		this.saveSettingsTimeoutId = setTimeout(() => main.saveSettings(), 200);
 	}
 };
 

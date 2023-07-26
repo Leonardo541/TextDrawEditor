@@ -25,6 +25,11 @@ function GuideLineDialogUI(parent, title, x, y, size, padding, style, clickAccep
 	this.contentUI.appendStaticLine();
 	this.buttonAcceptUI = new ButtonUI(this.buttonsUI, {innerText: "Accept", click: () => { clickAccept(parseFloat(this.xUI.element.value), parseFloat(this.yUI.element.value), parseFloat(this.sizeUI.element.value), parseFloat(this.paddingUI.element.value), this.styleUI.element.selectedIndex); }});
 	this.buttonCancelUI = new ButtonUI(this.buttonsUI, {innerText: "Cancel", click: () => { clickCancel(); }});
+	
+	this.element.style.width = "260px";
+	this.element.style.minWidth = this.element.style.width;
+	this.element.style.minHeight = this.element.clientHeight + "px";
+	this.element.style.maxHeight = this.element.style.minHeight;
 }
 
 GuideLineDialogUI.prototype = Object.create(DialogUI.prototype);

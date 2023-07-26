@@ -25,10 +25,12 @@ function Main()
 	this.addProjectTabUI = new EntityUI(this.scrollableTabsUI, "div", {class: "addProjectTab", onclick: (e) => { this.addProject(); }, contextmenu: (e) => { this.contextMenuAddProject(e.clientX, e.clientY); e.preventDefault(); }});
 	
 	this.scrollableControlsUI.appendSpacing();
-	this.controlListUI = new EntityUI(this.scrollableControlsUI, "div", {class: "textDrawList"});
-	this.controlResizerUI = new ResizerUI(this.scrollableControlsUI, 126);
 	
-	this.lastTextDrawItemUI = null;
+	this.controlListContainerUI = new EntityUI(this.scrollableControlsUI, "section", {});
+	this.controlListUI = new EntityUI(this.controlListContainerUI, "div", {class: "textDrawList"});
+	this.controlResizerUI = new ResizerUI(this.controlListContainerUI, 126);
+	
+	this.controlListUI.lastTextDrawItemUI = null;
 	
 	this.textDrawControlsUI = new EntityUI(this.scrollableControlsUI, "div", {style: {display: "none"}});
 	this.guideGridControlsUI = new EntityUI(this.scrollableControlsUI, "div", {style: {display: "none"}});
@@ -197,6 +199,7 @@ function Main()
 	this.keepHistory = false;
 	
 	this.defaultHistoryDialog = {};
+	this.defaultTextDrawListDialog = null;
 	this.defaultTextureDictionaryDialog = null;
 	
 	this.loadProjects();
@@ -229,6 +232,12 @@ function Main()
 	{
 		this.showHistoryDialog(true);
 		this.loadDialogPosition(HistoryDialogUI, this.defaultHistoryDialog);
+	}
+	
+	if(this.defaultTextDrawListDialog)
+	{
+		this.showTextDrawListDialog(true);
+		this.loadDialogPosition(TextDrawListDialogUI, this.defaultTextDrawListDialog);
 	}
 	
 	if(this.defaultTextureDictionaryDialog)
@@ -428,6 +437,15 @@ Main.prototype.loadSettings = function()
 			this.defaultHistoryDialog = null;
 		}
 		
+		if(saved.textDrawListDlg)
+		{
+			this.defaultTextDrawListDialog = saved.textDrawListDlg;
+		}
+		else
+		{
+			this.defaultTextDrawListDialog = null;
+		}
+		
 		if(saved.textureDictionaryDlg)
 		{
 			this.defaultTextureDictionaryDialog = saved.textureDictionaryDlg;
@@ -441,13 +459,14 @@ Main.prototype.loadSettings = function()
 
 Main.prototype.saveSettings = function()
 {
-	let controlListHeight = this.controlListUI.element.offsetHeight;
+	let controlListHeight = this.controlListHeight ?? this.controlListUI.element.offsetHeight;
 	let keepHistory = this.keepHistory;
 	
 	let historyDlg = this.saveDialogPosition(HistoryDialogUI);
+	let textDrawListDlg = this.saveDialogPosition(TextDrawListDialogUI);
 	let textureDictionaryDlg = this.saveDialogPosition(TextureDictionaryDialogUI);
 	
-	window.localStorage.setItem("settings", JSON.stringify({controlListHeight: controlListHeight, keepHistory: keepHistory, historyDlg: historyDlg, textureDictionaryDlg: textureDictionaryDlg}));
+	window.localStorage.setItem("settings", JSON.stringify({controlListHeight: controlListHeight, keepHistory: keepHistory, historyDlg: historyDlg, textDrawListDlg: textDrawListDlg, textureDictionaryDlg: textureDictionaryDlg}));
 };
 
 Main.prototype.updateHistoryDialog = function()
@@ -1556,6 +1575,7 @@ Main.prototype.contextMenuScreen = function(x, y)
 	let contextSubMenuUI = new ContextMenuUI(contextItemUI, 0, 0);
 	
 	contextSubMenuUI.appendItem("History", () => { this.showHistoryDialog(); }, "history");
+	contextSubMenuUI.appendItem("TextDraw List", () => { this.showTextDrawListDialog(); }, "list");
 	contextSubMenuUI.appendItem("Texture Dictionary", () => { this.showTextureDictionaryDialog(); }, "texture");
 	
 	this.contextMenuUI.updateSubMenuPosition();
@@ -2139,6 +2159,26 @@ Main.prototype.showHistoryDialog = function(noSaveSettings)
 		this.saveSettings();
 };
 
+Main.prototype.showTextDrawListDialog = function(noSaveSettings)
+{
+	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof TextDrawListDialogUI);
+	
+	if(dialogUI)
+	{
+		dialogUI.focus();
+		return;
+	}
+	
+	this.detachControlList();
+	
+	dialogUI = new TextDrawListDialogUI("body", "TextDraw List", this.controlListUI, () => { this.attachControlList(); this.hideDialog(dialogUI); });
+	
+	this.dialogsUI.push(dialogUI);
+	
+	if(!noSaveSettings)
+		this.saveSettings();
+};
+
 Main.prototype.showTextureDictionaryDialog = function(noSaveSettings)
 {
 	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof TextureDictionaryDialogUI);
@@ -2184,14 +2224,16 @@ Main.prototype.saveDialogPosition = function(type)
 
 Main.prototype.loadDialogPosition = function(type, position)
 {
-	if(position.x === undefined || position.y === undefined)
-		return;
-	
 	let dialogUI = this.dialogsUI.find(dialogUI => dialogUI instanceof type);
 	
 	if(dialogUI)
 	{
-		dialogUI.move(position.x, position.y);
+		if(position.x !== undefined && position.y !== undefined)
+			dialogUI.move(position.x, position.y);
+		
+		if(position.width !== undefined && position.height !== undefined)
+			dialogUI.size(position.width, position.height);
+		
 		dialogUI.position = position;
 	}
 };
@@ -2201,8 +2243,27 @@ Main.prototype.hideDialog = function(dialogUI)
 	this.dialogsUI.splice(this.dialogsUI.indexOf(dialogUI), 1);
 	dialogUI.remove();
 	
-	if(dialogUI instanceof HistoryDialogUI || dialogUI instanceof TextureDictionaryDialogUI)
+	if(dialogUI instanceof HistoryDialogUI || dialogUI instanceof TextDrawListDialogUI || dialogUI instanceof TextureDictionaryDialogUI)
 		this.saveSettings();
+};
+
+Main.prototype.attachControlList = function()
+{
+	this.controlListUI.element.style.height = this.controlListHeight + "px";
+	this.controlListContainerUI.element.style.display = "";
+	this.controlListContainerUI.element.insertBefore(main.controlListUI.element, main.controlResizerUI.element);
+	this.controlListHeight = undefined;
+	
+	this.checkScrollBars();
+}
+
+Main.prototype.detachControlList = function()
+{
+	this.controlListHeight = this.controlListUI.element.offsetHeight;
+	this.controlListContainerUI.element.style.display = "none";
+	this.controlListUI.element.style.height = "";
+	
+	this.checkScrollBars();
 };
 
 Main.prototype.overrideCursor = function(override)
@@ -2228,7 +2289,7 @@ Main.prototype.updateControlList = function()
 {
 	this.controlListUI.element.innerHTML = "";
 	
-	this.lastTextDrawItemUI = null;
+	this.controlListUI.lastTextDrawItemUI = null;
 	
 	if(this.currentProject)
 	{
@@ -2239,7 +2300,7 @@ Main.prototype.updateControlList = function()
 			
 			this.controlListUI.element.appendChild(this.currentProject.textDrawList[i].textDrawItemUI.element);
 			
-			this.lastTextDrawItemUI = this.currentProject.textDrawList[i].textDrawItemUI;
+			this.controlListUI.lastTextDrawItemUI = this.currentProject.textDrawList[i].textDrawItemUI;
 		}
 		
 		for(let i = 0; i < this.currentProject.guideGrids.length; i++)
@@ -2249,7 +2310,7 @@ Main.prototype.updateControlList = function()
 			
 			this.controlListUI.element.appendChild(this.currentProject.guideGrids[i].textDrawItemUI.element);
 			
-			this.lastTextDrawItemUI = this.currentProject.guideGrids[i].textDrawItemUI;
+			this.controlListUI.lastTextDrawItemUI = this.currentProject.guideGrids[i].textDrawItemUI;
 		}
 		
 		for(let i = 0; i < this.currentProject.guideLines.length; i++)
@@ -2259,11 +2320,11 @@ Main.prototype.updateControlList = function()
 			
 			this.controlListUI.element.appendChild(this.currentProject.guideLines[i].textDrawItemUI.element);
 			
-			this.lastTextDrawItemUI = this.currentProject.guideLines[i].textDrawItemUI;
+			this.controlListUI.lastTextDrawItemUI = this.currentProject.guideLines[i].textDrawItemUI;
 		}
 		
-		if(this.lastTextDrawItemUI && this.controlListUI.hasScrollBar())
-			this.lastTextDrawItemUI.element.classList.add("lastTextDrawItem");
+		if(this.controlListUI.lastTextDrawItemUI && this.controlListUI.hasScrollBar())
+			this.controlListUI.lastTextDrawItemUI.element.classList.add("lastTextDrawItem");
 	}
 };
 
@@ -3509,7 +3570,7 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 			{
 				dialogUI.stopMoving();
 				
-				if(dialogUI instanceof HistoryDialogUI || dialogUI instanceof TextureDictionaryDialogUI)
+				if(dialogUI instanceof HistoryDialogUI || dialogUI instanceof TextDrawListDialogUI || dialogUI instanceof TextureDictionaryDialogUI)
 					this.saveSettings();
 			}
 			
@@ -3521,17 +3582,17 @@ Main.prototype.checkMouse = function(e, buttonDown, buttonUp)
 	{
 		this.controlResizerUI.resize(e.clientY - this.controlResizerUI.resizingY);
 		
-		if(this.lastTextDrawItemUI)
+		if(this.controlListUI.lastTextDrawItemUI)
 		{
 			if(this.controlListUI.hasScrollBar())
 			{
-				if(!this.lastTextDrawItemUI.element.classList.contains("lastTextDrawItem"))
-					this.lastTextDrawItemUI.element.classList.add("lastTextDrawItem");
+				if(!this.controlListUI.lastTextDrawItemUI.element.classList.contains("lastTextDrawItem"))
+					this.controlListUI.lastTextDrawItemUI.element.classList.add("lastTextDrawItem");
 			}
 			else
 			{
-				if(this.lastTextDrawItemUI.element.classList.contains("lastTextDrawItem"))
-					this.lastTextDrawItemUI.element.classList.remove("lastTextDrawItem");
+				if(this.controlListUI.lastTextDrawItemUI.element.classList.contains("lastTextDrawItem"))
+					this.controlListUI.lastTextDrawItemUI.element.classList.remove("lastTextDrawItem");
 			}
 		}
 		
