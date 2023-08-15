@@ -2453,6 +2453,14 @@ Main.prototype.textChange = function(e)
 		
 		this.currentTextDrawUI.clear();
 		this.currentTextDrawUI.paint(this.currentProject.getCurrentTextDraw(), this.clicked);
+		
+		if(this.clickOption == "resize-letter")
+		{
+			this.optionsUI.clear();
+			this.optionsUI.paintGuideGrids(this.currentProject.getCurrentGuideGrid(), this.currentProject.guideGrids, this.clickOption);
+			this.optionsUI.paintGuideLines(this.currentProject.getCurrentGuideLine(), this.currentProject.guideLines, this.clickOption);
+			this.optionsUI.paint(this.currentProject.getCurrentTextDraw(), this.clickOption);
+		}
 	}
 };
 
