@@ -66,8 +66,9 @@ function Main()
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Color");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.colorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawColor); this.saveProjects(); }});
-	this.controlColorPickerUI = new TextBoxUI(this.textDrawControlsUI, {type: "color", change: (e) => { this.colorPickerChange(e); }});
+	this.colorPickerControlsUI = new EntityUI(this.textDrawControlsUI, "div", {class: "colorPicker"});
+	this.controlColorUI = new TextBoxUI(this.colorPickerControlsUI, {class: "textBoxColor", keyup: (e) => { this.colorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawColor); this.saveProjects(); }});
+	this.controlColorPickerUI = new TextBoxUI(this.colorPickerControlsUI, {type: "color", change: (e) => { this.colorPickerChange(e); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Use Box");
 	this.textDrawControlsUI.appendLineBreak();
@@ -75,8 +76,9 @@ function Main()
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Box Color");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlBoxColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.boxColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawBoxColor); this.saveProjects(); }});
-	this.controlBoxColorPickerUI = new TextBoxUI(this.textDrawControlsUI, {type: "color", change: (e) => { this.boxColorPickerChange(e); }});
+	this.boxColorPickerControlsUI = new EntityUI(this.textDrawControlsUI, "div", {class: "colorPicker"});
+	this.controlBoxColorUI = new TextBoxUI(this.boxColorPickerControlsUI, {class: "textBoxColor", keyup: (e) => { this.boxColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawBoxColor); this.saveProjects(); }});
+	this.controlBoxColorPickerUI = new TextBoxUI(this.boxColorPickerControlsUI, {type: "color", change: (e) => { this.boxColorPickerChange(e); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Set Shadow");
 	this.textDrawControlsUI.appendLineBreak();
@@ -88,8 +90,9 @@ function Main()
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Background Color");
 	this.textDrawControlsUI.appendLineBreak();
-	this.controlBackgroundColorUI = new TextBoxUI(this.textDrawControlsUI, {class: "textBoxColor", keyup: (e) => { this.backgroundColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawBackgroundColor); this.saveProjects(); }});
-	this.controlBackgroundColorPickerUI = new TextBoxUI(this.textDrawControlsUI, {type: "color", change: (e) => { this.backgroundColorPickerChange(e); }});
+	this.backgroundColorPickerControlsUI = new EntityUI(this.textDrawControlsUI, "div", {class: "colorPicker"});
+	this.controlBackgroundColorUI = new TextBoxUI(this.backgroundColorPickerControlsUI, {class: "textBoxColor", keyup: (e) => { this.backgroundColorChange(e); }, focusout: (e) => { this.repaintThumbnail(); this.checkAndPushHistoryData(HistoryType.TextDrawBackgroundColor); this.saveProjects(); }});
+	this.controlBackgroundColorPickerUI = new TextBoxUI(this.backgroundColorPickerControlsUI, {type: "color", change: (e) => { this.backgroundColorPickerChange(e); }});
 	this.textDrawControlsUI.appendLineBreak();
 	this.textDrawControlsUI.appendStaticText("Font");
 	this.textDrawControlsUI.appendLineBreak();

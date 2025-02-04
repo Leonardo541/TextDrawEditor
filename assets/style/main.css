@@ -47,6 +47,13 @@ button:hover
 	background-image: linear-gradient(#3f3f3f, #3c3c3c, #373737);
 }
 
+.colorPicker
+{
+	display: inline-block;
+	position: relative;
+	margin: 2px 5px;
+}
+
 input.textBoxLeft
 {
 	width: 118px;
@@ -61,9 +68,8 @@ input.textBoxRight
 
 input.textBoxColor
 {
-	float: left;
 	width: 219px;
-	margin-right: 0px;
+	margin: 0px;
 	border-right: 0px;
 }
 
@@ -77,10 +83,11 @@ input.textBoxColor:focus + *
 
 input[type=color]
 {
+	position: absolute;
 	width: 21px;
-	height: 21px;
+	height: 100%;
 	padding: 5px;
-	margin-left: 0px;
+	margin: 0px;
 	background-image: linear-gradient(#757575, #6c6c6c, #626262);
 	border-left: 0px;
 	border-radius: 0px 5px 5px 0px;
